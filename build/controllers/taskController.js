@@ -344,6 +344,24 @@ class TaskController {
             }));
         });
     }
+    send_Tasks() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // REVISAR SI YA SE ENVIARON LAS TAREAS
+            yield database_1.default.query('SELECT * FROM configuracion', (error, results, fields) => __awaiter(this, void 0, void 0, function* () {
+                if (results[0]) {
+                    const hoy = moment.utc().toDate();
+                    console.log(hoy);
+                    console.log(results[0].dia_actual);
+                    if (!moment(results[0].dia_actual).isSame(hoy, 'day')) {
+                        console.log('los dias no coinciden');
+                    }
+                    else {
+                        console.log('los dias si coinciden');
+                    }
+                }
+            }));
+        });
+    }
 }
 const taskController = new TaskController();
 exports.default = taskController;

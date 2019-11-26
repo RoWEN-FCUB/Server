@@ -303,6 +303,22 @@ class TaskController {
             }
         });        
     }
+
+    public async send_Tasks(): Promise<void> { // ENVIA LAS TAREAS DEL DIA POR CORREO
+        // REVISAR SI YA SE ENVIARON LAS TAREAS
+        await pool.query('SELECT * FROM configuracion', async (error: any, results: any, fields: any)=>{
+            if (results[0]) {
+                const hoy: Date = moment.utc().toDate();
+                console.log(hoy);
+                console.log(results[0].dia_actual);
+                if (!moment(results[0].dia_actual).isSame(hoy, 'day')) {
+                    console.log('los dias no coinciden');
+                } else {
+                    console.log('los dias si coinciden');
+                }
+            }
+        });
+    }
 } 
 const taskController = new TaskController();
 export default taskController;

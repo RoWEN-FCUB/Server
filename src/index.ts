@@ -69,6 +69,7 @@ class Server{
             await this.delay(60000,1);
             console.log('Buscando tareas incumplidas...');
             taskController.search_failed_tasks();
+            taskController.send_Tasks();
             //console.log('Esto se ejecuta cada 1 seg');
         }  
     }

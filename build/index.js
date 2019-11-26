@@ -80,6 +80,7 @@ class Server {
                 yield this.delay(60000, 1);
                 console.log('Buscando tareas incumplidas...');
                 taskController_1.default.search_failed_tasks();
+                taskController_1.default.send_Tasks();
                 //console.log('Esto se ejecuta cada 1 seg');
             }
         });
