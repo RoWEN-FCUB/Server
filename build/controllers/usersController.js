@@ -26,6 +26,7 @@ const path_1 = __importDefault(require("path"));
 const slash = require('slash');
 const nodemailer = require("nodemailer");
 var hash = require('hash.js');
+const keys_1 = __importDefault(require("../keys"));
 class UsersController {
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -157,26 +158,15 @@ class UsersController {
             });
         });
     }
-    SendEmail() {
+    SendEmail(to, subject, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            let transporter = nodemailer.createTransport({
-                host: "webmail.lastunas.cu",
-                port: 25,
-                secure: false,
-                auth: {
-                    user: 'carlos',
-                    pass: 'David.18'
-                },
-                tls: {
-                    rejectUnauthorized: false
-                }
-            });
+            let transporter = nodemailer.createTransport(keys_1.default.mail_server);
             let info = yield transporter.sendMail({
                 from: '"Carlos" <carlos@ltunas.inf.cu>',
-                to: "carlos@ltunas.inf.cu",
-                subject: "Hello ",
-                text: "Hello world?",
-                html: "<b>Hello world?</b>" // html body
+                to: to,
+                subject: subject,
+                //text: body, // plain text body
+                html: body // html body
             });
         });
     }

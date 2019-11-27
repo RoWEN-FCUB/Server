@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import pool from '../database';
 var moment = require('moment');
-
+import usersController from './usersController';
 class TaskController {
 
     constructor() {}
@@ -309,15 +309,56 @@ class TaskController {
         await pool.query('SELECT * FROM configuracion', async (error: any, results: any, fields: any)=>{
             if (results[0]) {
                 const hoy: Date = moment.utc().toDate();
-                console.log(hoy);
-                console.log(results[0].dia_actual);
+                //console.log(hoy);
+                //console.log(results[0].dia_actual);
                 if (!moment(results[0].dia_actual).isSame(hoy, 'day')) {
-                    console.log('los dias no coinciden');
+                    //console.log('los dias no coinciden');
+                    //usersController.SendEmail('carlos@ltunas.inf.cu', 'probando', 'esto es una prueba de correo');
+                    await pool.query("SELECT tareas.*, users.email as email, users.user AS nombre_creador FROM tareas INNER JOIN users ON(tareas.id_usuario=users.id) WHERE (DATE(?) BETWEEN DATE(tareas.fecha_inicio) AND DATE(tareas.fecha_fin)) ORDER BY tareas.id_usuario, TIME(tareas.fecha_inicio);",[hoy] , async (error: any, results: any, fields: any)=>{
+                        if (error) {console.log(error);}
+                        if (results) {
+                            console.log('Enviando las tareas del día...');
+                            let id_usuario: number = results[0].id_usuario;
+                            let body: string = '<b>Hola '+results[0].nombre_creador+', estas son las tareas de hoy:</b><br> ';
+                            body += '<table border="1"><tr><td><b>HORA</b></td><td><b>TAREAS</b></td></tr>';
+                            body += '<tr><td>' + this.formatTime(results[0].fecha_inicio, results[0].duracion) + '</td>';
+                            body += '<td>' + results[0].resumen + '</td></tr>';                            
+                            for (let i = 1; i < results.length; i++){
+                                if (results[i].id_usuario !== id_usuario) {
+                                    id_usuario = results[i].id_usuario;
+                                    body += '</table>';
+                                    usersController.SendEmail(results[i-1].email, 'Tareas de hoy', body);
+                                    body = '<b>Hola '+results[i].nombre_creador+', estas son las tareas de hoy:</b><br> ';
+                                    body += '<table border="1"><tr><td><b>HORA</b></td><td><b>TAREAS</b></td></tr>';
+                                    body += '<tr><td>' + this.formatTime(results[i].fecha_inicio, results[i].duracion) + '</td>';
+                                    body += '<td>' + results[i].resumen + '</td></tr>';
+                                } else {
+                                    body += '<tr><td>' + this.formatTime(results[i].fecha_inicio, results[i].duracion) + '</td>';
+                                    body += '<td>' + results[i].resumen + '</td></tr>';
+                                }
+                                if (i === results.length-1) {
+                                    body += '</table>';
+                                    usersController.SendEmail(results[i].email, 'Tareas de hoy', body);
+                                }
+                            }
+                            await pool.query('UPDATE configuracion SET dia_actual = ?', [hoy], async (error: any, results: any, fields: any)=>{
+                                if (error) {console.log(error);}
+                                console.log('Actualizado el dia');
+                            });                             
+                            //console.log(body);
+                        }
+                    });
                 } else {
-                    console.log('los dias si coinciden');
+                    //console.log('los dias si coinciden');
                 }
             }
         });
+    }
+
+    formatTime(value: Date, duration: number): string {
+        const duracion = moment.utc(value).add(duration, 'minutes').format('LT');
+        const hora = moment.utc(value).format('LT');
+        return hora + ' - ' + duracion;
     }
 } 
 const taskController = new TaskController();

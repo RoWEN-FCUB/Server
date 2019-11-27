@@ -6,7 +6,7 @@ import Path from "path";
 const slash = require('slash');
 const nodemailer = require("nodemailer");
 var hash = require('hash.js');
-
+import keys from '../keys';
 
 
 class UsersController{
@@ -131,26 +131,14 @@ class UsersController{
         });
     }
 
-    public async SendEmail() {
-        let transporter = nodemailer.createTransport({
-            host: "webmail.lastunas.cu",
-            port: 25, //587
-            secure: false, // true for 465, false for other ports
-            auth: {
-              user: 'carlos',
-              pass: 'David.18'
-            },
-            tls: {
-                rejectUnauthorized: false
-            }
-        
-          });        
+    public async SendEmail(to: string, subject: string, body: string) {
+        let transporter = nodemailer.createTransport(keys.mail_server);        
         let info = await transporter.sendMail({
             from: '"Carlos" <carlos@ltunas.inf.cu>', // sender address
-            to: "carlos@ltunas.inf.cu", // list of receivers
-            subject: "Hello ", // Subject line
-            text: "Hello world?", // plain text body
-            html: "<b>Hello world?</b>" // html body
+            to: to, // list of receivers
+            subject: subject, // Subject line
+            //text: body, // plain text body
+            html: body // html body
         });
     }
 }
