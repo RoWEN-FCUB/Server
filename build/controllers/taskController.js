@@ -360,7 +360,7 @@ class TaskController {
                             if (error) {
                                 console.log(error);
                             }
-                            if (results) {
+                            if (results.length > 0) {
                                 console.log('Enviando las tareas del día...');
                                 let id_usuario = results[0].id_usuario;
                                 let body = '<b>Hola ' + results[0].nombre_creador + ', estas son las tareas de hoy:</b><br> ';

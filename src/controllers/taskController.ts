@@ -316,7 +316,7 @@ class TaskController {
                     //usersController.SendEmail('carlos@ltunas.inf.cu', 'probando', 'esto es una prueba de correo');
                     await pool.query("SELECT tareas.*, users.email as email, users.user AS nombre_creador FROM tareas INNER JOIN users ON(tareas.id_usuario=users.id) WHERE (DATE(?) BETWEEN DATE(tareas.fecha_inicio) AND DATE(tareas.fecha_fin)) ORDER BY tareas.id_usuario, TIME(tareas.fecha_inicio);",[hoy] , async (error: any, results: any, fields: any)=>{
                         if (error) {console.log(error);}
-                        if (results) {
+                        if (results.length > 0) {
                             console.log('Enviando las tareas del día...');
                             let id_usuario: number = results[0].id_usuario;
                             let body: string = '<b>Hola '+results[0].nombre_creador+', estas son las tareas de hoy:</b><br> ';
