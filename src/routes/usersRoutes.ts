@@ -12,6 +12,7 @@ class UsersRoutes{
         this.router.get('/', usersController.list);
         this.router.get('/:id', usersController.getOne);
         this.router.get('/sub/:id', usersController.getSubordinados);
+        this.router.get('/sup/:id', usersController.getSuperior);
         this.router.post('/', usersController.create);
         this.router.put('/:id', usersController.update);
         this.router.delete('/:id', usersController.delete);

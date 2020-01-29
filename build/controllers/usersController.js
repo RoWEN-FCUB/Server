@@ -46,7 +46,7 @@ class UsersController {
     getSubordinados(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const user = yield database_1.default.query('SELECT users.id, users.user, users.fullname FROM users WHERE id_sup = ?', [id], function (error, results, fields) {
+            const user = yield database_1.default.query('SELECT users.id, users.user, users.fullname, users.position FROM users WHERE id_sup = ?', [id], function (error, results, fields) {
                 if (results.length > 0) {
                     res.json(results);
                 }
@@ -60,6 +60,17 @@ class UsersController {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
             const user = yield database_1.default.query('SELECT * FROM users WHERE id = ?', [id], function (error, results, fields) {
+                if (results.length > 0)
+                    res.json(results[0]);
+                else
+                    res.json({ text: "User not found" });
+            });
+        });
+    }
+    getSuperior(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const user = yield database_1.default.query('SELECT users.fullname, users.position FROM users WHERE id = (SELECT id_sup FROM users WHERE id = ?);', [id], function (error, results, fields) {
                 if (results.length > 0)
                     res.json(results[0]);
                 else
@@ -136,14 +147,14 @@ class UsersController {
             //const upass = req.body.password;        
             const upass = hash.sha256().update(req.body.password).digest('hex');
             const RSA_PRIVATE_KEY = fs.readFileSync(slash(path_1.default.join(__dirname, 'private.key')));
-            const resp = yield database_1.default.query('SELECT users.id, users.email, users.picture, users.pass, users.user, users.fullname, users_roles.role FROM users INNER JOIN users_roles ON (users.role = users_roles.id) WHERE email = ?', [email], function (error, results, fields) {
+            const resp = yield database_1.default.query('SELECT users.id, users.email, users.picture, users.pass, users.user, users.fullname, users.position, users_roles.role FROM users INNER JOIN users_roles ON (users.role = users_roles.id) WHERE email = ?', [email], function (error, results, fields) {
                 //console.log(results[0]);
                 if (!results[0]) {
                     res.status(404).json({ text: 'Datos de usuario incorrectos' });
                 }
                 else {
                     if (results[0].pass === upass) {
-                        const jwtBearerToken = jwt.sign({ id: results[0].id, role: results[0].role, name: results[0].user, picture: results[0].picture, fullname: results[0].fullname }, RSA_PRIVATE_KEY, {
+                        const jwtBearerToken = jwt.sign({ id: results[0].id, role: results[0].role, name: results[0].user, picture: results[0].picture, fullname: results[0].fullname, position: results[0].position }, RSA_PRIVATE_KEY, {
                             algorithm: 'RS256',
                             expiresIn: 3600,
                             subject: '' + results[0].id
