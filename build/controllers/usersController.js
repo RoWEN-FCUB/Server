@@ -173,7 +173,7 @@ class UsersController {
         return __awaiter(this, void 0, void 0, function* () {
             let transporter = nodemailer.createTransport(keys_1.default.mail_server);
             let info = yield transporter.sendMail({
-                from: '"Carlos" <carlos@ltunas.inf.cu>',
+                from: '"CITMATEL" <citmatel@noexiste.cu>',
                 to: to,
                 subject: subject,
                 //text: body, // plain text body
