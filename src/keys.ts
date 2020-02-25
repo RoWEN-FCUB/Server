@@ -1,8 +1,8 @@
 export default{
     database:{
         host: 'localhost',
-        user: 'root',
-        password: 'Admin.18',
+        user: 'rowen',
+        password: '123',
         database: 'citmatel_lt',
         timezone: 'utc'
     },
