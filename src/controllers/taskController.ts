@@ -71,7 +71,7 @@ class TaskController {
         const subs = req.body.subs;
         const id = task.id;
         const creador = task.nombre_creador;
-        //console.log(creador);
+        //console.log(req.body);
         delete task.id;
         delete task.observaciones;        
         delete task.nombre_creador;
@@ -80,10 +80,17 @@ class TaskController {
         const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
         const offset = date.getTimezoneOffset() / 60;
         const hours = date.getHours();
+        task.fecha_inicio = task.fecha_inicio.replace('T', ' ');
+        task.fecha_inicio = task.fecha_inicio.replace('.000Z', '');
+        task.fecha_fin = task.fecha_fin.replace('T', ' ');
+        task.fecha_fin = task.fecha_fin.replace('.000Z', '');
         newDate.setHours(hours - offset);        
-        if (subs.length === 0) {
-            await pool.query('INSERT INTO tareas set ?',[req.body], async (error: any, results: any, fields: any) => {
+        if (subs.length === 1) {
+            await pool.query('INSERT INTO tareas set ?',[task], async (error: any, results: any, fields: any) => {
                 res.json({message: 'Task saved'});
+                if (error) {
+                    console.log(error);
+                }
                 if (task.id_usuario !== task.id_creador) {
                     let notificacion = {
                         id_usuario: task.id_usuario,
@@ -117,7 +124,11 @@ class TaskController {
                 }                
             }
             await pool.query('INSERT INTO tareas (id_usuario, resumen, descripcion, fecha_inicio, estado, id_creador, duracion, validada, fecha_fin) VALUES ?',[new_tasks], async function(error: any, results: any, fields: any){
-                res.json({text: 'Task saved'});
+                if (error) {
+                    console.log(error);
+                } else {
+                    res.json({text: 'Task saved'});
+                }                
                 await pool.query('INSERT INTO notificaciones (id_usuario, notificacion, fecha, leida, vinculo, estatus) VALUES ?', [notificaciones], async function(error: any, results: any, fields: any){
                     if (error) {console.log(error);}                    
                 });
@@ -202,6 +213,11 @@ class TaskController {
         const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
         const offset = date.getTimezoneOffset() / 60;
         const hours = date.getHours();
+        req.body.fecha_inicio = req.body.fecha_inicio.replace('T', ' ');
+        req.body.fecha_inicio = req.body.fecha_inicio.replace('.000Z', '');
+        req.body.fecha_fin = req.body.fecha_fin.replace('T', ' ');
+        req.body.fecha_fin = req.body.fecha_fin.replace('.000Z', '');
+        //console.log(req.body);
         newDate.setHours(hours - offset);
         const tsk = await pool.query('SELECT * FROM tareas INNER JOIN users ON (tareas.id_usuario = users.id) WHERE tareas.id = ?', [id], async (error: any, results: any, fields: any) => {            
             task = results[0];            
@@ -230,13 +246,21 @@ class TaskController {
                     estatus: status,
                 };
                 const notif = await pool.query('INSERT INTO notificaciones set ?',[notificacion], async function(error: any, results: any, fields: any){
+                    if (error) {
+                        console.log(error);
+                    }  
                     await pool.query('UPDATE tareas set ? WHERE id = ?', [req.body,id], function(error: any, results: any, fields: any){            
+                        if (error) {
+                            console.log(error);
+                        }  
                         res.json({text:"Task updated"});
                     });
                 });
             } else {
-                await pool.query('UPDATE tareas set ? WHERE id = ?', [req.body,id], function(error: any, results: any, fields: any){            
-                    res.json({text:"Task updated"});
+                await pool.query('UPDATE tareas set ? WHERE id = ?', [req.body,id], function(error: any, results: any, fields: any){                                
+                    if (error) {
+                        console.log(error);
+                    }  res.json({text:"Task updated"});
                 });
             }                                  
         });                

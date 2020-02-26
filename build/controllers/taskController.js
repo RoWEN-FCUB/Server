@@ -90,7 +90,7 @@ class TaskController {
             const subs = req.body.subs;
             const id = task.id;
             const creador = task.nombre_creador;
-            //console.log(creador);
+            //console.log(req.body);
             delete task.id;
             delete task.observaciones;
             delete task.nombre_creador;
@@ -99,10 +99,17 @@ class TaskController {
             const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
             const offset = date.getTimezoneOffset() / 60;
             const hours = date.getHours();
+            task.fecha_inicio = task.fecha_inicio.replace('T', ' ');
+            task.fecha_inicio = task.fecha_inicio.replace('.000Z', '');
+            task.fecha_fin = task.fecha_fin.replace('T', ' ');
+            task.fecha_fin = task.fecha_fin.replace('.000Z', '');
             newDate.setHours(hours - offset);
-            if (subs.length === 0) {
-                yield database_1.default.query('INSERT INTO tareas set ?', [req.body], (error, results, fields) => __awaiter(this, void 0, void 0, function* () {
+            if (subs.length === 1) {
+                yield database_1.default.query('INSERT INTO tareas set ?', [task], (error, results, fields) => __awaiter(this, void 0, void 0, function* () {
                     res.json({ message: 'Task saved' });
+                    if (error) {
+                        console.log(error);
+                    }
                     if (task.id_usuario !== task.id_creador) {
                         let notificacion = {
                             id_usuario: task.id_usuario,
@@ -138,7 +145,12 @@ class TaskController {
                 }
                 yield database_1.default.query('INSERT INTO tareas (id_usuario, resumen, descripcion, fecha_inicio, estado, id_creador, duracion, validada, fecha_fin) VALUES ?', [new_tasks], function (error, results, fields) {
                     return __awaiter(this, void 0, void 0, function* () {
-                        res.json({ text: 'Task saved' });
+                        if (error) {
+                            console.log(error);
+                        }
+                        else {
+                            res.json({ text: 'Task saved' });
+                        }
                         yield database_1.default.query('INSERT INTO notificaciones (id_usuario, notificacion, fecha, leida, vinculo, estatus) VALUES ?', [notificaciones], function (error, results, fields) {
                             return __awaiter(this, void 0, void 0, function* () {
                                 if (error) {
@@ -229,6 +241,11 @@ class TaskController {
             const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
             const offset = date.getTimezoneOffset() / 60;
             const hours = date.getHours();
+            req.body.fecha_inicio = req.body.fecha_inicio.replace('T', ' ');
+            req.body.fecha_inicio = req.body.fecha_inicio.replace('.000Z', '');
+            req.body.fecha_fin = req.body.fecha_fin.replace('T', ' ');
+            req.body.fecha_fin = req.body.fecha_fin.replace('.000Z', '');
+            //console.log(req.body);
             newDate.setHours(hours - offset);
             const tsk = yield database_1.default.query('SELECT * FROM tareas INNER JOIN users ON (tareas.id_usuario = users.id) WHERE tareas.id = ?', [id], (error, results, fields) => __awaiter(this, void 0, void 0, function* () {
                 task = results[0];
@@ -260,7 +277,13 @@ class TaskController {
                     };
                     const notif = yield database_1.default.query('INSERT INTO notificaciones set ?', [notificacion], function (error, results, fields) {
                         return __awaiter(this, void 0, void 0, function* () {
+                            if (error) {
+                                console.log(error);
+                            }
                             yield database_1.default.query('UPDATE tareas set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
+                                if (error) {
+                                    console.log(error);
+                                }
                                 res.json({ text: "Task updated" });
                             });
                         });
@@ -268,6 +291,9 @@ class TaskController {
                 }
                 else {
                     yield database_1.default.query('UPDATE tareas set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
+                        if (error) {
+                            console.log(error);
+                        }
                         res.json({ text: "Task updated" });
                     });
                 }
