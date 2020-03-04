@@ -104,53 +104,32 @@ class TaskController {
             task.fecha_fin = task.fecha_fin.replace('T', ' ');
             task.fecha_fin = task.fecha_fin.replace('.000Z', '');
             newDate.setHours(hours - offset);
-            if (subs.length === 1) {
-                yield database_1.default.query('INSERT INTO tareas set ?', [task], (error, results, fields) => __awaiter(this, void 0, void 0, function* () {
-                    res.json({ message: 'Task saved' });
+            let new_tasks = [];
+            let notificaciones = [];
+            for (let i = 0; i < subs.length; i++) {
+                task.id_usuario = subs[i];
+                new_tasks.push(Object.values(task));
+                let notificacion = {
+                    id_usuario: task.id_usuario,
+                    notificacion: '<b>' + creador + '</b> te ha asignado la tarea: <b>' + task.resumen + '</b>',
+                    fecha: newDate,
+                    leida: false,
+                    vinculo: 'tasks/' + task.id_usuario + '/' + task.fecha_inicio + '/' + task.fecha_fin,
+                    estatus: 'info',
+                };
+                if (task.id_usuario !== task.id_creador) {
+                    notificaciones.push(Object.values(notificacion));
+                }
+            }
+            yield database_1.default.query('INSERT INTO tareas (id_usuario, resumen, descripcion, fecha_inicio, estado, id_creador, duracion, validada, fecha_fin) VALUES ?', [new_tasks], function (error, results, fields) {
+                return __awaiter(this, void 0, void 0, function* () {
                     if (error) {
                         console.log(error);
                     }
-                    if (task.id_usuario !== task.id_creador) {
-                        let notificacion = {
-                            id_usuario: task.id_usuario,
-                            notificacion: '<b>' + creador + '</b> te ha asignado la tarea: <b>' + task.resumen + '</b>',
-                            fecha: newDate,
-                            leida: false,
-                            vinculo: 'tasks/' + task.id_usuario + '/' + task.fecha_inicio + '/' + task.fecha_fin,
-                            estatus: 'info',
-                        };
-                        yield database_1.default.query('INSERT INTO notificaciones set ?', [notificacion], function (error, results, fields) {
-                            //res.json({text: 'Notification generated'});
-                        });
+                    else {
+                        res.json({ text: 'Task saved' });
                     }
-                }));
-            }
-            else {
-                let new_tasks = [];
-                let notificaciones = [];
-                for (let i = 0; i < subs.length; i++) {
-                    task.id_usuario = subs[i];
-                    new_tasks.push(Object.values(task));
-                    let notificacion = {
-                        id_usuario: task.id_usuario,
-                        notificacion: '<b>' + creador + '</b> te ha asignado la tarea: <b>' + task.resumen + '</b>',
-                        fecha: newDate,
-                        leida: false,
-                        vinculo: 'tasks/' + task.id_usuario + '/' + task.fecha_inicio + '/' + task.fecha_fin,
-                        estatus: 'info',
-                    };
-                    if (task.id_usuario !== task.id_creador) {
-                        notificaciones.push(Object.values(notificacion));
-                    }
-                }
-                yield database_1.default.query('INSERT INTO tareas (id_usuario, resumen, descripcion, fecha_inicio, estado, id_creador, duracion, validada, fecha_fin) VALUES ?', [new_tasks], function (error, results, fields) {
-                    return __awaiter(this, void 0, void 0, function* () {
-                        if (error) {
-                            console.log(error);
-                        }
-                        else {
-                            res.json({ text: 'Task saved' });
-                        }
+                    if (notificaciones.length > 0) {
                         yield database_1.default.query('INSERT INTO notificaciones (id_usuario, notificacion, fecha, leida, vinculo, estatus) VALUES ?', [notificaciones], function (error, results, fields) {
                             return __awaiter(this, void 0, void 0, function* () {
                                 if (error) {
@@ -158,9 +137,9 @@ class TaskController {
                                 }
                             });
                         });
-                    });
+                    }
                 });
-            }
+            });
         });
     }
     copy(req, res) {
