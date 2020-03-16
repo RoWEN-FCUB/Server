@@ -34,6 +34,7 @@ const rolesRoutes_1 = __importDefault(require("./routes/rolesRoutes"));
 const avatarRoutes_1 = __importDefault(require("./routes/avatarRoutes"));
 const notificationRoutes_1 = __importDefault(require("./routes/notificationRoutes"));
 const taskController_1 = __importDefault(require("./controllers/taskController"));
+const workshopRoutes_1 = __importDefault(require("./routes/workshopRoutes"));
 var dir = path_1.default.join(__dirname, 'public');
 //const fileUpload = require('express-fileupload');
 const nodemailer = require("nodemailer");
@@ -108,6 +109,7 @@ class Server {
         this.app.use('/roles', rolesRoutes_1.default);
         this.app.use('/avatar', avatarRoutes_1.default);
         this.app.use('/notifications', notificationRoutes_1.default);
+        this.app.use('/workshop', workshopRoutes_1.default);
     }
     delay(milliseconds, count) {
         return new Promise(resolve => {
