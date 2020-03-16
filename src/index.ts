@@ -17,9 +17,11 @@ import rolesRoutes from './routes/rolesRoutes';
 import avatarRoutes from './routes/avatarRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import taskController from './controllers/taskController';
+
 var dir = Path.join(__dirname, 'public');
 //const fileUpload = require('express-fileupload');
 
+const nodemailer = require("nodemailer");
 
 class Server{
     public app: Application;
@@ -27,8 +29,46 @@ class Server{
         this.app = express();
         this.config();
         this.routes();
-        //usersController.SendEmail();
-        //console.log(dir);        
+        this.SendEmail();      
+    }
+
+    async SendEmail() {
+        let transporter = nodemailer.createTransport({
+            host: "169.158.143.131",
+            port: 443, //587
+            secure: true, // true for 465, false for other ports
+            auth: {
+              user: 'carlos',
+              pass: 'David.18'
+            },
+            debug: true, // show debug output
+            logger: true, // log information in console
+            tls: {
+                rejectUnauthorized: false,
+                //ciphers:'SSLv3'
+            },            
+            //requireTLS:true,
+            ignoreTLS: true
+          });
+        // verify connection configuration
+        transporter.verify(async function(error: any, success: any) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Server is ready to take our messages');
+                try {
+                    let info = await transporter.sendMail({
+                        from: '"Carlos" <carlos@ltunas.inf.cu>', // sender address
+                        to: "carlos@ltunas.inf.cu", // list of receivers
+                        subject: "Hello ", // Subject line
+                        text: "Hello world?", // plain text body
+                        html: "<b>Hello world?</b>" // html body
+                    });
+                } catch (error) {
+                    console.log(error);
+                };  
+            }
+        });                  
     }
 
     config(): void{

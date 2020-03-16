@@ -36,13 +36,57 @@ const notificationRoutes_1 = __importDefault(require("./routes/notificationRoute
 const taskController_1 = __importDefault(require("./controllers/taskController"));
 var dir = path_1.default.join(__dirname, 'public');
 //const fileUpload = require('express-fileupload');
+const nodemailer = require("nodemailer");
 class Server {
     constructor() {
         this.app = express_1.default();
         this.config();
         this.routes();
-        //usersController.SendEmail();
-        //console.log(dir);        
+        this.SendEmail();
+    }
+    SendEmail() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let transporter = nodemailer.createTransport({
+                host: "169.158.143.131",
+                port: 443,
+                secure: true,
+                auth: {
+                    user: 'carlos',
+                    pass: 'David.18'
+                },
+                debug: true,
+                logger: true,
+                tls: {
+                    rejectUnauthorized: false,
+                },
+                //requireTLS:true,
+                ignoreTLS: true
+            });
+            // verify connection configuration
+            transporter.verify(function (error, success) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    if (error) {
+                        console.log(error);
+                    }
+                    else {
+                        console.log('Server is ready to take our messages');
+                        try {
+                            let info = yield transporter.sendMail({
+                                from: '"Carlos" <carlos@ltunas.inf.cu>',
+                                to: "carlos@ltunas.inf.cu",
+                                subject: "Hello ",
+                                text: "Hello world?",
+                                html: "<b>Hello world?</b>" // html body
+                            });
+                        }
+                        catch (error) {
+                            console.log(error);
+                        }
+                        ;
+                    }
+                });
+            });
+        });
     }
     config() {
         this.app.set('port', process.env.port || 3000);

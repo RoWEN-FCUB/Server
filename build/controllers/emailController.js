@@ -20,13 +20,12 @@ function SendEmail() {
                 pass: 'David.18'
             }
         });
-        /*
-        let info = await transporter.sendMail({
-            from: '"Carlos" <carlos@ltunas.inf.cu>', // sender address
-            to: "carlos@ltunas.inf.cu", // list of receivers
-            subject: "Hello ", // Subject line
-            text: "Hello world?", // plain text body
+        let info = yield transporter.sendMail({
+            from: '"Carlos" <carlos@ltunas.inf.cu>',
+            to: "carlos@ltunas.inf.cu",
+            subject: "Hello ",
+            text: "Hello world?",
             html: "<b>Hello world?</b>" // html body
-        });*/
+        });
     });
 }

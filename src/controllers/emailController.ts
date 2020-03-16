@@ -10,13 +10,13 @@ async function SendEmail() {
           pass: 'David.18'
         }
       });
-    /*
+    
     let info = await transporter.sendMail({
         from: '"Carlos" <carlos@ltunas.inf.cu>', // sender address
         to: "carlos@ltunas.inf.cu", // list of receivers
         subject: "Hello ", // Subject line
         text: "Hello world?", // plain text body
         html: "<b>Hello world?</b>" // html body
-    });*/
+    });
 }
 
