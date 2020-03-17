@@ -10,6 +10,8 @@ class WorkshopRoutes{
 
     config(): void{
         this.router.get('/', workshopController.listAll);
+        this.router.get('/clients', workshopController.listClients);
+        this.router.get('/devices', workshopController.listDevices);
     }
 }
 const workshopRoutes = new WorkshopRoutes();
