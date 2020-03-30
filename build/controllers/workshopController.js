@@ -40,6 +40,14 @@ class WorkshopController {
             });
         });
     }
+    listNames(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            //const {id} = req.params;
+            const records = yield database_1.default.query("SELECT * FROM taller_clientes_personas;", function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
 }
 const workshopController = new WorkshopController();
 exports.default = workshopController;

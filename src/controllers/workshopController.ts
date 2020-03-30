@@ -27,6 +27,13 @@ class WorkshopController {
             res.json(results);            
         });   
     }
+
+    public async listNames (req: Request,res: Response): Promise<void>{
+        //const {id} = req.params;
+        const records = await pool.query("SELECT * FROM taller_clientes_personas;", function(error: any, results: any, fields: any){
+            res.json(results);            
+        });   
+    }
 }
 
 const workshopController = new WorkshopController();
