@@ -80,10 +80,10 @@ class TaskController {
         const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
         const offset = date.getTimezoneOffset() / 60;
         const hours = date.getHours();
-        task.fecha_inicio = task.fecha_inicio.replace('T', ' ');
-        task.fecha_inicio = task.fecha_inicio.replace('.000Z', '');
-        task.fecha_fin = task.fecha_fin.replace('T', ' ');
-        task.fecha_fin = task.fecha_fin.replace('.000Z', '');
+        // task.fecha_inicio = task.fecha_inicio.replace('T', ' ');
+        // task.fecha_inicio = task.fecha_inicio.replace('.000Z', '');
+        // task.fecha_fin = task.fecha_fin.replace('T', ' ');
+        // task.fecha_fin = task.fecha_fin.replace('.000Z', '');
         newDate.setHours(hours - offset);        
         let new_tasks: any[] = [];
         let notificaciones: any[] = []; 
@@ -126,8 +126,7 @@ class TaskController {
         const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
         const offset = date.getTimezoneOffset() / 60;
         const hours = date.getHours();
-        newDate.setHours(hours - offset);    
-        //console.log(id + ' ' + startD + ' ' + endD);
+        newDate.setHours(hours - offset);            
         const tasktocopy = await pool.query('SELECT tareas.*, users.user AS nombre_creador FROM tareas INNER JOIN users ON(tareas.id_creador=users.id) WHERE tareas.id = ?', id, function(error: any, results: any, fields: any) {
             if(error) {
                 console.log(error);
@@ -136,22 +135,20 @@ class TaskController {
                 delete results[0].id;
                 results[0].estado = 'Pendiente';
                 const creador = results[0].nombre_creador;
-                delete results[0].nombre_creador;
-                const hours = moment(results[0].fecha_inicio).get('hour');
-                const minutes = moment(results[0].fecha_inicio).get('minute');
-                startD = moment(startD).set({'hour': hours, 'minute': minutes}).toDate();
+                delete results[0].nombre_creador;                
+                startD = new Date(startD);
+                results[0].fecha_inicio = moment.utc(results[0].fecha_inicio).dayOfYear(moment(startD).dayOfYear()).toDate();
+                results[0].fecha_fin = results[0].fecha_inicio;
                 const id_usuario = results[0].id_usuario;
                 const resumen = results[0].resumen;
-                const id_creador = results[0].id_creador;
-                //console.log(startD);
-                do {
-                    results[0].fecha_inicio = startD;
-                    results[0].fecha_fin = startD;
+                const id_creador = results[0].id_creador;                
+                do {                    
                     new_tasks.push(Object.values(results[0]));//copiar el objeto como un arreglo de valores
-                    startD = moment(startD).add(1,'days').toDate();
+                    results[0].fecha_inicio = moment(results[0].fecha_inicio).add(1,'days').toDate();
+                    results[0].fecha_fin = results[0].fecha_inicio;
                 }
-                while(!moment(startD).isAfter(endD, 'day'));
-                //console.log(new_tasks);
+                while(!moment(results[0].fecha_inicio).isAfter(endD, 'day'));
+                console.log(new_tasks);                
                 const sqlquery = 'INSERT INTO tareas (id_usuario, resumen, descripcion, fecha_inicio, estado, id_creador, duracion, validada, fecha_fin) VALUES ?';
                 const copyingtask = pool.query(sqlquery, [new_tasks], async (error: any, results: any, fields: any)=>{
                     if (error) {
