@@ -81,7 +81,6 @@ class UsersController {
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             req.body.pass = hash.sha256().update(req.body.pass).digest('hex');
-            console.log(req.body);
             yield database_1.default.query('INSERT INTO users set ?', [req.body], function (error, results, fields) {
                 res.json({ message: 'User saved' });
             });

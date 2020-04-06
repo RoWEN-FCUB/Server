@@ -19,7 +19,7 @@ class WorkshopController {
     listAll(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             //const {id} = req.params;
-            const records = yield database_1.default.query("SELECT * FROM taller_registro ORDER BY id DESC;", function (error, results, fields) {
+            const records = yield database_1.default.query("SELECT taller_registro.*, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente) ORDER BY id DESC;", function (error, results, fields) {
                 res.json(results);
             });
         });
@@ -27,7 +27,7 @@ class WorkshopController {
     listClients(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             //const {id} = req.params;
-            const records = yield database_1.default.query("SELECT * FROM taller_clientes;", function (error, results, fields) {
+            const records = yield database_1.default.query("SELECT * FROM taller_clientes ORDER BY siglas;", function (error, results, fields) {
                 res.json(results);
             });
         });
@@ -45,6 +45,27 @@ class WorkshopController {
             //const {id} = req.params;
             const records = yield database_1.default.query("SELECT * FROM taller_clientes_personas;", function (error, results, fields) {
                 res.json(results);
+            });
+        });
+    }
+    create(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (req.body.cliente_nombre !== '') {
+                const new_client = { siglas: req.body.cliente, nombre: req.body.cliente_nombre };
+                database_1.default.query('INSERT INTO taller_clientes set ?', new_client, function (error, results, fields) {
+                    if (error) {
+                        console.log(error);
+                    }
+                });
+            }
+            delete req.body.cliente_nombre;
+            yield database_1.default.query('INSERT INTO taller_registro set ?', [req.body], function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+                else {
+                    res.json({ message: 'Registro salvado' });
+                }
             });
         });
     }

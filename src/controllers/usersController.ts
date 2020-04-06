@@ -57,8 +57,7 @@ class UsersController{
     }
 
     public async create(req: Request, res: Response): Promise<void>{
-        req.body.pass = hash.sha256().update(req.body.pass).digest('hex');
-        console.log(req.body);
+        req.body.pass = hash.sha256().update(req.body.pass).digest('hex');        
         await pool.query('INSERT INTO users set ?',[req.body], function(error: any, results: any, fields: any) {
             res.json({message: 'User saved'});
         });       

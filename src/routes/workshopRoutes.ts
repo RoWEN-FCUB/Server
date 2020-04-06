@@ -13,6 +13,7 @@ class WorkshopRoutes{
         this.router.get('/clients', workshopController.listClients);
         this.router.get('/devices', workshopController.listDevices);
         this.router.get('/names', workshopController.listNames);
+        this.router.post('/', workshopController.create);
     }
 }
 const workshopRoutes = new WorkshopRoutes();
