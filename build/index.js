@@ -135,7 +135,7 @@ class Server {
         this.app.listen(this.app.get('port'), () => {
             console.log('Server on port:', this.app.get('port'));
         });
-        this.verify();
+        //this.verify();
     }
 }
 const server = new Server();
