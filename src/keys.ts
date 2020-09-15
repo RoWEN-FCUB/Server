@@ -1,9 +1,9 @@
 export default{
     database:{
-        host: 'localhost',
-        user: 'root',
-        password: 'Supernova*20',
-        database: 'citmatel_lt',
+        host: 'sql9.freemysqlhosting.net',
+        user: 'sql9365781',
+        password: 'xPC4D2kzsk',
+        database: 'sql9365781',
         timezone: 'utc'
     },
     mail_server: {
