@@ -4,7 +4,7 @@ exports.default = {
     database: {
         host: 'localhost',
         user: 'root',
-        password: 'Admin123',
+        password: 'Supernova*20',
         database: 'citmatel_lt',
         timezone: 'utc'
     },

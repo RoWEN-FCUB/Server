@@ -54,6 +54,13 @@ class WorkshopController {
             }            
         });       
     }
+
+    public async update (req: Request,res: Response): Promise<void>{
+        const {id} = req.params;
+        const result = await pool.query('UPDATE taller_registro set ? WHERE id = ?', [req.body,id], function(error: any, results: any, fields: any){            
+            res.json({text:"Record updated"});
+        });   
+    }
 }
 
 const workshopController = new WorkshopController();

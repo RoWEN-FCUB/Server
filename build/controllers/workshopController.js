@@ -69,6 +69,14 @@ class WorkshopController {
             });
         });
     }
+    update(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const result = yield database_1.default.query('UPDATE taller_registro set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
+                res.json({ text: "Record updated" });
+            });
+        });
+    }
 }
 const workshopController = new WorkshopController();
 exports.default = workshopController;

@@ -26,11 +26,12 @@ const nodemailer = require("nodemailer");
 
 class Server{
     public app: Application;
+    
     constructor(){
         this.app = express();
         this.config();
         this.routes();
-        this.SendEmail();      
+        //this.SendEmail();      
     }
 
     async SendEmail() {
@@ -73,9 +74,26 @@ class Server{
     }
 
     config(): void{
-        this.app.set('port', process.env.port || 3000);
+        /*var corsOptions = {
+            origin: '*',
+            optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+        }*/
+        this.app.set('port', process.env.port || 3128);
         this.app.use(morgan('dev'));
         this.app.use(cors());
+        /*var corsMiddleware = function(req: any, res: any, next: any) {
+            res.header('Access-Control-Allow-Origin', '169.158.137.122'); //replace localhost with actual host
+            res.header('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT, PATCH, POST, DELETE');
+            res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Authorization');        
+            next();
+        }        
+        this.app.use(corsMiddleware);*/
+        this.app.use(function(req, res, next) {
+            res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+            res.header('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT, PATCH, POST, DELETE');
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            next();
+          });
         this.app.use(express.json());
         this.app.use(express.urlencoded({extended:false}));
         //this.app.use(fileUpload());
@@ -117,7 +135,7 @@ class Server{
     }
 
     start(): void{
-        this.app.listen(this.app.get('port'), () => {
+        this.app.listen(this.app.get('port'), '0.0.0.0', () => {
             console.log('Server on port:',this.app.get('port'))
         });
         //this.verify();

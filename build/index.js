@@ -43,7 +43,7 @@ class Server {
         this.app = express_1.default();
         this.config();
         this.routes();
-        this.SendEmail();
+        //this.SendEmail();      
     }
     SendEmail() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -90,9 +90,26 @@ class Server {
         });
     }
     config() {
-        this.app.set('port', process.env.port || 3000);
+        /*var corsOptions = {
+            origin: '*',
+            optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+        }*/
+        this.app.set('port', process.env.port || 3128);
         this.app.use(morgan_1.default('dev'));
         this.app.use(cors_1.default());
+        /*var corsMiddleware = function(req: any, res: any, next: any) {
+            res.header('Access-Control-Allow-Origin', '169.158.137.122'); //replace localhost with actual host
+            res.header('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT, PATCH, POST, DELETE');
+            res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Authorization');
+            next();
+        }
+        this.app.use(corsMiddleware);*/
+        this.app.use(function (req, res, next) {
+            res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+            res.header('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT, PATCH, POST, DELETE');
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            next();
+        });
         this.app.use(express_1.default.json());
         this.app.use(express_1.default.urlencoded({ extended: false }));
         //this.app.use(fileUpload());
@@ -132,7 +149,7 @@ class Server {
         });
     }
     start() {
-        this.app.listen(this.app.get('port'), () => {
+        this.app.listen(this.app.get('port'), '0.0.0.0', () => {
             console.log('Server on port:', this.app.get('port'));
         });
         //this.verify();

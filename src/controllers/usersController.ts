@@ -112,7 +112,8 @@ class UsersController{
 
     public async validate(req: Request, res: Response): Promise<void>{        
         const email = req.body.email;
-        //console.log('Esto es lo que viene '+req.body.password);        
+        //console.log('Esto es lo que viene '+ req.body.email + ' ' + req.body.password);     
+        console.log(req.body);   
         //const upass = req.body.password;        
         const upass = hash.sha256().update(req.body.password).digest('hex');                
         const RSA_PRIVATE_KEY = fs.readFileSync(slash(Path.join(__dirname, 'private.key')));
@@ -130,9 +131,9 @@ class UsersController{
         
                         subject: ''+results[0].id
         
-                    });
-                    //console.log(jwtBearerToken);                    
-                    res.json({token: jwtBearerToken, expiresIn: 3600});
+                    });                                        
+                    res.json({data: {token: jwtBearerToken, expiresIn: 3600}});
+                    // console.log(res);
                 } else {
                     res.status(404).json({text: 'Datos de usuario incorrectos'});
                 }
