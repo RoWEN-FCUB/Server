@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
     database: {
-        host: 'sql9.freemysqlhosting.net',
-        user: 'sql9365781',
-        password: 'xPC4D2kzsk',
-        database: 'sql9365781',
+        host: 'fdb30.awardspace.net',
+        user: '3580339_citmatel',
+        password: 'Supernova*20',
+        database: '3580339_citmatel',
         timezone: 'utc'
     },
     mail_server: {
