@@ -2,11 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
     database: {
-        host: 'fdb30.awardspace.net',
-        user: '3580339_citmatel',
+        host: 'db4free.net',
+        user: 'citmatel_root',
         password: 'Supernova*20',
-        database: '3580339_citmatel',
-        timezone: 'utc'
+        database: 'citmatel_lt',
+        // timezone: 'utc',
+        port: '3306'
     },
     mail_server: {
         host: "webmail.lastunas.cu",
