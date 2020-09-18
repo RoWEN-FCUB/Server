@@ -45,6 +45,8 @@ class WorkshopController {
             })
         }
         delete req.body.cliente_nombre;
+        req.body.fecha_entrada = req.body.fecha_entrada.substring(0, req.body.fecha_entrada.indexOf('T'));
+        // console.log(req.body);
         await pool.query('INSERT INTO taller_registro set ?',[req.body], function(error: any, results: any, fields: any) {
             if (error) {
                 console.log(error);
@@ -52,7 +54,7 @@ class WorkshopController {
             else {
                 res.json({message: 'Registro salvado'});
             }            
-        });       
+        });
     }
 
     public async update (req: Request,res: Response): Promise<void>{

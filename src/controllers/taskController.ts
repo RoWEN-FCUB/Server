@@ -69,9 +69,9 @@ class TaskController {
     public async create(req: Request, res: Response): Promise<void>{ 
         const task = req.body.task;
         const subs = req.body.subs;
-        const id = task.id;
+        // const id = task.id;
         const creador = task.nombre_creador;
-        //console.log(req.body);
+        // console.log(req.body);
         delete task.id;
         delete task.observaciones;        
         delete task.nombre_creador;
@@ -80,10 +80,10 @@ class TaskController {
         const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
         const offset = date.getTimezoneOffset() / 60;
         const hours = date.getHours();
-        // task.fecha_inicio = task.fecha_inicio.replace('T', ' ');
-        // task.fecha_inicio = task.fecha_inicio.replace('.000Z', '');
-        // task.fecha_fin = task.fecha_fin.replace('T', ' ');
-        // task.fecha_fin = task.fecha_fin.replace('.000Z', '');
+        task.fecha_inicio = task.fecha_inicio.replace('T', ' ');
+        task.fecha_inicio = task.fecha_inicio.replace('.000Z', '.000');
+        task.fecha_fin = task.fecha_fin.replace('T', ' ');
+        task.fecha_fin = task.fecha_fin.replace('.000Z', '.000');
         newDate.setHours(hours - offset);        
         let new_tasks: any[] = [];
         let notificaciones: any[] = []; 
@@ -191,9 +191,9 @@ class TaskController {
         const offset = date.getTimezoneOffset() / 60;
         const hours = date.getHours();
         req.body.fecha_inicio = req.body.fecha_inicio.replace('T', ' ');
-        req.body.fecha_inicio = req.body.fecha_inicio.replace('.000Z', '');
+        req.body.fecha_inicio = req.body.fecha_inicio.replace('.000Z', '.000');
         req.body.fecha_fin = req.body.fecha_fin.replace('T', ' ');
-        req.body.fecha_fin = req.body.fecha_fin.replace('.000Z', '');
+        req.body.fecha_fin = req.body.fecha_fin.replace('.000Z', '.000');
         //console.log(req.body);
         newDate.setHours(hours - offset);
         const tsk = await pool.query('SELECT * FROM tareas INNER JOIN users ON (tareas.id_usuario = users.id) WHERE tareas.id = ?', [id], async (error: any, results: any, fields: any) => {            
