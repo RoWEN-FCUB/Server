@@ -31,26 +31,28 @@ class Server{
         this.app = express();
         this.config();
         this.routes();
-        //this.SendEmail();      
+        // this.SendEmail();      
     }
 
     async SendEmail() {
         let transporter = nodemailer.createTransport({
-            host: "169.158.143.131",
-            port: 443, //587
-            secure: true, // true for 465, false for other ports
+            /*host: "smtp.gmail.com",
+            port: 587,
+            ssl: true,
+            tls: true,*/
+            service: 'gmail',
             auth: {
-              user: 'carlos',
-              pass: 'David.18'
+                user: "carloslopezduranona@gmail.com",
+                pass: "David.18"
             },
             debug: true, // show debug output
             logger: true, // log information in console
-            tls: {
-                rejectUnauthorized: false,
-                //ciphers:'SSLv3'
-            },            
-            //requireTLS:true,
-            ignoreTLS: true
+            /*tls: {
+                // rejectUnauthorized: false,
+                ciphers:'SSLv3'
+            },*/            
+            // requireTLS:true,
+            // ignoreTLS: true
           });
         // verify connection configuration
         transporter.verify(async function(error: any, success: any) {
@@ -60,8 +62,8 @@ class Server{
                 console.log('Server is ready to take our messages');
                 try {
                     let info = await transporter.sendMail({
-                        from: '"Carlos" <carlos@ltunas.inf.cu>', // sender address
-                        to: "carlos@ltunas.inf.cu", // list of receivers
+                        from: "carloslopezduranona@gmail.com", // sender address
+                        to: "carloslopezduranona@gmail.com", // list of receivers
                         subject: "Hello ", // Subject line
                         text: "Hello world?", // plain text body
                         html: "<b>Hello world?</b>" // html body
@@ -70,7 +72,7 @@ class Server{
                     console.log(error);
                 };  
             }
-        });                  
+        });             
     }
 
     config(): void{
@@ -138,7 +140,7 @@ class Server{
         this.app.listen(this.app.get('port'), '0.0.0.0', () => {
             console.log('Server on port:',this.app.get('port'))
         });
-        //this.verify();
+        this.verify();
     }
 }
 

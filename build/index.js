@@ -43,25 +43,22 @@ class Server {
         this.app = express_1.default();
         this.config();
         this.routes();
-        //this.SendEmail();      
+        // this.SendEmail();      
     }
     SendEmail() {
         return __awaiter(this, void 0, void 0, function* () {
             let transporter = nodemailer.createTransport({
-                host: "169.158.143.131",
-                port: 443,
-                secure: true,
+                /*host: "smtp.gmail.com",
+                port: 587,
+                ssl: true,
+                tls: true,*/
+                service: 'gmail',
                 auth: {
-                    user: 'carlos',
-                    pass: 'David.18'
+                    user: "carloslopezduranona@gmail.com",
+                    pass: "David.18"
                 },
                 debug: true,
                 logger: true,
-                tls: {
-                    rejectUnauthorized: false,
-                },
-                //requireTLS:true,
-                ignoreTLS: true
             });
             // verify connection configuration
             transporter.verify(function (error, success) {
@@ -73,8 +70,8 @@ class Server {
                         console.log('Server is ready to take our messages');
                         try {
                             let info = yield transporter.sendMail({
-                                from: '"Carlos" <carlos@ltunas.inf.cu>',
-                                to: "carlos@ltunas.inf.cu",
+                                from: "carloslopezduranona@gmail.com",
+                                to: "carloslopezduranona@gmail.com",
                                 subject: "Hello ",
                                 text: "Hello world?",
                                 html: "<b>Hello world?</b>" // html body
@@ -152,7 +149,7 @@ class Server {
         this.app.listen(this.app.get('port'), '0.0.0.0', () => {
             console.log('Server on port:', this.app.get('port'));
         });
-        //this.verify();
+        this.verify();
     }
 }
 const server = new Server();

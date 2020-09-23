@@ -144,7 +144,7 @@ class UsersController{
     public async SendEmail(to: string, subject: string, body: string) {
         let transporter = nodemailer.createTransport(keys.mail_server);        
         let info = await transporter.sendMail({
-            from: '"CITMATEL" <citmatel@noexiste.cu>', // sender address
+            from: '"CITMATEL" <carloslopezduranona@gmail.com>', // sender address
             to: to, // list of receivers
             subject: subject, // Subject line
             //text: body, // plain text body

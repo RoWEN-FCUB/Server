@@ -24,8 +24,9 @@ class TaskController {
     public async getRangeofTasks (req: Request,res: Response): Promise<void>{
         const {id} = req.params;
         const {dia_inicio} = req.params;
-        const {dia_fin} = req.params;          
-        const tasks = await pool.query("SELECT tareas.*, GROUP_CONCAT(observaciones_tareas.observacion ORDER BY observaciones_tareas.id SEPARATOR '_') AS observaciones, users.user AS nombre_creador FROM tareas INNER JOIN users ON(tareas.id_creador=users.id) LEFT JOIN observaciones_tareas ON (tareas.id=observaciones_tareas.id_tarea) WHERE tareas.id_usuario = ? AND ((DATE(tareas.fecha_inicio) BETWEEN ? AND ?) OR (DATE(tareas.fecha_fin) BETWEEN ? AND ?)) GROUP BY tareas.id ORDER BY tareas.fecha_inicio;", [id, dia_inicio, dia_fin, dia_inicio, dia_fin], function(error: any, results: any, fields: any){            
+        const {dia_fin} = req.params;
+        // console.log("SELECT tareas.*, GROUP_CONCAT(observaciones_tareas.observacion ORDER BY observaciones_tareas.id SEPARATOR '_') AS observaciones, users.user AS nombre_creador FROM tareas INNER JOIN users ON(tareas.id_creador=users.id) LEFT JOIN observaciones_tareas ON (tareas.id=observaciones_tareas.id_tarea) WHERE tareas.id_usuario = "+id+" AND ((DATE(tareas.fecha_inicio) BETWEEN "+dia_inicio+" AND "+dia_fin+") OR (DATE(tareas.fecha_fin) BETWEEN "+dia_inicio+" AND "+dia_fin+")) GROUP BY tareas.id ORDER BY tareas.fecha_inicio;");          
+        const tasks = await pool.query("SELECT tareas.*, GROUP_CONCAT(observaciones_tareas.observacion ORDER BY observaciones_tareas.id SEPARATOR '_') AS observaciones, users.user AS nombre_creador FROM tareas INNER JOIN users ON(tareas.id_creador=users.id) LEFT JOIN observaciones_tareas ON (tareas.id=observaciones_tareas.id_tarea) WHERE tareas.id_usuario = ? AND ((DATE(tareas.fecha_inicio) BETWEEN ? AND ?) OR (DATE(tareas.fecha_fin) BETWEEN ? AND ?) OR (? BETWEEN DATE(tareas.fecha_inicio) AND DATE(tareas.fecha_fin))) GROUP BY tareas.id ORDER BY tareas.fecha_inicio;", [id, dia_inicio, dia_fin, dia_inicio, dia_fin, dia_inicio], function(error: any, results: any, fields: any){            
             res.json(results);           
         });   
     }
