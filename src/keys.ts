@@ -21,7 +21,7 @@ export default{
         service: 'gmail',
             auth: {
                 user: "carloslopezduranona@gmail.com",
-                pass: "David.18"
+                pass: "Supernova*20"
             },
     }
 }

@@ -117,13 +117,13 @@ class UsersController{
         //const upass = req.body.password;        
         const upass = hash.sha256().update(req.body.password).digest('hex');                
         const RSA_PRIVATE_KEY = fs.readFileSync(slash(Path.join(__dirname, 'private.key')));
-        const resp = await pool.query('SELECT users.id, users.email, users.picture, users.pass, users.user, users.fullname, users.position, users_roles.role FROM users INNER JOIN users_roles ON (users.role = users_roles.id) WHERE email = ?',[email], function(error: any, results: any, fields: any){
+        const resp = await pool.query('SELECT users.id, users.email, users.picture, users.pass, users.user, users.fullname, users.position, users.id_sup, users_roles.role FROM users INNER JOIN users_roles ON (users.role = users_roles.id) WHERE email = ?',[email], function(error: any, results: any, fields: any){
             //console.log(results[0]);
             if(!results[0]){
                 res.status(404).json({text: 'Datos de usuario incorrectos'});
             } else {
                 if(results[0].pass === upass) {                    
-                    const jwtBearerToken = jwt.sign({id: results[0].id, role: results[0].role, name: results[0].user, picture: results[0].picture, fullname: results[0].fullname, position: results[0].position}, RSA_PRIVATE_KEY, {
+                    const jwtBearerToken = jwt.sign({id: results[0].id, role: results[0].role, name: results[0].user, picture: results[0].picture, fullname: results[0].fullname, position: results[0].position, id_sup: results[0].id_sup}, RSA_PRIVATE_KEY, {
     
                         algorithm: 'RS256',
         
