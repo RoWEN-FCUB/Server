@@ -11,12 +11,12 @@ class WorkshopRoutes {
         this.config();
     }
     config() {
-        this.router.get('/', workshopController_1.default.listAll);
+        this.router.get('/records/:page', workshopController_1.default.listAll);
         this.router.get('/clients', workshopController_1.default.listClients);
         this.router.get('/devices', workshopController_1.default.listDevices);
         this.router.get('/names', workshopController_1.default.listNames);
         this.router.post('/', workshopController_1.default.create);
-        this.router.get('/search/:str', workshopController_1.default.search);
+        this.router.get('/search/:str&:page', workshopController_1.default.search);
         this.router.put('/:id', workshopController_1.default.update);
     }
 }
