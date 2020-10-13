@@ -1,7 +1,8 @@
 export default{
     database:{
-        //host: '127.0.0.1',
-        host: '104.207.147.123',
+        host: '127.0.0.1',
+        // host: '104.207.147.123',
+        // host: '169.158.137.126',
         user: 'root',
         password: 'Supernova*20',
         database: 'citmatel_lt',

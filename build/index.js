@@ -38,6 +38,8 @@ const workshopRoutes_1 = __importDefault(require("./routes/workshopRoutes"));
 var dir = path_1.default.join(__dirname, 'public');
 //const fileUpload = require('express-fileupload');
 const nodemailer = require("nodemailer");
+const https = require('https');
+const http = require('http');
 class Server {
     constructor() {
         this.app = express_1.default();
@@ -146,9 +148,20 @@ class Server {
         });
     }
     start() {
-        this.app.listen(this.app.get('port'), '0.0.0.0', () => {
-            console.log('Server on port:', this.app.get('port'));
+        const httpServer = http.createServer(this.app);
+        const httpsServer = https.createServer({
+            key: fs.readFileSync(slash(path_1.default.join(__dirname, 'apache-selfsigned.key'))),
+            cert: fs.readFileSync(slash(path_1.default.join(__dirname, 'apache-selfsigned.crt'))),
+        }, this.app);
+        /*httpServer.listen(3128, () => {
+            console.log('HTTP Server running on port 80');
+        });*/
+        httpsServer.listen(3128, () => {
+            console.log('HTTPS Server running on port 3128');
         });
+        /*this.app.listen(this.app.get('port'), '0.0.0.0', () => {
+            console.log('Server on port:',this.app.get('port'));
+        });*/
         this.verify();
     }
 }

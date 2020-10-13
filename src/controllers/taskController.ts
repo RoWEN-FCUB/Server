@@ -118,6 +118,43 @@ class TaskController {
         });               
     }
 
+    public async validateAllTasks(req: Request, res: Response): Promise<void>{
+        const userid = req.body.userid;
+        let startD = req.body.startD as string;
+        let endD = req.body.endD as string;
+        const inicio = startD;
+        const fin = endD;
+        startD = startD.substr(0,startD.indexOf('T'));
+        endD = endD.substr(0,endD.indexOf('T'));
+        const date = new Date();
+        const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+        const offset = date.getTimezoneOffset() / 60;
+        const hours = date.getHours();
+        newDate.setHours(hours - offset);
+        let query = 'UPDATE tareas SET validada=true WHERE tareas.id_usuario = '+userid+' AND ((DATE(tareas.fecha_inicio) BETWEEN \''+startD+'\' AND \''+endD+'\') OR (DATE(tareas.fecha_fin) BETWEEN \''+startD+'\' AND \''+endD+'\'));';
+        // console.log(query);
+        const tasktovalidate = await pool.query(query, async function(error: any, results: any, fields: any) {
+            if(error) {
+                console.log(error);
+            }
+            query = 'SELECT user FROM `users` WHERE id = (SELECT id_sup FROM users WHERE id = '+userid+')';            
+            const superior = await pool.query(query, async function(error: any, results: any, fields: any) {                
+                let notificacion = {
+                    id_usuario: userid,
+                    notificacion: '<b>' + results[0].user + '</b> ha validado tus tareas del <b>' + startD + '</b> al <b>' + endD + '</b>',
+                    fecha: newDate,
+                    leida: false,
+                    vinculo: 'tasks/' + userid + '/' + inicio + '/' + fin,
+                    estatus: 'info',
+                };                    
+                await pool.query('INSERT INTO notificaciones set ?',[notificacion], function(error: any, results: any, fields: any){
+                    // res.json({text: 'Task copied'});
+                });
+            });
+            res.json({text: 'Tasks validated'});
+        });
+    }
+
     public async copy(req: Request, res: Response): Promise<void>{        
         const id = req.body.id;
         let startD = req.body.startD;
@@ -227,18 +264,63 @@ class TaskController {
                     if (error) {
                         console.log(error);
                     }  
-                    await pool.query('UPDATE tareas set ? WHERE id = ?', [req.body,id], function(error: any, results: any, fields: any){            
+                    await pool.query('UPDATE tareas set ? WHERE id = ?', [req.body,id], async function(error: any, results: any, fields: any){            
                         if (error) {
                             console.log(error);
-                        }  
-                        res.json({text:"Task updated"});
+                        }
+                        if (!task.validada && req.body.validada) {
+                            let query = 'SELECT user FROM `users` WHERE id = (SELECT id_sup FROM users WHERE id = '+task.id_usuario+')';            
+                            const superior = await pool.query(query, async function(error: any, results: any, fields: any) {                
+                                if (error) {
+                                    console.log(error);
+                                } 
+                                let notificacion = {
+                                    id_usuario: task.id_usuario,
+                                    notificacion: '<b>' + results[0].user + '</b> ha validado tu tarea <b>' + task.resumen + '</b>',
+                                    fecha: newDate,
+                                    leida: false,
+                                    vinculo: 'tasks/' + task.id_usuario + '/' + task.fecha_inicio + '/' + task.fecha_inicio,
+                                    estatus: 'info',
+                                };                    
+                                await pool.query('INSERT INTO notificaciones set ?',[notificacion], function(error: any, results: any, fields: any){
+                                    if (error) {
+                                        console.log(error);
+                                    }
+                                    res.json({text:"Task updated"});
+                                });
+                            });
+                        }
+                        res.json({text:"Task updated"});                       
                     });
                 });
             } else {
-                await pool.query('UPDATE tareas set ? WHERE id = ?', [req.body,id], function(error: any, results: any, fields: any){                                
+                await pool.query('UPDATE tareas set ? WHERE id = ?', [req.body,id], async function(error: any, results: any, fields: any){                                
                     if (error) {
                         console.log(error);
-                    }  res.json({text:"Task updated"});
+                    }
+                    if (!task.validada && req.body.validada) {
+                        let query = 'SELECT user FROM `users` WHERE id = (SELECT id_sup FROM users WHERE id = '+task.id_usuario+')';            
+                        const superior = await pool.query(query, async function(error: any, results: any, fields: any) {                
+                            if (error) {
+                                console.log(error);
+                            } 
+                            let notificacion = {
+                                id_usuario: task.id_usuario,
+                                notificacion: '<b>' + results[0].user + '</b> ha validado tu tarea <b>' + task.resumen + '</b>',
+                                fecha: newDate,
+                                leida: false,
+                                vinculo: 'tasks/' + task.id_usuario + '/' + task.fecha_inicio + '/' + task.fecha_inicio,
+                                estatus: 'info',
+                            };                    
+                            await pool.query('INSERT INTO notificaciones set ?',[notificacion], function(error: any, results: any, fields: any){
+                                if (error) {
+                                    console.log(error);
+                                }
+                                res.json({text:"Task updated"});
+                            });
+                        });
+                    }
+                    res.json({text:"Task updated"});
                 });
             }                                  
         });                

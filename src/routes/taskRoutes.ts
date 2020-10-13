@@ -19,6 +19,7 @@ class TaskRoutes{
         this.router.post('/obs', taskController.createObserv);// guardar observacion
         this.router.post('/', taskController.create);// guardar
         this.router.post('/copy', taskController.copy);//copiar tareas
+        this.router.post('/validate', taskController.validateAllTasks);//validar tareas
         this.router.put('/:id', taskController.update);// actualizar
         this.router.delete('/:id', taskController.delete);// eliminar
     }

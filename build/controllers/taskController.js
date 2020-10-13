@@ -143,6 +143,48 @@ class TaskController {
             });
         });
     }
+    validateAllTasks(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const userid = req.body.userid;
+            let startD = req.body.startD;
+            let endD = req.body.endD;
+            const inicio = startD;
+            const fin = endD;
+            startD = startD.substr(0, startD.indexOf('T'));
+            endD = endD.substr(0, endD.indexOf('T'));
+            const date = new Date();
+            const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+            const offset = date.getTimezoneOffset() / 60;
+            const hours = date.getHours();
+            newDate.setHours(hours - offset);
+            let query = 'UPDATE tareas SET validada=true WHERE tareas.id_usuario = ' + userid + ' AND ((DATE(tareas.fecha_inicio) BETWEEN \'' + startD + '\' AND \'' + endD + '\') OR (DATE(tareas.fecha_fin) BETWEEN \'' + startD + '\' AND \'' + endD + '\'));';
+            // console.log(query);
+            const tasktovalidate = yield database_1.default.query(query, function (error, results, fields) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    if (error) {
+                        console.log(error);
+                    }
+                    query = 'SELECT user FROM `users` WHERE id = (SELECT id_sup FROM users WHERE id = ' + userid + ')';
+                    const superior = yield database_1.default.query(query, function (error, results, fields) {
+                        return __awaiter(this, void 0, void 0, function* () {
+                            let notificacion = {
+                                id_usuario: userid,
+                                notificacion: '<b>' + results[0].user + '</b> ha validado tus tareas del <b>' + startD + '</b> al <b>' + endD + '</b>',
+                                fecha: newDate,
+                                leida: false,
+                                vinculo: 'tasks/' + userid + '/' + inicio + '/' + fin,
+                                estatus: 'info',
+                            };
+                            yield database_1.default.query('INSERT INTO notificaciones set ?', [notificacion], function (error, results, fields) {
+                                // res.json({text: 'Task copied'});
+                            });
+                        });
+                    });
+                    res.json({ text: 'Tasks validated' });
+                });
+            });
+        });
+    }
     copy(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.body.id;
@@ -258,20 +300,72 @@ class TaskController {
                                 console.log(error);
                             }
                             yield database_1.default.query('UPDATE tareas set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
-                                if (error) {
-                                    console.log(error);
-                                }
-                                res.json({ text: "Task updated" });
+                                return __awaiter(this, void 0, void 0, function* () {
+                                    if (error) {
+                                        console.log(error);
+                                    }
+                                    if (!task.validada && req.body.validada) {
+                                        let query = 'SELECT user FROM `users` WHERE id = (SELECT id_sup FROM users WHERE id = ' + task.id_usuario + ')';
+                                        const superior = yield database_1.default.query(query, function (error, results, fields) {
+                                            return __awaiter(this, void 0, void 0, function* () {
+                                                if (error) {
+                                                    console.log(error);
+                                                }
+                                                let notificacion = {
+                                                    id_usuario: task.id_usuario,
+                                                    notificacion: '<b>' + results[0].user + '</b> ha validado tu tarea <b>' + task.resumen + '</b>',
+                                                    fecha: newDate,
+                                                    leida: false,
+                                                    vinculo: 'tasks/' + task.id_usuario + '/' + task.fecha_inicio + '/' + task.fecha_inicio,
+                                                    estatus: 'info',
+                                                };
+                                                yield database_1.default.query('INSERT INTO notificaciones set ?', [notificacion], function (error, results, fields) {
+                                                    if (error) {
+                                                        console.log(error);
+                                                    }
+                                                    res.json({ text: "Task updated" });
+                                                });
+                                            });
+                                        });
+                                    }
+                                    res.json({ text: "Task updated" });
+                                });
                             });
                         });
                     });
                 }
                 else {
                     yield database_1.default.query('UPDATE tareas set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
-                        if (error) {
-                            console.log(error);
-                        }
-                        res.json({ text: "Task updated" });
+                        return __awaiter(this, void 0, void 0, function* () {
+                            if (error) {
+                                console.log(error);
+                            }
+                            if (!task.validada && req.body.validada) {
+                                let query = 'SELECT user FROM `users` WHERE id = (SELECT id_sup FROM users WHERE id = ' + task.id_usuario + ')';
+                                const superior = yield database_1.default.query(query, function (error, results, fields) {
+                                    return __awaiter(this, void 0, void 0, function* () {
+                                        if (error) {
+                                            console.log(error);
+                                        }
+                                        let notificacion = {
+                                            id_usuario: task.id_usuario,
+                                            notificacion: '<b>' + results[0].user + '</b> ha validado tu tarea <b>' + task.resumen + '</b>',
+                                            fecha: newDate,
+                                            leida: false,
+                                            vinculo: 'tasks/' + task.id_usuario + '/' + task.fecha_inicio + '/' + task.fecha_inicio,
+                                            estatus: 'info',
+                                        };
+                                        yield database_1.default.query('INSERT INTO notificaciones set ?', [notificacion], function (error, results, fields) {
+                                            if (error) {
+                                                console.log(error);
+                                            }
+                                            res.json({ text: "Task updated" });
+                                        });
+                                    });
+                                });
+                            }
+                            res.json({ text: "Task updated" });
+                        });
                     });
                 }
             }));
