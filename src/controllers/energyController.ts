@@ -35,8 +35,34 @@ class EnergyController {
 
     public async update(req: Request, res: Response): Promise<void>{
         const {id} = req.params;
-        let oldpass = '';
-                            
+        delete req.body.planacumulado;
+        delete req.body.realacumulado;
+        // req.body.fecha = req.body.fecha.substr(0,req.body.fecha.indexOf('T'));
+        req.body.plan = Number(req.body.plan);
+        req.body.lectura = Number(req.body.lectura);
+        const query = 'UPDATE energia SET plan = '+req.body.plan+', consumo = '+req.body.consumo+', lectura = '+req.body.lectura+' WHERE id = '+id+';';
+        await pool.query(query, function(error: any, results: any, fields: any) {
+            res.json({message: 'Energy record updated'});
+        });
+    }
+
+    public async updateAll(req: Request, res: Response): Promise<void>{
+        let updates = [];
+        for (let i = 0; i < req.body.length; i++) {
+            delete req.body[i].fecha;
+            delete req.body[i].realacumulado;
+            delete req.body[i].planacumulado;
+            updates.push(Object.values(req.body[i]));
+        }
+        // console.log(updates);
+        // const query = 'UPDATE energia SET fecha = \''+req.body.fecha+'\',plan = '+req.body.plan+', consumo = '+req.body.consumo+', lectura = '+req.body.lectura+' WHERE id = '+id+';';
+        await pool.query('INSERT INTO energia (id, plan, consumo, lectura) VALUES ? ON DUPLICATE KEY UPDATE plan=VALUES(plan),consumo=VALUES(consumo),lectura=VALUES(lectura);', [updates] , function(error: any, results: any, fields: any) {
+            if (error) {
+                console.log(error);
+            }
+            res.json({message: 'Energy record updated'});
+        });
+        res.json({message: 'Energy record updated'});
     }
 }
 

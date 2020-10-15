@@ -9,9 +9,11 @@ class EnergyRoutes{
     }
 
     config(): void{
-        this.router.get('/:year&:month', energyController.list);
+        this.router.get('/list/:year&:month', energyController.list);
         this.router.get('/reading/:date', energyController.getReading);
-        this.router.post('/', energyController.create);
+        this.router.post('/create', energyController.create);
+        this.router.put('/update/:id', energyController.update);
+        this.router.put('/updateAll', energyController.updateAll);
     }
 }
 const energyRoutes = new EnergyRoutes();

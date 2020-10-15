@@ -7,7 +7,8 @@ export default{
         password: 'Supernova*20',
         database: 'citmatel_lt',
         timezone: 'utc',
-        port: '3306'
+        port: '3306',
+        multipleStatements: true
     },
     /*
     database:{
