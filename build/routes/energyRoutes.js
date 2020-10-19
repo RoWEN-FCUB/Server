@@ -16,6 +16,8 @@ class EnergyRoutes {
         this.router.post('/create', energyController_1.default.create);
         this.router.put('/update/:id', energyController_1.default.update);
         this.router.put('/updateAll', energyController_1.default.updateAll);
+        this.router.put('/updatePlans', energyController_1.default.updatePlans);
+        this.router.delete('/:id', energyController_1.default.deleteERecord);
     }
 }
 const energyRoutes = new EnergyRoutes();
