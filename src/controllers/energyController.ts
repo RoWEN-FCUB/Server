@@ -5,10 +5,17 @@ var moment = require('moment');
 class EnergyController {
     constructor() {}
 
-    public async list (req: Request,res: Response): Promise<void>{
+    public async list (req: Request, res: Response): Promise<void>{
         const {month} = req.params;
         const {year} = req.params;
         const tasks = await pool.query("SELECT * FROM energia WHERE YEAR(fecha) = ? AND MONTH(fecha) = ?;", [year, month], function(error: any, results: any, fields: any){
+            res.json(results);            
+        });
+    }
+
+    public async listMonths (req: Request, res: Response): Promise<void>{
+        const {year} = req.params;        
+        const tasks = await pool.query("SELECT MONTH(fecha) as Mes, sum(plan) as Plan, sum(consumo) as Consumo FROM energia WHERE YEAR(fecha) = ? GROUP BY MONTH(fecha) ORDER BY mes;", [year], function(error: any, results: any, fields: any){
             res.json(results);            
         });
     }

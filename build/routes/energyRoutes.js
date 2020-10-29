@@ -12,6 +12,7 @@ class EnergyRoutes {
     }
     config() {
         this.router.get('/list/:year&:month', energyController_1.default.list);
+        this.router.get('/months/:year', energyController_1.default.listMonths);
         this.router.get('/reading/:date', energyController_1.default.getReading);
         this.router.post('/create', energyController_1.default.create);
         this.router.put('/update/:id', energyController_1.default.update);

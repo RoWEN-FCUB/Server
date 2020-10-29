@@ -25,6 +25,14 @@ class EnergyController {
             });
         });
     }
+    listMonths(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { year } = req.params;
+            const tasks = yield database_1.default.query("SELECT MONTH(fecha) as Mes, sum(plan) as Plan, sum(consumo) as Consumo FROM energia WHERE YEAR(fecha) = ? GROUP BY MONTH(fecha) ORDER BY mes;", [year], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
     getReading(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { date } = req.params;
