@@ -133,7 +133,7 @@ class Server{
     async verify(): Promise<void> {
         //console.log("Hello");
         while (true) {
-            await this.delay(60000,1);
+            await this.delay(600000,1);
             console.log('Buscando tareas incumplidas...');
             taskController.search_failed_tasks();
             taskController.send_Tasks();

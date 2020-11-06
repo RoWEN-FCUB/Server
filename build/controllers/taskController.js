@@ -203,6 +203,7 @@ class TaskController {
                 if (results[0]) {
                     delete results[0].id;
                     results[0].estado = 'Pendiente';
+                    results[0].validada = false;
                     const creador = results[0].nombre_creador;
                     delete results[0].nombre_creador;
                     startD = new Date(startD);

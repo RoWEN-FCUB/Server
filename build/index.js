@@ -141,7 +141,7 @@ class Server {
         return __awaiter(this, void 0, void 0, function* () {
             //console.log("Hello");
             while (true) {
-                yield this.delay(60000, 1);
+                yield this.delay(600000, 1);
                 console.log('Buscando tareas incumplidas...');
                 taskController_1.default.search_failed_tasks();
                 taskController_1.default.send_Tasks();
