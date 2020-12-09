@@ -61,7 +61,7 @@ class EnergyController {
             delete req.body[i].planacumulado;
             updates.push(Object.values(req.body[i]));
         }
-        console.log(updates);
+        // console.log(updates);
         // const query = 'UPDATE energia SET fecha = \''+req.body.fecha+'\',plan = '+req.body.plan+', consumo = '+req.body.consumo+', lectura = '+req.body.lectura+' WHERE id = '+id+';';
         await pool.query('INSERT INTO energia (id, plan, consumo, lectura) VALUES ? ON DUPLICATE KEY UPDATE plan=VALUES(plan),consumo=VALUES(consumo),lectura=VALUES(lectura);', [updates] , function(error: any, results: any, fields: any) {
             if (error) {
@@ -94,7 +94,7 @@ class EnergyController {
 
     public async deleteERecord(req: Request,res: Response) {
         const {id} = req.params;
-        await pool.query('DELETE FROM energia WHERE id = ?', [id], function(error: any, results: any, fields: any){          
+        await pool.query('UPDATE energia SET consumo = null, lectura = null WHERE id = ?', [id], function(error: any, results: any, fields: any){          
             res.json({text:"Energy record deleted"});
         });
     }
