@@ -113,7 +113,7 @@ class UsersController{
     public async validate(req: Request, res: Response): Promise<void>{        
         const email = req.body.email;
         //console.log('Esto es lo que viene '+ req.body.email + ' ' + req.body.password);     
-        console.log(req.body);   
+        //console.log(req.body);   
         //const upass = req.body.password;        
         const upass = hash.sha256().update(req.body.password).digest('hex');                
         const RSA_PRIVATE_KEY = fs.readFileSync(slash(Path.join(__dirname, 'private.key')));
