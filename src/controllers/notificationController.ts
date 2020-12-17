@@ -12,6 +12,7 @@ class NotificationController {
     public async getNewNotifications (req: Request,res: Response){        
         const {id} = req.params; // id del usuario        
         const notif = await pool.query('SELECT * FROM notificaciones WHERE id_usuario = ? AND leida = false ORDER BY id DESC', [id], function(error: any, results: any, fields: any){          
+            // console.log(results);
             res.json(results);
         });
     }
@@ -28,6 +29,9 @@ class NotificationController {
         const {id} = req.params;
         const {notifid} = req.params;  
         const notif = await pool.query('UPDATE notificaciones SET leida = true WHERE id_usuario = ? AND id <= ?', [id, notifid], function(error: any, results: any, fields: any){          
+            if  (error) {
+                console.log(error);
+            }
             res.json({text:"Notification readed"});
         });
     }

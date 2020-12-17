@@ -143,7 +143,7 @@ class UsersController {
         return __awaiter(this, void 0, void 0, function* () {
             const email = req.body.email;
             //console.log('Esto es lo que viene '+ req.body.email + ' ' + req.body.password);     
-            console.log(req.body);
+            //console.log(req.body);   
             //const upass = req.body.password;        
             const upass = hash.sha256().update(req.body.password).digest('hex');
             const RSA_PRIVATE_KEY = fs.readFileSync(slash(path_1.default.join(__dirname, 'private.key')));
