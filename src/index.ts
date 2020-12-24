@@ -19,6 +19,7 @@ import notificationRoutes from './routes/notificationRoutes';
 import taskController from './controllers/taskController';
 import workshopRoutes from './routes/workshopRoutes';
 import energyRoutes from './routes/energyRoutes';
+import companyRoutes from './routes/companyRoutes';
 
 var dir = Path.join(__dirname, 'public');
 //const fileUpload = require('express-fileupload');
@@ -119,6 +120,7 @@ class Server{
         this.app.use('/notifications', notificationRoutes);
         this.app.use('/workshop', workshopRoutes);
         this.app.use('/energy', energyRoutes);
+        this.app.use('/company', companyRoutes);
     }
 
     delay(milliseconds: number, count: number): Promise<number> {
