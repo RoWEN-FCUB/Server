@@ -30,7 +30,7 @@ const keys_1 = __importDefault(require("../keys"));
 class UsersController {
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const users = yield database_1.default.query('SELECT * FROM users', function (error, results, fields) {
+            const users = yield database_1.default.query('SELECT users.*, empresas.siglas FROM users INNER JOIN empresas ON (users.id_emp = empresas.id) ORDER BY empresas.siglas', function (error, results, fields) {
                 res.json(results);
             });
         });
@@ -80,8 +80,13 @@ class UsersController {
     }
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            delete req.body.siglas;
+            console.log(req.body);
             req.body.pass = hash.sha256().update(req.body.pass).digest('hex');
             yield database_1.default.query('INSERT INTO users set ?', [req.body], function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
                 res.json({ message: 'User saved' });
             });
         });
@@ -89,6 +94,7 @@ class UsersController {
     update(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
+            delete req.body.siglas;
             let oldpass = '';
             const resp = yield database_1.default.query('SELECT pass FROM users WHERE id = ?', [id], function (error, results, fields) {
                 oldpass = results[0].pass;
@@ -113,11 +119,11 @@ class UsersController {
     user_valid(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const email = req.body.email;
-            const id = req.body.id;
             const user = req.body.user;
-            if (id) {
+            const id = req.body.id;
+            if (typeof id !== 'undefined') {
                 const resp = yield database_1.default.query('SELECT * FROM users WHERE users.id != ? AND (users.email = ? OR users.user = ?)', [id, email, user], function (error, results, fields) {
-                    console.log(results);
+                    // console.log(results);
                     if (results[0]) {
                         res.json({ valid: false });
                     }
@@ -128,7 +134,7 @@ class UsersController {
             }
             else {
                 const resp = yield database_1.default.query('SELECT * FROM users WHERE users.email = ? OR users.user = ?', [email, user], function (error, results, fields) {
-                    console.log(results);
+                    // console.log(results);
                     if (results[0]) {
                         res.json({ valid: false });
                     }

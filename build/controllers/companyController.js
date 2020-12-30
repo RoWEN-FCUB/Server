@@ -22,6 +22,30 @@ class CompanyController {
             });
         });
     }
+    create(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            delete req.body.id;
+            yield database_1.default.query('INSERT INTO empresas SET ?', [req.body], function (error, results, fields) {
+                res.json({ message: 'Company saved' });
+            });
+        });
+    }
+    update(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const result = database_1.default.query('UPDATE empresas set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
+                res.json({ text: "Company updated" });
+            });
+        });
+    }
+    delete(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const company = yield database_1.default.query('DELETE FROM empresas WHERE id = ?', [id], function (error, results, fields) {
+                res.json({ text: "Company deleted" });
+            });
+        });
+    }
 }
 const companyController = new CompanyController();
 exports.default = companyController;

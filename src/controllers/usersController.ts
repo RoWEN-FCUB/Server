@@ -12,9 +12,9 @@ import keys from '../keys';
 class UsersController{
 
    public async list (req: Request,res: Response): Promise<void>{
-        const users = await pool.query('SELECT * FROM users', function(error: any, results: any, fields: any){
+        const users = await pool.query('SELECT users.*, empresas.siglas FROM users INNER JOIN empresas ON (users.id_emp = empresas.id) ORDER BY empresas.siglas', function(error: any, results: any, fields: any){
             res.json(results);
-        });   
+        });
     }
 
     public async getRoles(req: Request,res: Response): Promise<void>{   
@@ -57,14 +57,20 @@ class UsersController{
     }
 
     public async create(req: Request, res: Response): Promise<void>{
+        delete req.body.siglas;
+        console.log(req.body);
         req.body.pass = hash.sha256().update(req.body.pass).digest('hex');        
         await pool.query('INSERT INTO users set ?',[req.body], function(error: any, results: any, fields: any) {
+            if (error) {
+                console.log(error);
+            }
             res.json({message: 'User saved'});
         });       
     }
 
     public async update(req: Request, res: Response): Promise<void>{
         const {id} = req.params;
+        delete req.body.siglas;
         let oldpass = '';
         const resp = await pool.query('SELECT pass FROM users WHERE id = ?', [id], function(error: any, results: any, fields: any){
             oldpass = results[0].pass;            
@@ -87,11 +93,11 @@ class UsersController{
 
     public async user_valid(req: Request, res: Response): Promise<void> { //valida que los datos no esten duplicados
         const email = req.body.email;
-        const id = req.body.id;
         const user = req.body.user;
-        if (id) {
+        const id = req.body.id;
+        if (typeof id !== 'undefined') {
             const resp = await pool.query('SELECT * FROM users WHERE users.id != ? AND (users.email = ? OR users.user = ?)',[id, email, user], function(error: any, results: any, fields: any) {
-                console.log(results);
+                // console.log(results);
                 if(results[0]) {
                     res.json({valid: false});                
                 } else {
@@ -100,7 +106,7 @@ class UsersController{
             });
         } else {
             const resp = await pool.query('SELECT * FROM users WHERE users.email = ? OR users.user = ?',[email, user], function(error: any, results: any, fields: any) {
-                console.log(results);
+                // console.log(results);
                 if(results[0]) {
                     res.json({valid: false});                
                 } else {

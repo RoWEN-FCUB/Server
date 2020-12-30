@@ -12,6 +12,9 @@ class CompanyRoutes {
     }
     config() {
         this.router.get('/list', companyController_1.default.list);
+        this.router.post('/', companyController_1.default.create);
+        this.router.put('/:id', companyController_1.default.update);
+        this.router.delete('/:id', companyController_1.default.delete);
     }
 }
 const companyRoutes = new CompanyRoutes();
