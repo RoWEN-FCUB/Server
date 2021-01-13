@@ -101,9 +101,9 @@ class TaskController {
             const offset = date.getTimezoneOffset() / 60;
             const hours = date.getHours();
             task.fecha_inicio = task.fecha_inicio.replace('T', ' ');
-            task.fecha_inicio = task.fecha_inicio.replace('.000Z', '.000');
+            task.fecha_inicio = task.fecha_inicio.split('.')[0] + '.000';
             task.fecha_fin = task.fecha_fin.replace('T', ' ');
-            task.fecha_fin = task.fecha_fin.replace('.000Z', '.000');
+            task.fecha_fin = task.fecha_fin.split('.')[0] + '.000';
             newDate.setHours(hours - offset);
             let new_tasks = [];
             let notificaciones = [];
