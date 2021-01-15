@@ -22,6 +22,14 @@ class CompanyController {
             });
         });
     }
+    getOne(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const tasks = yield database_1.default.query("SELECT * FROM empresas WHERE id = ?;", [id], function (error, results, fields) {
+                res.json(results[0]);
+            });
+        });
+    }
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;

@@ -10,6 +10,7 @@ class CompanyRoutes{
 
     config(): void{
         this.router.get('/list', companyController.list);
+        this.router.get('/get/:id', companyController.getOne);
         this.router.post('/', companyController.create);
         this.router.put('/:id', companyController.update);
         this.router.delete('/:id', companyController.delete);

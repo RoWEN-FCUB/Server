@@ -11,9 +11,9 @@ class EnergyRoutes {
         this.config();
     }
     config() {
-        this.router.get('/list/:year&:month', energyController_1.default.list);
-        this.router.get('/months/:year', energyController_1.default.listMonths);
-        this.router.get('/reading/:date', energyController_1.default.getReading);
+        this.router.get('/list/:year&:month&:id_emp', energyController_1.default.list);
+        this.router.get('/months/:year&:id_emp', energyController_1.default.listMonths);
+        this.router.get('/reading/:date&:id_emp', energyController_1.default.getReading);
         this.router.post('/create', energyController_1.default.create);
         this.router.put('/update/:id', energyController_1.default.update);
         this.router.put('/updateAll', energyController_1.default.updateAll);

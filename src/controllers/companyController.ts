@@ -10,6 +10,13 @@ class CompanyController {
         });
     }
 
+    public async getOne (req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        const tasks = await pool.query("SELECT * FROM empresas WHERE id = ?;", [id], function(error: any, results: any, fields: any){
+            res.json(results[0]);
+        });
+    }
+
     public async create(req: Request, res: Response): Promise<void>{
         delete req.body.id;
         await pool.query('INSERT INTO empresas SET ?', [req.body], function(error: any, results: any, fields: any) {
