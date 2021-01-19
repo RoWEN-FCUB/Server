@@ -19,7 +19,8 @@ class WorkshopController {
     listAll(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const page = Number(req.params.page);
-            const records = yield database_1.default.query("SELECT taller_registro.*, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente) ORDER BY id DESC LIMIT 10 OFFSET ?;", ((page - 1) * 10), function (error, wrecords, fields) {
+            const id_emp = Number(req.params.id_emp);
+            const records = yield database_1.default.query("SELECT taller_registro.*, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente) WHERE id_emp = ? ORDER BY id DESC LIMIT 10 OFFSET ?;", [id_emp, ((page - 1) * 10)], function (error, wrecords, fields) {
                 return __awaiter(this, void 0, void 0, function* () {
                     const reccount = yield database_1.default.query("SELECT count(*) as total_records FROM taller_registro;", function (error, count, fields) {
                         const total = count[0].total_records;
@@ -32,7 +33,7 @@ class WorkshopController {
     listClients(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const records = yield database_1.default.query("SELECT * FROM taller_clientes ORDER BY siglas;", function (error, results, fields) {
-                console.log('Probando' + results);
+                // console.log('Probando' + results)
                 res.json(results);
             });
         });
@@ -111,6 +112,7 @@ class WorkshopController {
         return __awaiter(this, void 0, void 0, function* () {
             const str = String(req.params.str);
             const page = Number(req.params.page);
+            const id_emp = Number(req.params.id_emp);
             const keys = str.split(' ', 13);
             let query = '';
             let query_count = 'SELECT count(*) as total_records FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
@@ -138,13 +140,13 @@ class WorkshopController {
                     query_mod += " OR recogido LIKE '%" + keys[i] + "%'";
                     query_mod += " OR taller_clientes.nombre LIKE '%" + keys[i] + "%')";
                 }
-                query_count += ' WHERE ' + query_mod + ';';
-                query += query_mod + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
+                query_count += ' WHERE ' + query_mod + ' AND id_emp = ' + id_emp + ';';
+                query += query_mod + ' AND id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
             }
             else {
                 query = 'SELECT taller_registro.*, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
-                query += ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
-                query_count += ';';
+                query += ' WHERE id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
+                query_count += ' WHERE id_emp = ' + id_emp + ';';
             }
             // console.log(query_count);
             const records = yield database_1.default.query(query, function (error, wrecords, fields) {

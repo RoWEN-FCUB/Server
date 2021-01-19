@@ -9,7 +9,8 @@ class WorkshopController {
 
     public async listAll (req: Request,res: Response): Promise<void>{
         const page = Number(req.params.page);
-        const records = await pool.query("SELECT taller_registro.*, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente) ORDER BY id DESC LIMIT 10 OFFSET ?;", ((page - 1) * 10), async function(error: any, wrecords: any, fields: any){            
+        const id_emp = Number(req.params.id_emp);
+        const records = await pool.query("SELECT taller_registro.*, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente) WHERE id_emp = ? ORDER BY id DESC LIMIT 10 OFFSET ?;", [id_emp, ((page - 1) * 10)], async function(error: any, wrecords: any, fields: any){            
             const reccount = await pool.query("SELECT count(*) as total_records FROM taller_registro;", function(error: any, count: any, fields: any){            
                 const total = count[0].total_records;                
                 res.json({wrecords, total});
@@ -19,7 +20,7 @@ class WorkshopController {
 
     public async listClients (req: Request,res: Response): Promise<void>{        
         const records = await pool.query("SELECT * FROM taller_clientes ORDER BY siglas;", function(error: any, results: any, fields: any){            
-            console.log('Probando' + results)
+            // console.log('Probando' + results)
             res.json(results);            
         });   
     }
@@ -91,6 +92,7 @@ class WorkshopController {
     public async search(req: Request, res: Response): Promise<void>{
         const str = String(req.params.str);
         const page = Number(req.params.page);
+        const id_emp = Number(req.params.id_emp);
         const keys = str.split(' ', 13);
         let query = '';
         let query_count = 'SELECT count(*) as total_records FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
@@ -117,12 +119,12 @@ class WorkshopController {
                 query_mod += " OR recogido LIKE '%" + keys[i] + "%'";
                 query_mod += " OR taller_clientes.nombre LIKE '%" + keys[i] + "%')";
             }
-            query_count += ' WHERE ' + query_mod + ';';
-            query += query_mod + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
+            query_count += ' WHERE ' + query_mod + ' AND id_emp = ' + id_emp + ';';
+            query += query_mod + ' AND id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
         } else {
             query = 'SELECT taller_registro.*, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
-            query += ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
-            query_count += ';';
+            query += ' WHERE id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
+            query_count += ' WHERE id_emp = ' + id_emp + ';';
         }        
         // console.log(query_count);
         const records = await pool.query(query, async function(error: any, wrecords: any, fields: any){
