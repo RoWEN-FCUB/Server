@@ -162,6 +162,14 @@ class WorkshopController {
             });
         });
     }
+    delete(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const reccount = yield database_1.default.query('DELETE FROM taller_registro WHERE id = ?', [id], function (error, results, fields) {
+                res.json({ text: "WRecord deleted" });
+            });
+        });
+    }
 }
 const workshopController = new WorkshopController();
 exports.default = workshopController;

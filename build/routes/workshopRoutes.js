@@ -18,6 +18,7 @@ class WorkshopRoutes {
         this.router.post('/', workshopController_1.default.create);
         this.router.get('/search/:str&:page&:id_emp', workshopController_1.default.search);
         this.router.put('/:id', workshopController_1.default.update);
+        this.router.delete('/:id', workshopController_1.default.delete);
     }
 }
 const workshopRoutes = new WorkshopRoutes();

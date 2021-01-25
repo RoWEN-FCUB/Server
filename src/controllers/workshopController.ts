@@ -137,6 +137,13 @@ class WorkshopController {
             });
         });
     }
+
+    public async delete(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        const reccount = await pool.query('DELETE FROM taller_registro WHERE id = ?', [id], function(error: any, results: any, fields: any){            
+            res.json({text:"WRecord deleted"});
+        });
+    }
 }
 
 const workshopController = new WorkshopController();
