@@ -71,8 +71,11 @@ class EnergyController {
             const { id } = req.params;
             delete req.body.planacumulado;
             delete req.body.realacumulado;
+            delete req.body.id;
+            delete req.body.id_serv;
+            delete req.body.fecha;
             // req.body.fecha = req.body.fecha.substr(0,req.body.fecha.indexOf('T'));
-            req.body.plan = Number(req.body.plan);
+            /*req.body.plan = Number(req.body.plan);
             req.body.plan_hpicd = Number(req.body.plan_hpicd);
             req.body.plan_hpicn = Number(req.body.plan_hpicn);
             req.body.lectura = Number(req.body.lectura);
@@ -80,10 +83,13 @@ class EnergyController {
             req.body.lectura_hpicd2 = Number(req.body.lectura_hpicd2);
             req.body.lectura_hpicn1 = Number(req.body.lectura_hpicn1);
             req.body.lectura_hpicn2 = Number(req.body.lectura_hpicn2);
-            req.body.id_serv = Number(req.body.id_serv);
-            const query = 'UPDATE energia SET plan = ' + req.body.plan + ', consumo = ' + req.body.consumo + ', lectura = ' + req.body.lectura + ', lectura_hpicd1 = ' + req.body.lectura_hpicd1 + ', lectura_hpicd2 = ' + req.body.lectura_hpicd2 + ', lectura_hpicn1 = ' + req.body.lectura_hpicn2 + ', lectura_hpicd1 = ' + req.body.lectura_hpicn2 + ', plan_hpicd = ' + req.body.plan_hpicd + ', plan_hpicn = ' + req.body.plan_hpicn + ', id_serv = ' + req.body.id_serv + ' WHERE id = ' + id + ';';
+            req.body.id_serv = Number(req.body.id_serv);*/
+            // const query = 'UPDATE energia SET plan = '+req.body.plan+', consumo = '+req.body.consumo+', lectura = '+req.body.lectura+', lectura_hpicd1 = '+req.body.lectura_hpicd1+', lectura_hpicd2 = '+req.body.lectura_hpicd2+', lectura_hpicn1 = '+req.body.lectura_hpicn2+', lectura_hpicd1 = '+req.body.lectura_hpicn2+', plan_hpicd = '+req.body.plan_hpicd+', plan_hpicn = '+req.body.plan_hpicn+', id_serv = '+req.body.id_serv+' WHERE id = '+id+';';
             // console.log(query);
-            yield database_1.default.query(query, function (error, results, fields) {
+            /*await pool.query(query, function(error: any, results: any, fields: any) {
+                res.json({message: 'Energy record updated'});
+            });*/
+            yield database_1.default.query('UPDATE energia SET ? WHERE id = ?', [req.body, id], function (error, results, fields) {
                 res.json({ message: 'Energy record updated' });
             });
         });
