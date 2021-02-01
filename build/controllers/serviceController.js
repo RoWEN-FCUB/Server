@@ -22,11 +22,28 @@ class ServiceController {
             });
         });
     }
-    userServices(req, res) {
+    getUserServices(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
             const tasks = yield database_1.default.query("SELECT servicios.* FROM servicios INNER JOIN usuario_servicio ON (servicios.id = usuario_servicio.id_servicio) WHERE usuario_servicio.id_usuario = ?;", [id], function (error, results, fields) {
                 res.json(results);
+            });
+        });
+    }
+    updateUserServices(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            yield database_1.default.query("DELETE FROM usuario_servicio WHERE id_usuario = ?", [id], function (error, results, fields) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    if (req.body.length > 0) {
+                        yield database_1.default.query("INSERT INTO usuario_servicio (id_usuario, id_servicio) VALUES ?", [req.body], function (error, results, fields) {
+                            res.json({ message: 'Service saved' });
+                        });
+                    }
+                    else {
+                        res.json({ message: 'Service saved' });
+                    }
+                });
             });
         });
     }

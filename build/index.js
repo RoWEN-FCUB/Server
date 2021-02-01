@@ -38,7 +38,6 @@ const workshopRoutes_1 = __importDefault(require("./routes/workshopRoutes"));
 const energyRoutes_1 = __importDefault(require("./routes/energyRoutes"));
 const companyRoutes_1 = __importDefault(require("./routes/companyRoutes"));
 const serviceRoutes_1 = __importDefault(require("./routes/serviceRoutes"));
-const user_serviceRoutes_1 = __importDefault(require("./routes/user-serviceRoutes"));
 var dir = path_1.default.join(__dirname, 'public');
 //const fileUpload = require('express-fileupload');
 const nodemailer = require("nodemailer");
@@ -133,7 +132,6 @@ class Server {
         this.app.use('/energy', energyRoutes_1.default);
         this.app.use('/company', companyRoutes_1.default);
         this.app.use('/service', serviceRoutes_1.default);
-        this.app.use('/user-service', user_serviceRoutes_1.default);
     }
     delay(milliseconds, count) {
         return new Promise(resolve => {

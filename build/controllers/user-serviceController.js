@@ -26,7 +26,7 @@ class UserServiceController {
     delete(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const company = yield database_1.default.query('DELETE FROM usuario_servicio WHERE id = ?', [id], function (error, results, fields) {
+            const company = yield database_1.default.query('DELETE FROM usuario_servicio WHERE id_usuario = ?', [id], function (error, results, fields) {
                 res.json({ text: "Service deleted" });
             });
         });

@@ -44,6 +44,15 @@ class EnergyController {
             });
         });
     }
+    getReadingsByService(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const { fecha } = req.params;
+            yield database_1.default.query("SELECT * FROM (SELECT sum(plan) as plan_total, id_serv FROM energia INNER JOIN servicios ON (energia.id_serv=servicios.id) WHERE YEAR(energia.fecha) = YEAR(?) AND MONTH(energia.fecha) = MONTH(?) GROUP BY id_serv) as tabla_total INNER JOIN energia ON (tabla_total.id_serv = energia.id_serv) INNER JOIN servicios ON (energia.id_serv = servicios.id) INNER JOIN usuario_servicio ON (servicios.id = usuario_servicio.id_servicio) INNER JOIN (SELECT sum(plan) as plan_acumulado, sum(consumo) as real_acumulado, id_serv FROM energia INNER JOIN servicios ON (energia.id_serv=servicios.id) WHERE YEAR(energia.fecha) = YEAR(?) AND MONTH(energia.fecha) = MONTH(?) AND energia.fecha <= DATE(?) GROUP BY id_serv) as tabla_acumulados ON (tabla_acumulados.id_serv=energia.id_serv) WHERE usuario_servicio.id_usuario = ? AND energia.fecha = ?", [fecha, fecha, fecha, fecha, fecha, id, fecha], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;
@@ -104,7 +113,7 @@ class EnergyController {
             }
             // console.log(updates);
             // const query = 'UPDATE energia SET fecha = \''+req.body.fecha+'\',plan = '+req.body.plan+', consumo = '+req.body.consumo+', lectura = '+req.body.lectura+' WHERE id = '+id+';';
-            yield database_1.default.query('INSERT INTO energia (id, plan, consumo, lectura, lectura_hpicd1, lectura_hpicd2, lectura_hpicn1, lectura_hpicn2, plan_hpicd, plan_hpicn, id_serv) VALUES ? ON DUPLICATE KEY UPDATE plan=VALUES(plan),consumo=VALUES(consumo),lectura=VALUES(lectura),lectura_hpicd1=VALUES(lectura_hpicd1),lectura_hpicd2=VALUES(lectura_hpicd2),lectura_hpicn1=VALUES(lectura_hpicn1),lectura_hpicn2=VALUES(lectura_hpicn2),plan_hpicd=VALUES(plan_hpicd),plan_hpicn=VALUES(plan_hpicn);', [updates], function (error, results, fields) {
+            yield database_1.default.query('INSERT INTO energia (id, fecha, plan, consumo, lectura, lectura_hpicd1, lectura_hpicd2, lectura_hpicn1, lectura_hpicn2, plan_hpicd, plan_hpicn, id_serv) VALUES ? ON DUPLICATE KEY UPDATE plan=VALUES(plan),consumo=VALUES(consumo),lectura=VALUES(lectura),lectura_hpicd1=VALUES(lectura_hpicd1),lectura_hpicd2=VALUES(lectura_hpicd2),lectura_hpicn1=VALUES(lectura_hpicn1),lectura_hpicn2=VALUES(lectura_hpicn2),plan_hpicd=VALUES(plan_hpicd),plan_hpicn=VALUES(plan_hpicn);', [updates], function (error, results, fields) {
                 if (error) {
                     console.log(error);
                 }

@@ -10,10 +10,23 @@ class ServiceController {
         });
     }
 
-    public async userServices (req: Request, res: Response): Promise<void>{
+    public async getUserServices (req: Request, res: Response): Promise<void>{
         const {id} = req.params;
         const tasks = await pool.query("SELECT servicios.* FROM servicios INNER JOIN usuario_servicio ON (servicios.id = usuario_servicio.id_servicio) WHERE usuario_servicio.id_usuario = ?;", [id], function(error: any, results: any, fields: any){
             res.json(results);            
+        });
+    }
+
+    public async updateUserServices (req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        await pool.query("DELETE FROM usuario_servicio WHERE id_usuario = ?", [id], async function(error: any, results: any, fields: any){
+            if (req.body.length > 0) {
+                await pool.query("INSERT INTO usuario_servicio (id_usuario, id_servicio) VALUES ?", [req.body], function(error: any, results: any, fields: any){
+                    res.json({message: 'Service saved'});
+                });
+            } else {
+                res.json({message: 'Service saved'});
+            }
         });
     }
 
