@@ -12,7 +12,9 @@ class EnergyRoutes {
     }
     config() {
         this.router.get('/list/:year&:month&:id_serv', energyController_1.default.list);
+        this.router.get('/allservices/:year&:month&:id_user', energyController_1.default.allservices);
         this.router.get('/months/:year&:id_serv', energyController_1.default.listMonths);
+        this.router.get('/monthsallservices/:year&:id_user', energyController_1.default.listMonthsAllServices);
         this.router.get('/reading/:date&:id_serv', energyController_1.default.getReading);
         this.router.get('/readingbyservices/:id&:fecha', energyController_1.default.getReadingsByService);
         this.router.post('/create', energyController_1.default.create);

@@ -26,11 +26,30 @@ class EnergyController {
             });
         });
     }
+    allservices(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { month } = req.params;
+            const { year } = req.params;
+            const { id_user } = req.params;
+            const tasks = yield database_1.default.query("SELECT sum(plan) as plan, sum(consumo) as consumo, energia.fecha FROM energia INNER JOIN servicios ON (energia.id_serv=servicios.id) INNER JOIN usuario_servicio ON (servicios.id=usuario_servicio.id_servicio) WHERE YEAR(fecha) = ? AND MONTH(fecha) = ? AND usuario_servicio.id_usuario = ? GROUP BY energia.fecha;", [year, month, id_user], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
     listMonths(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { year } = req.params;
             const { id_serv } = req.params;
             const tasks = yield database_1.default.query("SELECT MONTH(fecha) as Mes, sum(plan) as Plan, sum(consumo) as Consumo FROM energia WHERE YEAR(fecha) = ? AND id_serv = ? GROUP BY MONTH(fecha) ORDER BY mes;", [year, id_serv], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
+    listMonthsAllServices(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { year } = req.params;
+            const { id_user } = req.params;
+            const tasks = yield database_1.default.query("SELECT MONTH(fecha) as Mes, sum(plan) as Plan, sum(consumo) as Consumo FROM energia WHERE YEAR(fecha) = ? AND energia.id_serv IN (SELECT * FROM (SELECT usuario_servicio.id_servicio FROM usuario_servicio WHERE usuario_servicio.id_usuario = ?) as id_services) GROUP BY MONTH(fecha) ORDER BY mes;", [year, id_user], function (error, results, fields) {
                 res.json(results);
             });
         });
