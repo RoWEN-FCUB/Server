@@ -17,7 +17,7 @@ class ServiceController {
     constructor() { }
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const tasks = yield database_1.default.query("SELECT servicios.*, empresas.siglas AS nombre_emp FROM servicios LEFT JOIN empresas ON (empresas.id = servicios.id_emp);", function (error, results, fields) {
+            const tasks = yield database_1.default.query("SELECT servicios.*, empresas.siglas AS nombre_emp FROM servicios LEFT JOIN empresas ON (empresas.id = servicios.id_emp) ORDER BY servicios.id;", function (error, results, fields) {
                 res.json(results);
             });
         });
@@ -25,7 +25,7 @@ class ServiceController {
     getUserServices(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const tasks = yield database_1.default.query("SELECT servicios.* FROM servicios INNER JOIN usuario_servicio ON (servicios.id = usuario_servicio.id_servicio) WHERE usuario_servicio.id_usuario = ?;", [id], function (error, results, fields) {
+            const tasks = yield database_1.default.query("SELECT servicios.* FROM servicios INNER JOIN usuario_servicio ON (servicios.id = usuario_servicio.id_servicio) WHERE usuario_servicio.id_usuario = ? ORDER BY servicios.id;", [id], function (error, results, fields) {
                 res.json(results);
             });
         });

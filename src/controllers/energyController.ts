@@ -19,7 +19,15 @@ class EnergyController {
         const {month} = req.params;
         const {year} = req.params;
         const {id_user} = req.params;
-        const tasks = await pool.query("SELECT sum(plan) as plan, sum(consumo) as consumo, energia.fecha FROM energia INNER JOIN servicios ON (energia.id_serv=servicios.id) INNER JOIN usuario_servicio ON (servicios.id=usuario_servicio.id_servicio) WHERE YEAR(fecha) = ? AND MONTH(fecha) = ? AND usuario_servicio.id_usuario = ? GROUP BY energia.fecha;", [year, month, id_user], function(error: any, results: any, fields: any){            
+        const tasks = await pool.query("SELECT sum(plan) as plan, sum(consumo) as consumo, energia.fecha, MIN(bloqueado) as bloqueado FROM energia INNER JOIN servicios ON (energia.id_serv=servicios.id) INNER JOIN usuario_servicio ON (servicios.id=usuario_servicio.id_servicio) WHERE YEAR(fecha) = ? AND MONTH(fecha) = ? AND usuario_servicio.id_usuario = ? GROUP BY energia.fecha;", [year, month, id_user], function(error: any, results: any, fields: any){            
+            res.json(results);        
+        });
+    }
+
+    public async unbloquedservices(req: Request, res: Response) : Promise<void>{
+        const {date} = req.params;
+        const {id_user} = req.params;
+        const tasks = await pool.query("SELECT servicios.nombre, energia.consumo FROM servicios INNER JOIN energia ON (energia.id_serv=servicios.id) INNER JOIN usuario_servicio ON (servicios.id=usuario_servicio.id_servicio) WHERE energia.fecha=? AND usuario_servicio.id_usuario = ? AND energia.bloqueado=false", [date, id_user], function(error: any, results: any, fields: any){            
             res.json(results);        
         });
     }
@@ -57,7 +65,7 @@ class EnergyController {
     }
 
     public async create(req: Request, res: Response): Promise<void>{
-        delete req.body.id;
+        // delete req.body.id;
         delete req.body.planacumulado;
         delete req.body.realacumulado;
         req.body.fecha = req.body.fecha.substr(0,req.body.fecha.indexOf('T'));
@@ -72,6 +80,7 @@ class EnergyController {
         req.body.id_serv = Number(req.body.id_serv);
         let query = 'INSERT INTO energia (fecha, plan, consumo, lectura, lectura_hpicd1, lectura_hpicd2, lectura_hpicn1, lectura_hpicn2, plan_hpicd, plan_hpicn, id_serv) ';
         query += 'VALUES(\''+req.body.fecha+'\', '+req.body.plan+', '+req.body.consumo+', '+req.body.lectura+', '+req.body.lectura_hpicd1+', '+req.body.lectura_hpicd2+', '+req.body.lectura_hpicn1+', '+req.body.lectura_hpicn2+', '+req.body.plan_hpicd+', '+req.body.plan_hpicn+', '+req.body.id_serv+');'
+        console.log(query);
         await pool.query(query, function(error: any, results: any, fields: any) {
             res.json({message: 'Energy record saved'});
         });
@@ -99,7 +108,37 @@ class EnergyController {
         /*await pool.query(query, function(error: any, results: any, fields: any) {
             res.json({message: 'Energy record updated'});
         });*/
-        await pool.query('UPDATE energia SET ? WHERE id = ?', [req.body, id], function(error: any, results: any, fields: any) {
+        await pool.query('UPDATE energia SET ? WHERE id = ?;', [req.body, id], function(error: any, results: any, fields: any) {
+            res.json({message: 'Energy record updated'});
+        });
+    }
+
+    public async blockRecord(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        await pool.query('UPDATE energia SET bloqueado = true WHERE id = ?;', [id], function(error: any, results: any, fields: any) {
+            res.json({message: 'Energy record updated'});
+        });
+    }
+
+    public async unblockRecord(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        await pool.query('UPDATE energia SET bloqueado = false WHERE id = ?;', [id], function(error: any, results: any, fields: any) {
+            res.json({message: 'Energy record updated'});
+        });
+    }
+
+    public async blockAllRecords(req: Request, res: Response): Promise<void>{
+        const {id_user} = req.params;
+        const {date} = req.params;
+        await pool.query('UPDATE energia SET bloqueado = true WHERE id IN (SELECT energia.id FROM energia INNER JOIN servicios ON (energia.id_serv=servicios.id) INNER JOIN usuario_servicio ON (servicios.id=usuario_servicio.id_servicio) WHERE usuario_servicio.id_usuario = ? AND energia.fecha = ?) ', [id_user, date], function(error: any, results: any, fields: any) {
+            res.json({message: 'Energy record updated'});
+        });
+    }
+
+    public async unblockAllRecords(req: Request, res: Response): Promise<void>{
+        const {id_user} = req.params;
+        const {date} = req.params;
+        await pool.query('UPDATE energia SET bloqueado = false WHERE id IN (SELECT energia.id FROM energia INNER JOIN servicios ON (energia.id_serv=servicios.id) INNER JOIN usuario_servicio ON (servicios.id=usuario_servicio.id_servicio) WHERE usuario_servicio.id_usuario = ? AND energia.fecha = ?) ', [id_user, date], function(error: any, results: any, fields: any) {
             res.json({message: 'Energy record updated'});
         });
     }
@@ -113,12 +152,14 @@ class EnergyController {
         }
         // console.log(updates);
         // const query = 'UPDATE energia SET fecha = \''+req.body.fecha+'\',plan = '+req.body.plan+', consumo = '+req.body.consumo+', lectura = '+req.body.lectura+' WHERE id = '+id+';';
-        await pool.query('INSERT INTO energia (id, fecha, plan, consumo, lectura, lectura_hpicd1, lectura_hpicd2, lectura_hpicn1, lectura_hpicn2, plan_hpicd, plan_hpicn, id_serv) VALUES ? ON DUPLICATE KEY UPDATE plan=VALUES(plan),consumo=VALUES(consumo),lectura=VALUES(lectura),lectura_hpicd1=VALUES(lectura_hpicd1),lectura_hpicd2=VALUES(lectura_hpicd2),lectura_hpicn1=VALUES(lectura_hpicn1),lectura_hpicn2=VALUES(lectura_hpicn2),plan_hpicd=VALUES(plan_hpicd),plan_hpicn=VALUES(plan_hpicn);', [updates] , function(error: any, results: any, fields: any) {
-            if (error) {
-                console.log(error);
-            }
-            res.json({message: 'Energy record updated'});
-        });
+        if (updates.length > 0) {
+            await pool.query('INSERT INTO energia (fecha, plan, consumo, lectura, lectura_hpicd1, lectura_hpicd2, lectura_hpicn1, lectura_hpicn2, plan_hpicd, plan_hpicn, id_serv) VALUES ? ON DUPLICATE KEY UPDATE plan=VALUES(plan),consumo=VALUES(consumo),lectura=VALUES(lectura),lectura_hpicd1=VALUES(lectura_hpicd1),lectura_hpicd2=VALUES(lectura_hpicd2),lectura_hpicn1=VALUES(lectura_hpicn1),lectura_hpicn2=VALUES(lectura_hpicn2),plan_hpicd=VALUES(plan_hpicd),plan_hpicn=VALUES(plan_hpicn);', [updates] , function(error: any, results: any, fields: any) {
+                if (error) {
+                    console.log(error);
+                }
+                res.json({message: 'Energy record updated'});
+            });
+        }
         res.json({message: 'Energy record updated'});
     }
 

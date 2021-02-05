@@ -5,14 +5,14 @@ class ServiceController {
     constructor() {}
 
     public async list (req: Request, res: Response): Promise<void>{
-        const tasks = await pool.query("SELECT servicios.*, empresas.siglas AS nombre_emp FROM servicios LEFT JOIN empresas ON (empresas.id = servicios.id_emp);", function(error: any, results: any, fields: any){
+        const tasks = await pool.query("SELECT servicios.*, empresas.siglas AS nombre_emp FROM servicios LEFT JOIN empresas ON (empresas.id = servicios.id_emp) ORDER BY servicios.id;", function(error: any, results: any, fields: any){
             res.json(results);            
         });
     }
 
     public async getUserServices (req: Request, res: Response): Promise<void>{
         const {id} = req.params;
-        const tasks = await pool.query("SELECT servicios.* FROM servicios INNER JOIN usuario_servicio ON (servicios.id = usuario_servicio.id_servicio) WHERE usuario_servicio.id_usuario = ?;", [id], function(error: any, results: any, fields: any){
+        const tasks = await pool.query("SELECT servicios.* FROM servicios INNER JOIN usuario_servicio ON (servicios.id = usuario_servicio.id_servicio) WHERE usuario_servicio.id_usuario = ? ORDER BY servicios.id;", [id], function(error: any, results: any, fields: any){
             res.json(results);            
         });
     }

@@ -17,8 +17,13 @@ class EnergyRoutes {
         this.router.get('/monthsallservices/:year&:id_user', energyController_1.default.listMonthsAllServices);
         this.router.get('/reading/:date&:id_serv', energyController_1.default.getReading);
         this.router.get('/readingbyservices/:id&:fecha', energyController_1.default.getReadingsByService);
+        this.router.get('/unbloquedservices/:id_user&:date', energyController_1.default.unbloquedservices);
         this.router.post('/create', energyController_1.default.create);
         this.router.put('/update/:id', energyController_1.default.update);
+        this.router.delete('/block/:id', energyController_1.default.blockRecord);
+        this.router.delete('/unblock/:id', energyController_1.default.unblockRecord);
+        this.router.delete('/blockall/:id_user&:date', energyController_1.default.blockAllRecords);
+        this.router.delete('/unblockall/:id_user&:date', energyController_1.default.unblockAllRecords);
         this.router.put('/updateAll', energyController_1.default.updateAll);
         this.router.put('/updatePlans', energyController_1.default.updatePlans);
         this.router.delete('/:id', energyController_1.default.deleteERecord);
