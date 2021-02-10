@@ -30,6 +30,15 @@ class WorkshopController {
             });
         });
     }
+    listParts(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id_reg = Number(req.params.id_reg);
+            const records = yield database_1.default.query("SELECT * FROM taller_registro_partes WHERE id_reg = ?;", [id_reg], function (error, results, fields) {
+                // console.log('Probando' + results)
+                res.json(results);
+            });
+        });
+    }
     listClients(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const records = yield database_1.default.query("SELECT * FROM taller_clientes ORDER BY siglas;", function (error, results, fields) {

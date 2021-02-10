@@ -13,6 +13,7 @@ class WorkshopRoutes{
         this.router.get('/clients', workshopController.listClients);
         this.router.get('/devices', workshopController.listDevices);
         this.router.get('/names', workshopController.listNames);
+        this.router.get('/parts/:id_reg', workshopController.listParts);
         this.router.post('/', workshopController.create);
         this.router.get('/search/:str&:page&:id_emp', workshopController.search);
         this.router.put('/:id', workshopController.update);

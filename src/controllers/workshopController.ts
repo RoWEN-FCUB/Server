@@ -18,6 +18,14 @@ class WorkshopController {
         });   
     }
 
+    public async listParts (req: Request,res: Response): Promise<void>{        
+        const id_reg = Number(req.params.id_reg);
+        const records = await pool.query("SELECT * FROM taller_registro_partes WHERE id_reg = ?;", [id_reg], function(error: any, results: any, fields: any){            
+            // console.log('Probando' + results)
+            res.json(results);            
+        });   
+    }
+
     public async listClients (req: Request,res: Response): Promise<void>{        
         const records = await pool.query("SELECT * FROM taller_clientes ORDER BY siglas;", function(error: any, results: any, fields: any){            
             // console.log('Probando' + results)
