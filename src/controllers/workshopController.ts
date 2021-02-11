@@ -26,6 +26,35 @@ class WorkshopController {
         });   
     }
 
+    public async listAllParts (req: Request,res: Response): Promise<void>{
+        const records = await pool.query("SELECT DISTINCT(parte) FROM taller_registro_partes;", function(error: any, results: any, fields: any){            
+            // console.log('Probando' + results)
+            res.json(results);            
+        });
+    }
+
+    public async listPartMarcs (req: Request,res: Response): Promise<void>{
+        const part = req.params.part;
+        const records = await pool.query("SELECT DISTINCT(marca) FROM taller_registro_partes WHERE parte = ?;", [part], function(error: any, results: any, fields: any){
+            res.json(results);            
+        });
+    }
+
+    public async listPartModels (req: Request,res: Response): Promise<void>{
+        const part = req.params.part;
+        const marc = req.params.marc;
+        const records = await pool.query("SELECT DISTINCT(modelo) FROM taller_registro_partes WHERE parte = ? AND marca = ?;", [part, marc], function(error: any, results: any, fields: any){
+            res.json(results);            
+        });
+    }
+
+    public async listPartCaps (req: Request,res: Response): Promise<void>{
+        const part = req.params.part;
+        const records = await pool.query("SELECT DISTINCT(capacidad) FROM taller_registro_partes WHERE parte = ?;", [part], function(error: any, results: any, fields: any){
+            res.json(results);            
+        });
+    }
+
     public async listClients (req: Request,res: Response): Promise<void>{        
         const records = await pool.query("SELECT * FROM taller_clientes ORDER BY siglas;", function(error: any, results: any, fields: any){            
             // console.log('Probando' + results)
@@ -34,7 +63,31 @@ class WorkshopController {
     }
 
     public async listDevices (req: Request,res: Response): Promise<void>{        
-        const records = await pool.query("SELECT * FROM taller_equipos;", function(error: any, results: any, fields: any){
+        const records = await pool.query("SELECT DISTINCT(equipo) FROM taller_equipos;", function(error: any, results: any, fields: any){
+            res.json(results);            
+        });   
+    }
+
+    public async listMarcs (req: Request,res: Response): Promise<void>{  
+        const equipo = req.params.equipo;
+        const records = await pool.query("SELECT DISTINCT(marca) FROM taller_equipos WHERE equipo = ?;", equipo, function(error: any, results: any, fields: any){
+            res.json(results);            
+        });   
+    }
+
+    public async listModels (req: Request,res: Response): Promise<void>{  
+        const equipo = req.params.equipo;
+        const marca = req.params.marca;
+        const records = await pool.query("SELECT DISTINCT(modelo) FROM taller_equipos WHERE equipo = ? AND marca = ?;", [equipo, marca], function(error: any, results: any, fields: any){
+            res.json(results);            
+        });   
+    }
+
+    public async listSerialsInv (req: Request,res: Response): Promise<void>{  
+        const equipo = req.params.equipo;
+        const marca = req.params.marca;
+        const modelo = req.params.modelo;
+        const records = await pool.query("SELECT serie, inventario FROM taller_equipos WHERE equipo = ? AND marca = ? AND modelo = ?;", [equipo, marca, modelo], function(error: any, results: any, fields: any){
             res.json(results);            
         });   
     }
@@ -45,6 +98,14 @@ class WorkshopController {
         });   
     }
 
+    public async createWPerson(req: Request, res: Response): Promise<void>{
+        pool.query('INSERT INTO taller_clientes_personas set ?', req.body, function(error: any, results: any, fields: any) {
+            if (error) {
+                console.log(error);
+            }
+        });
+    }
+
     public async create(req: Request, res: Response): Promise<void>{
         if (req.body.cliente_nombre !== '') {
             const new_client = {siglas: req.body.cliente, nombre: req.body.cliente_nombre};
@@ -52,7 +113,7 @@ class WorkshopController {
                 if (error) {
                     console.log(error);
                 }
-            })
+            });
         }
         delete req.body.cliente_nombre;
         const id_superior = req.body.id_superior;
@@ -151,6 +212,30 @@ class WorkshopController {
         const reccount = await pool.query('DELETE FROM taller_registro WHERE id = ?', [id], function(error: any, results: any, fields: any){            
             res.json({text:"WRecord deleted"});
         });
+    }
+
+    public async deletePart(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        const reccount = await pool.query('DELETE FROM taller_registro_partes WHERE id = ?', [id], function(error: any, results: any, fields: any){            
+            res.json({text:"WPart deleted"});
+        });
+    }
+
+    public async updateParts(req: Request, res: Response): Promise<void>{
+        // console.log(req.body);
+        let updates = [];
+        for (let i = 0; i < req.body.length; i++) {
+            updates.push(Object.values(req.body[i]));
+        }
+        if (updates.length > 0) {
+            await pool.query('INSERT INTO taller_registro_partes VALUES ? ON DUPLICATE KEY UPDATE parte = VALUES(parte), marca = VALUES(marca), modelo = VALUES(modelo), capacidad = VALUES(capacidad), cantidad = VALUES(cantidad), serie = VALUES(serie), id_reg = VALUES(id_reg);', [updates] , function(error: any, results: any, fields: any) {
+                if (error) {
+                    console.log(error);
+                }
+                res.json({message: 'Workshop parts updated'});
+            });
+        }
+        res.json({message: 'Workshop parts updated'});
     }
 }
 

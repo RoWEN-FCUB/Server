@@ -39,6 +39,39 @@ class WorkshopController {
             });
         });
     }
+    listAllParts(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const records = yield database_1.default.query("SELECT DISTINCT(parte) FROM taller_registro_partes;", function (error, results, fields) {
+                // console.log('Probando' + results)
+                res.json(results);
+            });
+        });
+    }
+    listPartMarcs(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const part = req.params.part;
+            const records = yield database_1.default.query("SELECT DISTINCT(marca) FROM taller_registro_partes WHERE parte = ?;", [part], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
+    listPartModels(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const part = req.params.part;
+            const marc = req.params.marc;
+            const records = yield database_1.default.query("SELECT DISTINCT(modelo) FROM taller_registro_partes WHERE parte = ? AND marca = ?;", [part, marc], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
+    listPartCaps(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const part = req.params.part;
+            const records = yield database_1.default.query("SELECT DISTINCT(capacidad) FROM taller_registro_partes WHERE parte = ?;", [part], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
     listClients(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const records = yield database_1.default.query("SELECT * FROM taller_clientes ORDER BY siglas;", function (error, results, fields) {
@@ -49,7 +82,34 @@ class WorkshopController {
     }
     listDevices(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const records = yield database_1.default.query("SELECT * FROM taller_equipos;", function (error, results, fields) {
+            const records = yield database_1.default.query("SELECT DISTINCT(equipo) FROM taller_equipos;", function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
+    listMarcs(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const equipo = req.params.equipo;
+            const records = yield database_1.default.query("SELECT DISTINCT(marca) FROM taller_equipos WHERE equipo = ?;", equipo, function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
+    listModels(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const equipo = req.params.equipo;
+            const marca = req.params.marca;
+            const records = yield database_1.default.query("SELECT DISTINCT(modelo) FROM taller_equipos WHERE equipo = ? AND marca = ?;", [equipo, marca], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
+    listSerialsInv(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const equipo = req.params.equipo;
+            const marca = req.params.marca;
+            const modelo = req.params.modelo;
+            const records = yield database_1.default.query("SELECT serie, inventario FROM taller_equipos WHERE equipo = ? AND marca = ? AND modelo = ?;", [equipo, marca, modelo], function (error, results, fields) {
                 res.json(results);
             });
         });
@@ -58,6 +118,15 @@ class WorkshopController {
         return __awaiter(this, void 0, void 0, function* () {
             const records = yield database_1.default.query("SELECT * FROM taller_clientes_personas;", function (error, results, fields) {
                 res.json(results);
+            });
+        });
+    }
+    createWPerson(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            database_1.default.query('INSERT INTO taller_clientes_personas set ?', req.body, function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
             });
         });
     }
@@ -177,6 +246,32 @@ class WorkshopController {
             const reccount = yield database_1.default.query('DELETE FROM taller_registro WHERE id = ?', [id], function (error, results, fields) {
                 res.json({ text: "WRecord deleted" });
             });
+        });
+    }
+    deletePart(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const reccount = yield database_1.default.query('DELETE FROM taller_registro_partes WHERE id = ?', [id], function (error, results, fields) {
+                res.json({ text: "WPart deleted" });
+            });
+        });
+    }
+    updateParts(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // console.log(req.body);
+            let updates = [];
+            for (let i = 0; i < req.body.length; i++) {
+                updates.push(Object.values(req.body[i]));
+            }
+            if (updates.length > 0) {
+                yield database_1.default.query('INSERT INTO taller_registro_partes VALUES ? ON DUPLICATE KEY UPDATE parte = VALUES(parte), marca = VALUES(marca), modelo = VALUES(modelo), capacidad = VALUES(capacidad), cantidad = VALUES(cantidad), serie = VALUES(serie), id_reg = VALUES(id_reg);', [updates], function (error, results, fields) {
+                    if (error) {
+                        console.log(error);
+                    }
+                    res.json({ message: 'Workshop parts updated' });
+                });
+            }
+            res.json({ message: 'Workshop parts updated' });
         });
     }
 }

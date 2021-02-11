@@ -14,12 +14,22 @@ class WorkshopRoutes {
         this.router.get('/records/:page&:id_emp', workshopController_1.default.listAll);
         this.router.get('/clients', workshopController_1.default.listClients);
         this.router.get('/devices', workshopController_1.default.listDevices);
+        this.router.get('/marcs/:equipo', workshopController_1.default.listMarcs);
+        this.router.get('/partmarcs/:part', workshopController_1.default.listPartMarcs);
+        this.router.get('/partcaps/:part', workshopController_1.default.listPartCaps);
+        this.router.get('/partmodels/:part&:marc', workshopController_1.default.listPartModels);
+        this.router.get('/models/:equipo&:marca', workshopController_1.default.listModels);
+        this.router.get('/serials/:equipo&:marca&:modelo', workshopController_1.default.listSerialsInv);
         this.router.get('/names', workshopController_1.default.listNames);
         this.router.get('/parts/:id_reg', workshopController_1.default.listParts);
+        this.router.get('/allparts', workshopController_1.default.listAllParts);
         this.router.post('/', workshopController_1.default.create);
+        this.router.post('/createwperson', workshopController_1.default.createWPerson);
         this.router.get('/search/:str&:page&:id_emp', workshopController_1.default.search);
         this.router.put('/:id', workshopController_1.default.update);
+        this.router.post('/updateparts', workshopController_1.default.updateParts);
         this.router.delete('/:id', workshopController_1.default.delete);
+        this.router.delete('/parts/:id', workshopController_1.default.deletePart);
     }
 }
 const workshopRoutes = new WorkshopRoutes();
