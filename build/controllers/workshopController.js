@@ -116,8 +116,17 @@ class WorkshopController {
     }
     listNames(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const records = yield database_1.default.query("SELECT * FROM taller_clientes_personas;", function (error, results, fields) {
+            const id_cliente = req.params.id_cliente;
+            const records = yield database_1.default.query("SELECT * FROM taller_clientes_personas WHERE id_cliente = ?;", [id_cliente], function (error, results, fields) {
                 res.json(results);
+            });
+        });
+    }
+    listPerson(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const name = req.params.name;
+            const records = yield database_1.default.query("SELECT * FROM taller_clientes_personas WHERE nombre = ?;", [name], function (error, results, fields) {
+                res.json(results[0]);
             });
         });
     }
@@ -127,6 +136,7 @@ class WorkshopController {
                 if (error) {
                     console.log(error);
                 }
+                res.json({ message: 'Person created' });
             });
         });
     }
@@ -253,6 +263,26 @@ class WorkshopController {
             const { id } = req.params;
             const reccount = yield database_1.default.query('DELETE FROM taller_registro_partes WHERE id = ?', [id], function (error, results, fields) {
                 res.json({ text: "WPart deleted" });
+            });
+        });
+    }
+    deleteWDevice(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { wdev } = req.params;
+            const reccount = yield database_1.default.query('DELETE FROM taller_equipos WHERE equipo = ?', [wdev], function (error, results, fields) {
+                res.json({ text: "WDevice deleted" });
+            });
+        });
+    }
+    deleteWCLient(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const reccount = yield database_1.default.query('DELETE FROM taller_clientes_personas WHERE id_cliente = ?', [id], function (error, results, fields) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    const reccount = yield database_1.default.query('DELETE FROM taller_clientes WHERE id = ?', [id], function (error, results, fields) {
+                        res.json({ text: "WClient deleted" });
+                    });
+                });
             });
         });
     }

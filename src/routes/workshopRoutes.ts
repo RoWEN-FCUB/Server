@@ -18,7 +18,8 @@ class WorkshopRoutes{
         this.router.get('/partmodels/:part&:marc', workshopController.listPartModels);
         this.router.get('/models/:equipo&:marca', workshopController.listModels);
         this.router.get('/serials/:equipo&:marca&:modelo', workshopController.listSerialsInv);
-        this.router.get('/names', workshopController.listNames);
+        this.router.get('/names/:id_cliente', workshopController.listNames);
+        this.router.get('/listperson/:name', workshopController.listPerson);
         this.router.get('/parts/:id_reg', workshopController.listParts);
         this.router.get('/allparts', workshopController.listAllParts);
         this.router.post('/', workshopController.create);
@@ -28,6 +29,8 @@ class WorkshopRoutes{
         this.router.post('/updateparts', workshopController.updateParts);
         this.router.delete('/:id', workshopController.delete);
         this.router.delete('/parts/:id', workshopController.deletePart);
+        this.router.delete('/wclient/:id', workshopController.deleteWCLient);
+        this.router.delete('/wdevice/:wdev', workshopController.deleteWDevice);
     }
 }
 const workshopRoutes = new WorkshopRoutes();

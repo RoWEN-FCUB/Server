@@ -92,9 +92,17 @@ class WorkshopController {
         });   
     }
 
-    public async listNames (req: Request,res: Response): Promise<void>{        
-        const records = await pool.query("SELECT * FROM taller_clientes_personas;", function(error: any, results: any, fields: any){
-            res.json(results);            
+    public async listNames (req: Request,res: Response): Promise<void>{    
+        const id_cliente = req.params.id_cliente;    
+        const records = await pool.query("SELECT * FROM taller_clientes_personas WHERE id_cliente = ?;", [id_cliente], function(error: any, results: any, fields: any){
+            res.json(results);
+        });
+    }
+
+    public async listPerson (req: Request,res: Response): Promise<void>{    
+        const name = req.params.name;    
+        const records = await pool.query("SELECT * FROM taller_clientes_personas WHERE nombre = ?;", [name], function(error: any, results: any, fields: any){
+            res.json(results[0]);            
         });   
     }
 
@@ -103,6 +111,7 @@ class WorkshopController {
             if (error) {
                 console.log(error);
             }
+            res.json({message: 'Person created'});
         });
     }
 
@@ -218,6 +227,22 @@ class WorkshopController {
         const {id} = req.params;
         const reccount = await pool.query('DELETE FROM taller_registro_partes WHERE id = ?', [id], function(error: any, results: any, fields: any){            
             res.json({text:"WPart deleted"});
+        });
+    }
+
+    public async deleteWDevice(req: Request, res: Response): Promise<void>{
+        const {wdev} = req.params;
+        const reccount = await pool.query('DELETE FROM taller_equipos WHERE equipo = ?', [wdev], function(error: any, results: any, fields: any){            
+            res.json({text:"WDevice deleted"});
+        });
+    }
+
+    public async deleteWCLient(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        const reccount = await pool.query('DELETE FROM taller_clientes_personas WHERE id_cliente = ?', [id], async function(error: any, results: any, fields: any){            
+            const reccount = await pool.query('DELETE FROM taller_clientes WHERE id = ?', [id], function(error: any, results: any, fields: any){            
+                res.json({text:"WClient deleted"});
+            });
         });
     }
 
