@@ -237,6 +237,13 @@ class WorkshopController {
         });
     }
 
+    public async deleteWPerson(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        const reccount = await pool.query('DELETE FROM taller_clientes_personas WHERE id = ?', [id], function(error: any, results: any, fields: any){            
+            res.json({text:"WPerson deleted"});
+        });
+    }
+
     public async deleteWCLient(req: Request, res: Response): Promise<void>{
         const {id} = req.params;
         const reccount = await pool.query('DELETE FROM taller_clientes_personas WHERE id_cliente = ?', [id], async function(error: any, results: any, fields: any){            

@@ -274,6 +274,14 @@ class WorkshopController {
             });
         });
     }
+    deleteWPerson(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const reccount = yield database_1.default.query('DELETE FROM taller_clientes_personas WHERE id = ?', [id], function (error, results, fields) {
+                res.json({ text: "WPerson deleted" });
+            });
+        });
+    }
     deleteWCLient(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;

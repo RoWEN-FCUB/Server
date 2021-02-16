@@ -30,6 +30,7 @@ class WorkshopRoutes{
         this.router.delete('/:id', workshopController.delete);
         this.router.delete('/parts/:id', workshopController.deletePart);
         this.router.delete('/wclient/:id', workshopController.deleteWCLient);
+        this.router.delete('/wperson/:id', workshopController.deleteWPerson);
         this.router.delete('/wdevice/:wdev', workshopController.deleteWDevice);
     }
 }
