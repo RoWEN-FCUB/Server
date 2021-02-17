@@ -200,7 +200,7 @@ class WorkshopController {
             query_count += ' WHERE ' + query_mod + ' AND id_emp = ' + id_emp + ';';
             query += query_mod + ' AND id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
         } else {
-            query = 'SELECT taller_registro.*, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
+            query = 'SELECT taller_registro.id, taller_registro.cod, taller_registro.cliente, taller_registro.equipo, taller_registro.marca, taller_registro.modelo, taller_registro.inventario, taller_registro.serie, taller_registro.fecha_entrada, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.entregado) AS entregado, taller_registro.ot, taller_registro.estado, taller_registro.especialista, taller_registro.fecha_salida, taller_registro.recogido, taller_registro.id_emp, taller_registro.fallo, taller_registro.observaciones, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
             query += ' WHERE id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
             query_count += ' WHERE id_emp = ' + id_emp + ';';
         }        
@@ -210,7 +210,8 @@ class WorkshopController {
                 let total = 0;
                 if(count[0].total_records) {
                     total = count[0].total_records;
-                }                                
+                }   
+                // console.log(wrecords);
                 res.json({wrecords, total});
             });
         });
