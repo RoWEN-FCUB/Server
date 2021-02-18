@@ -124,19 +124,27 @@ class WorkshopController {
     }
     listPerson(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const name = req.params.name;
-            const records = yield database_1.default.query("SELECT * FROM taller_clientes_personas WHERE nombre = ?;", [name], function (error, results, fields) {
+            const ci = req.params.ci;
+            const records = yield database_1.default.query("SELECT * FROM taller_clientes_personas WHERE ci = ?;", [ci], function (error, results, fields) {
                 res.json(results[0]);
             });
         });
     }
     createWPerson(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            database_1.default.query('INSERT INTO taller_clientes_personas set ?', req.body, function (error, results, fields) {
+            const siglas = req.params.siglas;
+            database_1.default.query('SELECT id FROM taller_clientes WHERE siglas =  ?', siglas, function (error, id, fields) {
                 if (error) {
                     console.log(error);
                 }
-                res.json({ message: 'Person created' });
+                // console.log(id);
+                req.body.id_cliente = id[0].id;
+                database_1.default.query('INSERT INTO taller_clientes_personas set ?', req.body, function (error, results, fields) {
+                    if (error) {
+                        console.log(error);
+                    }
+                    res.json({ message: 'Person created' });
+                });
             });
         });
     }
@@ -167,13 +175,13 @@ class WorkshopController {
                 estatus: 'info',
             };
             notificacion.fecha = notificacion.fecha.substring(0, notificacion.fecha.indexOf('T'));
-            const notif = yield database_1.default.query('INSERT INTO notificaciones set ?', [notificacion], function (error, results, fields) {
+            const notif = yield database_1.default.query('INSERT INTO notificaciones set ?', [notificacion], function (error, results1, fields) {
                 return __awaiter(this, void 0, void 0, function* () {
                     if (error) {
                         console.log(error);
                     }
                     req.body.fecha_entrada = req.body.fecha_entrada.substring(0, req.body.fecha_entrada.indexOf('T'));
-                    yield database_1.default.query('INSERT INTO taller_registro set ?', [req.body], function (error, results, fields) {
+                    yield database_1.default.query('INSERT INTO taller_registro set ?', [req.body], function (error, _results2, fields) {
                         if (error) {
                             console.log(error);
                         }
@@ -188,6 +196,7 @@ class WorkshopController {
     update(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
+            delete req.body.entrega_ci;
             req.body.fecha_entrada = req.body.fecha_entrada.substring(0, req.body.fecha_entrada.indexOf('T'));
             req.body.fecha_salida = req.body.fecha_salida.substring(0, req.body.fecha_salida.indexOf('T'));
             delete req.body.cliente_nombre;
@@ -232,7 +241,7 @@ class WorkshopController {
                 query += query_mod + ' AND id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
             }
             else {
-                query = 'SELECT taller_registro.id, taller_registro.cod, taller_registro.cliente, taller_registro.equipo, taller_registro.marca, taller_registro.modelo, taller_registro.inventario, taller_registro.serie, taller_registro.fecha_entrada, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.entregado) AS entregado, taller_registro.ot, taller_registro.estado, taller_registro.especialista, taller_registro.fecha_salida, taller_registro.recogido, taller_registro.id_emp, taller_registro.fallo, taller_registro.observaciones, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
+                query = 'SELECT taller_registro.id, taller_registro.cod, taller_registro.cliente, taller_registro.equipo, taller_registro.marca, taller_registro.modelo, taller_registro.inventario, taller_registro.serie, taller_registro.fecha_entrada, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.entregado) AS entregado, taller_registro.entregado AS entrega_ci, taller_registro.ot, taller_registro.estado, taller_registro.especialista, taller_registro.fecha_salida, taller_registro.recogido, taller_registro.id_emp, taller_registro.fallo, taller_registro.observaciones, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
                 query += ' WHERE id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
                 query_count += ' WHERE id_emp = ' + id_emp + ';';
             }
@@ -244,7 +253,7 @@ class WorkshopController {
                         if (count[0].total_records) {
                             total = count[0].total_records;
                         }
-                        console.log(wrecords);
+                        // console.log(wrecords);
                         res.json({ wrecords, total });
                     });
                 });

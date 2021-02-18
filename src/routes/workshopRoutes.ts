@@ -19,11 +19,11 @@ class WorkshopRoutes{
         this.router.get('/models/:equipo&:marca', workshopController.listModels);
         this.router.get('/serials/:equipo&:marca&:modelo', workshopController.listSerialsInv);
         this.router.get('/names/:id_cliente', workshopController.listNames);
-        this.router.get('/listperson/:name', workshopController.listPerson);
+        this.router.get('/listperson/:ci', workshopController.listPerson);
         this.router.get('/parts/:id_reg', workshopController.listParts);
         this.router.get('/allparts', workshopController.listAllParts);
         this.router.post('/', workshopController.create);
-        this.router.post('/createwperson', workshopController.createWPerson);
+        this.router.post('/createwperson/:siglas', workshopController.createWPerson);
         this.router.get('/search/:str&:page&:id_emp', workshopController.search);
         this.router.put('/:id', workshopController.update);
         this.router.post('/updateparts', workshopController.updateParts);

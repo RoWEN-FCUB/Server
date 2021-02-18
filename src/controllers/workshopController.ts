@@ -100,18 +100,26 @@ class WorkshopController {
     }
 
     public async listPerson (req: Request,res: Response): Promise<void>{    
-        const name = req.params.name;    
-        const records = await pool.query("SELECT * FROM taller_clientes_personas WHERE nombre = ?;", [name], function(error: any, results: any, fields: any){
+        const ci = req.params.ci;    
+        const records = await pool.query("SELECT * FROM taller_clientes_personas WHERE ci = ?;", [ci], function(error: any, results: any, fields: any){
             res.json(results[0]);            
         });   
     }
 
     public async createWPerson(req: Request, res: Response): Promise<void>{
-        pool.query('INSERT INTO taller_clientes_personas set ?', req.body, function(error: any, results: any, fields: any) {
+        const siglas = req.params.siglas;
+        pool.query('SELECT id FROM taller_clientes WHERE siglas =  ?', siglas, function(error: any, id: any, fields: any) {
             if (error) {
                 console.log(error);
             }
-            res.json({message: 'Person created'});
+            // console.log(id);
+            req.body.id_cliente = id[0].id;
+            pool.query('INSERT INTO taller_clientes_personas set ?', req.body, function(error: any, results: any, fields: any) {
+                if (error) {
+                    console.log(error);
+                }
+                res.json({message: 'Person created'});
+            });
         });
     }
 
@@ -141,12 +149,12 @@ class WorkshopController {
             estatus: 'info',
         };
         notificacion.fecha = notificacion.fecha.substring(0, notificacion.fecha.indexOf('T'));        
-        const notif = await pool.query('INSERT INTO notificaciones set ?',[notificacion], async function(error: any, results: any, fields: any){
+        const notif = await pool.query('INSERT INTO notificaciones set ?',[notificacion], async function(error: any, results1: any, fields: any){
             if (error) {
                 console.log(error);
             }
             req.body.fecha_entrada = req.body.fecha_entrada.substring(0, req.body.fecha_entrada.indexOf('T'));            
-            await pool.query('INSERT INTO taller_registro set ?',[req.body], function(error: any, results: any, fields: any) {
+            await pool.query('INSERT INTO taller_registro set ?',[req.body], function(error: any, _results2: any, fields: any) {
                 if (error) {
                     console.log(error);
                 }
@@ -158,7 +166,8 @@ class WorkshopController {
     }
 
     public async update(req: Request, res: Response): Promise<void>{
-        const {id} = req.params;        
+        const {id} = req.params;
+        delete req.body.entrega_ci;
         req.body.fecha_entrada = req.body.fecha_entrada.substring(0, req.body.fecha_entrada.indexOf('T'));
         req.body.fecha_salida = req.body.fecha_salida.substring(0, req.body.fecha_salida.indexOf('T'));
         delete req.body.cliente_nombre;        
@@ -200,7 +209,7 @@ class WorkshopController {
             query_count += ' WHERE ' + query_mod + ' AND id_emp = ' + id_emp + ';';
             query += query_mod + ' AND id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
         } else {
-            query = 'SELECT taller_registro.id, taller_registro.cod, taller_registro.cliente, taller_registro.equipo, taller_registro.marca, taller_registro.modelo, taller_registro.inventario, taller_registro.serie, taller_registro.fecha_entrada, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.entregado) AS entregado, taller_registro.ot, taller_registro.estado, taller_registro.especialista, taller_registro.fecha_salida, taller_registro.recogido, taller_registro.id_emp, taller_registro.fallo, taller_registro.observaciones, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
+            query = 'SELECT taller_registro.id, taller_registro.cod, taller_registro.cliente, taller_registro.equipo, taller_registro.marca, taller_registro.modelo, taller_registro.inventario, taller_registro.serie, taller_registro.fecha_entrada, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.entregado) AS entregado, taller_registro.entregado AS entrega_ci, taller_registro.ot, taller_registro.estado, taller_registro.especialista, taller_registro.fecha_salida, taller_registro.recogido, taller_registro.id_emp, taller_registro.fallo, taller_registro.observaciones, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
             query += ' WHERE id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
             query_count += ' WHERE id_emp = ' + id_emp + ';';
         }        
