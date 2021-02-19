@@ -161,6 +161,8 @@ class WorkshopController {
             delete req.body.cliente_nombre;
             const id_superior = req.body.id_superior;
             delete req.body.id_superior;
+            delete req.body.entrega_ci;
+            delete req.body.recoge_ci;
             const date = new Date();
             const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
             const offset = date.getTimezoneOffset() / 60;
@@ -200,6 +202,8 @@ class WorkshopController {
             req.body.fecha_entrada = req.body.fecha_entrada.substring(0, req.body.fecha_entrada.indexOf('T'));
             req.body.fecha_salida = req.body.fecha_salida.substring(0, req.body.fecha_salida.indexOf('T'));
             delete req.body.cliente_nombre;
+            delete req.body.recoge_ci;
+            // console.log(req.body);
             const result = yield database_1.default.query('UPDATE taller_registro set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
                 res.json({ text: "Record updated" });
             });
@@ -241,7 +245,7 @@ class WorkshopController {
                 query += query_mod + ' AND id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
             }
             else {
-                query = 'SELECT taller_registro.id, taller_registro.cod, taller_registro.cliente, taller_registro.equipo, taller_registro.marca, taller_registro.modelo, taller_registro.inventario, taller_registro.serie, taller_registro.fecha_entrada, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.entregado) AS entregado, taller_registro.entregado AS entrega_ci, taller_registro.ot, taller_registro.estado, taller_registro.especialista, taller_registro.fecha_salida, taller_registro.recogido, taller_registro.id_emp, taller_registro.fallo, taller_registro.observaciones, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
+                query = 'SELECT taller_registro.id, taller_registro.cod, taller_registro.cliente, taller_registro.equipo, taller_registro.marca, taller_registro.modelo, taller_registro.inventario, taller_registro.serie, taller_registro.fecha_entrada, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.entregado) AS entregado, taller_registro.entregado AS entrega_ci, taller_registro.ot, taller_registro.estado, taller_registro.especialista, taller_registro.fecha_salida, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.recogido) AS recogido, taller_registro.recogido AS recoge_ci, taller_registro.id_emp, taller_registro.fallo, taller_registro.observaciones, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
                 query += ' WHERE id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
                 query_count += ' WHERE id_emp = ' + id_emp + ';';
             }
