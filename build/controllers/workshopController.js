@@ -133,6 +133,7 @@ class WorkshopController {
     createWPerson(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const siglas = req.params.siglas;
+            //console.log(req.body);
             database_1.default.query('SELECT id FROM taller_clientes WHERE siglas =  ?', siglas, function (error, id, fields) {
                 if (error) {
                     console.log(error);
@@ -219,7 +220,7 @@ class WorkshopController {
             let query_count = 'SELECT count(*) as total_records FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
             let query_mod = '';
             if (keys.length >= 0 && str !== 'null') {
-                query = 'SELECT taller_registro.*, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente) WHERE ';
+                query = 'SELECT taller_registro.id, taller_registro.cod, taller_registro.cliente, taller_registro.equipo, taller_registro.marca, taller_registro.modelo, taller_registro.inventario, taller_registro.serie, taller_registro.fecha_entrada, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.entregado) AS entregado, taller_registro.entregado AS entrega_ci, taller_registro.ot, taller_registro.estado, taller_registro.especialista, taller_registro.fecha_salida, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.recogido) AS recogido, taller_registro.recogido AS recoge_ci, taller_registro.id_emp, taller_registro.fallo, taller_registro.observaciones, taller_registro.externo, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente) WHERE ';
                 for (let i = 0; i < keys.length; i++) {
                     if (i === 0) {
                         query_mod += "(cliente LIKE '%" + keys[i] + "%'";
@@ -245,11 +246,11 @@ class WorkshopController {
                 query += query_mod + ' AND id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
             }
             else {
-                query = 'SELECT taller_registro.id, taller_registro.cod, taller_registro.cliente, taller_registro.equipo, taller_registro.marca, taller_registro.modelo, taller_registro.inventario, taller_registro.serie, taller_registro.fecha_entrada, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.entregado) AS entregado, taller_registro.entregado AS entrega_ci, taller_registro.ot, taller_registro.estado, taller_registro.especialista, taller_registro.fecha_salida, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.recogido) AS recogido, taller_registro.recogido AS recoge_ci, taller_registro.id_emp, taller_registro.fallo, taller_registro.observaciones, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
+                query = 'SELECT taller_registro.id, taller_registro.cod, taller_registro.cliente, taller_registro.equipo, taller_registro.marca, taller_registro.modelo, taller_registro.inventario, taller_registro.serie, taller_registro.fecha_entrada, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.entregado) AS entregado, taller_registro.entregado AS entrega_ci, taller_registro.ot, taller_registro.estado, taller_registro.especialista, taller_registro.fecha_salida, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.recogido) AS recogido, taller_registro.recogido AS recoge_ci, taller_registro.id_emp, taller_registro.fallo, taller_registro.observaciones, taller_registro.externo, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
                 query += ' WHERE id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
                 query_count += ' WHERE id_emp = ' + id_emp + ';';
             }
-            // console.log(query_count);
+            // console.log(query);
             const records = yield database_1.default.query(query, function (error, wrecords, fields) {
                 return __awaiter(this, void 0, void 0, function* () {
                     const reccount = yield database_1.default.query(query_count, function (error, count, fields) {
