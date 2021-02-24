@@ -170,6 +170,7 @@ class EnergyController {
         return __awaiter(this, void 0, void 0, function* () {
             let updates = [];
             for (let i = 0; i < req.body.length; i++) {
+                req.body[i].fecha = req.body[i].fecha.substr(0, req.body[i].fecha.indexOf('T'));
                 delete req.body[i].realacumulado;
                 delete req.body[i].planacumulado;
                 updates.push(Object.values(req.body[i]));
@@ -177,7 +178,7 @@ class EnergyController {
             // console.log(updates);
             // const query = 'UPDATE energia SET fecha = \''+req.body.fecha+'\',plan = '+req.body.plan+', consumo = '+req.body.consumo+', lectura = '+req.body.lectura+' WHERE id = '+id+';';
             if (updates.length > 0) {
-                yield database_1.default.query('INSERT INTO energia (fecha, plan, consumo, lectura, lectura_hpicd1, lectura_hpicd2, lectura_hpicn1, lectura_hpicn2, plan_hpicd, plan_hpicn, id_serv) VALUES ? ON DUPLICATE KEY UPDATE plan=VALUES(plan),consumo=VALUES(consumo),lectura=VALUES(lectura),lectura_hpicd1=VALUES(lectura_hpicd1),lectura_hpicd2=VALUES(lectura_hpicd2),lectura_hpicn1=VALUES(lectura_hpicn1),lectura_hpicn2=VALUES(lectura_hpicn2),plan_hpicd=VALUES(plan_hpicd),plan_hpicn=VALUES(plan_hpicn);', [updates], function (error, results, fields) {
+                yield database_1.default.query('INSERT INTO energia (id, fecha, plan, consumo, lectura, lectura_hpicd1, lectura_hpicd2, lectura_hpicn1, lectura_hpicn2, plan_hpicd, plan_hpicn, id_serv, bloqueado) VALUES ? ON DUPLICATE KEY UPDATE plan=VALUES(plan),consumo=VALUES(consumo),lectura=VALUES(lectura),lectura_hpicd1=VALUES(lectura_hpicd1),lectura_hpicd2=VALUES(lectura_hpicd2),lectura_hpicn1=VALUES(lectura_hpicn1),lectura_hpicn2=VALUES(lectura_hpicn2),plan_hpicd=VALUES(plan_hpicd),plan_hpicn=VALUES(plan_hpicn), bloqueado=VALUES(bloqueado);', [updates], function (error, results, fields) {
                     if (error) {
                         console.log(error);
                     }
@@ -214,7 +215,7 @@ class EnergyController {
     deleteERecord(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            yield database_1.default.query('UPDATE energia SET consumo = null, lectura = null, lectura_hpicd1 = null, lectura_hpicd2 = null, lectura_hpicn1 = null, lectura_hpicn2 = null WHERE id = ?', [id], function (error, results, fields) {
+            yield database_1.default.query('UPDATE energia SET consumo = 0, lectura = 0, lectura_hpicd1 = 0, lectura_hpicd2 = 0, lectura_hpicn1 = 0, lectura_hpicn2 = 0, bloqueado = false WHERE id = ?', [id], function (error, results, fields) {
                 res.json({ text: "Energy record deleted" });
             });
         });
