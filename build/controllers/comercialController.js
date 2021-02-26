@@ -18,7 +18,25 @@ class ComercialController {
     listProviders(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id_empresa;
-            const tasks = yield database_1.default.query("SELECT * FROM comercial_proveedor WHERE id_empresa = ?;", [id], function (error, results, fields) {
+            const prov = yield database_1.default.query("SELECT * FROM comercial_proveedor WHERE id_empresa = ?;", [id], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
+    listProducts(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id_provider = req.params.id_proveedor;
+            const prod = yield database_1.default.query("SELECT * FROM comercial_producto WHERE id_proveedor = ?;", [id_provider], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
+    listReceipts(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id_provider = req.params.id_proveedor;
+            const concilied = req.params.concilied;
+            const delivered = req.params.delivered;
+            const prod = yield database_1.default.query("SELECT comercial_vale.*, comercial_vale_productos.id_producto, comercial_vale_productos.cantidad, comercial_producto.codigo, comercial_producto.nombre, comercial_producto.descripcion, comercial_producto.unidad_medida, comercial_producto.precio, comercial_producto.mlc FROM comercial_vale INNER JOIN comercial_vale_productos ON (comercial_vale.id = comercial_vale_productos.id_vale) INNER JOIN comercial_producto ON (comercial_vale_productos.id_producto = comercial_producto.id) WHERE comercial_vale.id_proveedor = ? ORDER BY pedido DESC;", [id_provider], function (error, results, fields) {
                 res.json(results);
             });
         });
