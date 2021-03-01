@@ -39,7 +39,6 @@ class ServiceController {
 
     public async create(req: Request, res: Response): Promise<void>{
         delete req.body.id;
-        console.log(req.body);
         await pool.query('INSERT INTO servicios SET ?', [req.body], function(error: any, results: any, fields: any) {
             if (error) {
                 console.log(error);
@@ -50,7 +49,6 @@ class ServiceController {
 
     public async update(req: Request, res: Response): Promise<void>{
         const {id} = req.params;
-        console.log(req.body);
         const result = pool.query('UPDATE servicios set ? WHERE id = ?', [req.body,id], function(error: any, results: any, fields: any){            
             res.json({text:"Service updated"});
         });

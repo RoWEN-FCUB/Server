@@ -41,6 +41,17 @@ class ComercialController {
             });
         });
     }
+    createProduct(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            delete req.body.id;
+            yield database_1.default.query('INSERT INTO comercial_producto SET ?', [req.body], function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+                res.json({ message: 'Product saved' });
+            });
+        });
+    }
 }
 const comercialController = new ComercialController();
 exports.default = comercialController;

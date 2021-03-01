@@ -58,7 +58,6 @@ class ServiceController {
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;
-            console.log(req.body);
             yield database_1.default.query('INSERT INTO servicios SET ?', [req.body], function (error, results, fields) {
                 if (error) {
                     console.log(error);
@@ -70,7 +69,6 @@ class ServiceController {
     update(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            console.log(req.body);
             const result = database_1.default.query('UPDATE servicios set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
                 res.json({ text: "Service updated" });
             });

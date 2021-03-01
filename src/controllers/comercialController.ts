@@ -26,6 +26,16 @@ class ComercialController {
             res.json(results);            
         });
     }
+
+    public async createProduct(req: Request, res: Response): Promise<void>{
+        delete req.body.id;        
+        await pool.query('INSERT INTO comercial_producto SET ?', [req.body], function(error: any, results: any, fields: any) {
+            if (error) {
+                console.log(error);
+            }
+            res.json({message: 'Product saved'});
+        });
+    }
 }
 const comercialController = new ComercialController();
 export default comercialController;

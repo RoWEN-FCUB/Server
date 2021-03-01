@@ -12,6 +12,7 @@ class CompanyRoutes{
         this.router.get('/listProviders/:id_empresa', comercialController.listProviders);
         this.router.get('/listProducts/:id_proveedor', comercialController.listProducts);
         this.router.get('/listReceipts/:id_proveedor&:concilied&:delivered', comercialController.listReceipts);
+        this.router.post('/product', comercialController.createProduct);
     }
 }
 const companyRoutes = new CompanyRoutes();
