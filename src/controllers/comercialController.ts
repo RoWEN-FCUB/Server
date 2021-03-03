@@ -36,6 +36,11 @@ class ComercialController {
             res.json({message: 'Product saved'});
         });
     }
+
+    public async upload(req: any, res: any): Promise<void>{
+        const filename = req.files.uploads.path.split('\\').pop().split('/').pop();
+        res.json({fname: filename});
+    }
 }
 const comercialController = new ComercialController();
 export default comercialController;

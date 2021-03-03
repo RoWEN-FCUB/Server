@@ -52,6 +52,12 @@ class ComercialController {
             });
         });
     }
+    upload(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const filename = req.files.uploads.path.split('\\').pop().split('/').pop();
+            res.json({ fname: filename });
+        });
+    }
 }
 const comercialController = new ComercialController();
 exports.default = comercialController;
