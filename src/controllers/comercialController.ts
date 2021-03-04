@@ -37,6 +37,58 @@ class ComercialController {
         });
     }
 
+    public async createProvider(req: Request, res: Response): Promise<void>{
+        delete req.body.id;        
+        await pool.query('INSERT INTO comercial_proveedor SET ?', [req.body], function(error: any, results: any, fields: any) {
+            if (error) {
+                console.log(error);
+            }
+            res.json({message: 'Provider saved'});
+        });
+    }
+
+    public async updateProduct(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        // console.log(req.body);
+        const result = pool.query('UPDATE comercial_producto set ? WHERE id = ?', [req.body,id], function(error: any, results: any, fields: any){            
+            res.json({text:"Product updated"});
+        });
+    }
+
+    public async updateProvider(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        // console.log(req.body);
+        const result = pool.query('UPDATE comercial_proveedor set ? WHERE id = ?', [req.body,id], function(error: any, results: any, fields: any){            
+            res.json({text:"Provider updated"});
+        });
+    }
+
+    public async deleteProduct(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        const result = await pool.query('SELECT * FROM comercial_vale_productos WHERE id_producto = ?', [id], async function(error: any, results: any[], fields: any){            
+            if (results.length > 0) {
+                res.json({text:"Product exists"});
+            } else {
+                const result2 = await pool.query('DELETE FROM comercial_producto WHERE id = ?', [id], function(error: any, results: any, fields: any){            
+                    res.json({text:"Product deleted"});
+                }); 
+            }
+        }); 
+    }
+
+    public async deleteProvider(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        const result = await pool.query('SELECT * FROM comercial_vale_productos INNER JOIN comercial_producto ON (comercial_vale_productos.id_producto = comercial_producto.id) WHERE comercial_producto.id_proveedor = ?', [id], async function(error: any, results: any[], fields: any){            
+            if (results.length > 0) {
+                res.json({text:"Provider exists"});
+            } else {
+                const result2 = await pool.query('DELETE FROM comercial_proveedor WHERE id = ?', [id], function(error: any, results: any, fields: any){            
+                    res.json({text:"Provider deleted"});
+                }); 
+            }
+        }); 
+    }
+
     public async upload(req: any, res: any): Promise<void>{
         const filename = req.files.uploads.path.split('\\').pop().split('/').pop();
         res.json({fname: filename});

@@ -41,7 +41,7 @@ class CompanyController {
     update(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            console.log(req.body);
+            // console.log(req.body);
             const result = database_1.default.query('UPDATE empresas set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
                 res.json({ text: "Company updated" });
             });
