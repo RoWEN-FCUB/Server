@@ -47,6 +47,36 @@ class ComercialController {
         });
     }
 
+    public async createReceipt(req: Request, res: Response): Promise<void>{
+        delete req.body.id;
+        // console.log(req.body);
+        req.body.fecha_emision = req.body.fecha_emision.substr(0,req.body.fecha_emision.indexOf('T'));
+        let productos: any[] = req.body.productos;
+        delete req.body.productos;
+        // console.log(productos);
+        await pool.query('INSERT INTO comercial_vale SET ?', [req.body], async function(error: any, results: any, fields: any) {
+            if (error) {
+                console.log(error);
+            }
+            let prods = [];
+            for (let i = 0; i < productos.length; i++) {
+                const vale_producto = {
+                    id_vale: results.insertId,
+                    id_producto: productos[i].id,
+                    cantidad: productos[i].cantidad,
+                }
+                prods.push(Object.values(vale_producto));
+            }
+            await pool.query('INSERT INTO comercial_vale_productos (id_vale, id_producto, cantidad) VALUES ?', [prods], function(error: any, results: any, fields: any) {
+                if (error) {
+                    console.log(error);
+                }
+                res.json({message: 'Receipt saved'});
+            });
+        });
+        //res.json({message: 'Receipt saved'});
+    }
+
     public async updateProduct(req: Request, res: Response): Promise<void>{
         const {id} = req.params;
         // console.log(req.body);
@@ -82,8 +112,10 @@ class ComercialController {
             if (results.length > 0) {
                 res.json({text:"Provider exists"});
             } else {
-                const result2 = await pool.query('DELETE FROM comercial_proveedor WHERE id = ?', [id], function(error: any, results: any, fields: any){            
-                    res.json({text:"Provider deleted"});
+                const result3 = await pool.query('DELETE FROM comercial_producto WHERE id_proveedor = ?', [id], async function(error: any, results: any, fields: any){            
+                    const result2 = await pool.query('DELETE FROM comercial_proveedor WHERE id = ?', [id], function(error: any, results: any, fields: any){            
+                        res.json({text:"Provider deleted"});
+                    });
                 }); 
             }
         }); 

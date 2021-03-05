@@ -63,6 +63,39 @@ class ComercialController {
             });
         });
     }
+    createReceipt(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            delete req.body.id;
+            // console.log(req.body);
+            req.body.fecha_emision = req.body.fecha_emision.substr(0, req.body.fecha_emision.indexOf('T'));
+            let productos = req.body.productos;
+            delete req.body.productos;
+            // console.log(productos);
+            yield database_1.default.query('INSERT INTO comercial_vale SET ?', [req.body], function (error, results, fields) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    if (error) {
+                        console.log(error);
+                    }
+                    let prods = [];
+                    for (let i = 0; i < productos.length; i++) {
+                        const vale_producto = {
+                            id_vale: results.insertId,
+                            id_producto: productos[i].id,
+                            cantidad: productos[i].cantidad,
+                        };
+                        prods.push(Object.values(vale_producto));
+                    }
+                    yield database_1.default.query('INSERT INTO comercial_vale_productos (id_vale, id_producto, cantidad) VALUES ?', [prods], function (error, results, fields) {
+                        if (error) {
+                            console.log(error);
+                        }
+                        res.json({ message: 'Receipt saved' });
+                    });
+                });
+            });
+            //res.json({message: 'Receipt saved'});
+        });
+    }
     updateProduct(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
@@ -107,8 +140,12 @@ class ComercialController {
                         res.json({ text: "Provider exists" });
                     }
                     else {
-                        const result2 = yield database_1.default.query('DELETE FROM comercial_proveedor WHERE id = ?', [id], function (error, results, fields) {
-                            res.json({ text: "Provider deleted" });
+                        const result3 = yield database_1.default.query('DELETE FROM comercial_producto WHERE id_proveedor = ?', [id], function (error, results, fields) {
+                            return __awaiter(this, void 0, void 0, function* () {
+                                const result2 = yield database_1.default.query('DELETE FROM comercial_proveedor WHERE id = ?', [id], function (error, results, fields) {
+                                    res.json({ text: "Provider deleted" });
+                                });
+                            });
                         });
                     }
                 });
