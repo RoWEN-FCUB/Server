@@ -66,6 +66,7 @@ class ComercialController {
     createReceipt(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;
+            delete req.body.cantidad_productos;
             // console.log(req.body);
             req.body.fecha_emision = req.body.fecha_emision.substr(0, req.body.fecha_emision.indexOf('T'));
             let productos = req.body.productos;
