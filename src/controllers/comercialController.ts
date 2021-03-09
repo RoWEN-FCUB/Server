@@ -94,6 +94,34 @@ class ComercialController {
         });
     }
 
+    public async updateReceipt(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        delete req.body.cantidad_productos;
+        // console.log(req.body);
+        req.body.fecha_emision = req.body.fecha_emision.substr(0,req.body.fecha_emision.indexOf('T'));
+        let productos: any[] = req.body.productos;
+        delete req.body.productos;
+        const result = await pool.query('DELETE FROM comercial_vale_productos WHERE id_vale = ?', [id], async function(error: any, results: any, fields: any){            
+            await pool.query('UPDATE comercial_vale set ? WHERE id = ?', [req.body,id], async function(error: any, results: any, fields: any){            
+                let prods = [];
+                for (let i = 0; i < productos.length; i++) {
+                    const vale_producto = {
+                        id_vale: id,
+                        id_producto: productos[i].id,
+                        cantidad: productos[i].cantidad,
+                    }
+                    prods.push(Object.values(vale_producto));
+                }
+                await pool.query('INSERT INTO comercial_vale_productos (id_vale, id_producto, cantidad) VALUES ?', [prods], function(error: any, results: any, fields: any) {
+                    if (error) {
+                        console.log(error);
+                    }
+                    res.json({message: 'Receipt updated'});
+                });
+            });
+        });
+    }
+
     public async deleteProduct(req: Request, res: Response): Promise<void>{
         const {id} = req.params;
         const result = await pool.query('SELECT * FROM comercial_vale_productos WHERE id_producto = ?', [id], async function(error: any, results: any[], fields: any){            

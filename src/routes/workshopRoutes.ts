@@ -9,7 +9,7 @@ class WorkshopRoutes{
     }
 
     config(): void{
-        this.router.get('/records/:page&:id_emp', workshopController.listAll);
+        this.router.get('/records/:page&:id_serv', workshopController.listAll);
         this.router.get('/clients', workshopController.listClients);
         this.router.get('/devices', workshopController.listDevices);
         this.router.get('/marcs/:equipo', workshopController.listMarcs);
@@ -24,7 +24,7 @@ class WorkshopRoutes{
         this.router.get('/allparts', workshopController.listAllParts);
         this.router.post('/', workshopController.create);
         this.router.post('/createwperson/:siglas', workshopController.createWPerson);
-        this.router.get('/search/:str&:page&:id_emp', workshopController.search);
+        this.router.get('/search/:str&:page&:id_serv', workshopController.search);
         this.router.put('/:id', workshopController.update);
         this.router.post('/updateparts', workshopController.updateParts);
         this.router.delete('/:id', workshopController.delete);

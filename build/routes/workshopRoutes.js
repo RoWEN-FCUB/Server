@@ -11,7 +11,7 @@ class WorkshopRoutes {
         this.config();
     }
     config() {
-        this.router.get('/records/:page&:id_emp', workshopController_1.default.listAll);
+        this.router.get('/records/:page&:id_serv', workshopController_1.default.listAll);
         this.router.get('/clients', workshopController_1.default.listClients);
         this.router.get('/devices', workshopController_1.default.listDevices);
         this.router.get('/marcs/:equipo', workshopController_1.default.listMarcs);
@@ -26,7 +26,7 @@ class WorkshopRoutes {
         this.router.get('/allparts', workshopController_1.default.listAllParts);
         this.router.post('/', workshopController_1.default.create);
         this.router.post('/createwperson/:siglas', workshopController_1.default.createWPerson);
-        this.router.get('/search/:str&:page&:id_emp', workshopController_1.default.search);
+        this.router.get('/search/:str&:page&:id_serv', workshopController_1.default.search);
         this.router.put('/:id', workshopController_1.default.update);
         this.router.post('/updateparts', workshopController_1.default.updateParts);
         this.router.delete('/:id', workshopController_1.default.delete);

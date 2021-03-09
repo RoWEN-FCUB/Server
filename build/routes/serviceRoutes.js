@@ -11,7 +11,7 @@ class ServiceRoutes {
         this.config();
     }
     config() {
-        this.router.get('/list', serviceController_1.default.list);
+        this.router.get('/list/:id_emp', serviceController_1.default.list);
         this.router.get('/get/:id', serviceController_1.default.getOne);
         this.router.get('/user_services/:id', serviceController_1.default.getUserServices);
         this.router.post('/', serviceController_1.default.create);

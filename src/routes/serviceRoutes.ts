@@ -9,7 +9,7 @@ class ServiceRoutes{
     }
 
     config(): void{
-        this.router.get('/list', serviceController.list);
+        this.router.get('/list/:id_emp', serviceController.list);
         this.router.get('/get/:id', serviceController.getOne);
         this.router.get('/user_services/:id', serviceController.getUserServices);
         this.router.post('/', serviceController.create);

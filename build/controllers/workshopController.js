@@ -19,8 +19,8 @@ class WorkshopController {
     listAll(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const page = Number(req.params.page);
-            const id_emp = Number(req.params.id_emp);
-            const records = yield database_1.default.query("SELECT taller_registro.*, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente) WHERE id_emp = ? ORDER BY id DESC LIMIT 10 OFFSET ?;", [id_emp, ((page - 1) * 10)], function (error, wrecords, fields) {
+            const id_serv = Number(req.params.id_emp);
+            const records = yield database_1.default.query("SELECT taller_registro.*, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente) WHERE id_emp = ? ORDER BY id DESC LIMIT 10 OFFSET ?;", [id_serv, ((page - 1) * 10)], function (error, wrecords, fields) {
                 return __awaiter(this, void 0, void 0, function* () {
                     const reccount = yield database_1.default.query("SELECT count(*) as total_records FROM taller_registro;", function (error, count, fields) {
                         const total = count[0].total_records;
@@ -214,13 +214,13 @@ class WorkshopController {
         return __awaiter(this, void 0, void 0, function* () {
             const str = String(req.params.str);
             const page = Number(req.params.page);
-            const id_emp = Number(req.params.id_emp);
+            const id_serv = Number(req.params.id_serv);
             const keys = str.split(' ', 13);
             let query = '';
             let query_count = 'SELECT count(*) as total_records FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
             let query_mod = '';
             if (keys.length >= 0 && str !== 'null') {
-                query = 'SELECT taller_registro.id, taller_registro.cod, taller_registro.cliente, taller_registro.equipo, taller_registro.marca, taller_registro.modelo, taller_registro.inventario, taller_registro.serie, taller_registro.fecha_entrada, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.entregado) AS entregado, taller_registro.entregado AS entrega_ci, taller_registro.ot, taller_registro.estado, taller_registro.especialista, taller_registro.fecha_salida, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.recogido) AS recogido, taller_registro.recogido AS recoge_ci, taller_registro.id_emp, taller_registro.fallo, taller_registro.observaciones, taller_registro.externo, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente) WHERE ';
+                query = 'SELECT taller_registro.id, taller_registro.cod, taller_registro.cliente, taller_registro.equipo, taller_registro.marca, taller_registro.modelo, taller_registro.inventario, taller_registro.serie, taller_registro.fecha_entrada, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.entregado) AS entregado, taller_registro.entregado AS entrega_ci, taller_registro.ot, taller_registro.estado, taller_registro.especialista, taller_registro.fecha_salida, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.recogido) AS recogido, taller_registro.recogido AS recoge_ci, taller_registro.id_serv, taller_registro.fallo, taller_registro.observaciones, taller_registro.externo, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente) WHERE ';
                 for (let i = 0; i < keys.length; i++) {
                     if (i === 0) {
                         query_mod += "(cliente LIKE '%" + keys[i] + "%'";
@@ -242,15 +242,15 @@ class WorkshopController {
                     query_mod += " OR recogido LIKE '%" + keys[i] + "%'";
                     query_mod += " OR taller_clientes.nombre LIKE '%" + keys[i] + "%')";
                 }
-                query_count += ' WHERE ' + query_mod + ' AND id_emp = ' + id_emp + ';';
-                query += query_mod + ' AND id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
+                query_count += ' WHERE ' + query_mod + ' AND id_serv = ' + id_serv + ';';
+                query += query_mod + ' AND id_serv = ' + id_serv + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
             }
             else {
-                query = 'SELECT taller_registro.id, taller_registro.cod, taller_registro.cliente, taller_registro.equipo, taller_registro.marca, taller_registro.modelo, taller_registro.inventario, taller_registro.serie, taller_registro.fecha_entrada, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.entregado) AS entregado, taller_registro.entregado AS entrega_ci, taller_registro.ot, taller_registro.estado, taller_registro.especialista, taller_registro.fecha_salida, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.recogido) AS recogido, taller_registro.recogido AS recoge_ci, taller_registro.id_emp, taller_registro.fallo, taller_registro.observaciones, taller_registro.externo, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
-                query += ' WHERE id_emp = ' + id_emp + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
-                query_count += ' WHERE id_emp = ' + id_emp + ';';
+                query = 'SELECT taller_registro.id, taller_registro.cod, taller_registro.cliente, taller_registro.equipo, taller_registro.marca, taller_registro.modelo, taller_registro.inventario, taller_registro.serie, taller_registro.fecha_entrada, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.entregado) AS entregado, taller_registro.entregado AS entrega_ci, taller_registro.ot, taller_registro.estado, taller_registro.especialista, taller_registro.fecha_salida, (SELECT nombre FROM taller_clientes_personas WHERE ci = taller_registro.recogido) AS recogido, taller_registro.recogido AS recoge_ci, taller_registro.id_serv, taller_registro.fallo, taller_registro.observaciones, taller_registro.externo, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente)';
+                query += ' WHERE id_serv = ' + id_serv + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
+                query_count += ' WHERE id_serv = ' + id_serv + ';';
             }
-            // console.log(query);
+            console.log(query);
             const records = yield database_1.default.query(query, function (error, wrecords, fields) {
                 return __awaiter(this, void 0, void 0, function* () {
                     const reccount = yield database_1.default.query(query_count, function (error, count, fields) {

@@ -21,6 +21,7 @@ class CompanyRoutes {
         this.router.post('/receipt', comercialController_1.default.createReceipt);
         this.router.put('/product/:id', comercialController_1.default.updateProduct);
         this.router.put('/provider/:id', comercialController_1.default.updateProvider);
+        this.router.put('/receipt/:id', comercialController_1.default.updateReceipt);
         this.router.delete('/product/:id', comercialController_1.default.deleteProduct);
         this.router.delete('/provider/:id', comercialController_1.default.deleteProvider);
         this.router.post('/upload', multipartMiddleware, comercialController_1.default.upload);

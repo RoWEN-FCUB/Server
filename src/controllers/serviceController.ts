@@ -5,7 +5,8 @@ class ServiceController {
     constructor() {}
 
     public async list (req: Request, res: Response): Promise<void>{
-        const tasks = await pool.query("SELECT servicios.*, empresas.siglas AS nombre_emp FROM servicios LEFT JOIN empresas ON (empresas.id = servicios.id_emp) ORDER BY servicios.id;", function(error: any, results: any, fields: any){
+        const {id_emp} = req.params;
+        const tasks = await pool.query("SELECT servicios.*, empresas.siglas AS nombre_emp FROM servicios LEFT JOIN empresas ON (empresas.id = servicios.id_emp) WHERE servicios.id_emp = ? ORDER BY servicios.id;", [id_emp], function(error: any, results: any, fields: any){
             res.json(results);            
         });
     }
