@@ -22,6 +22,7 @@ class CompanyRoutes{
         this.router.put('/receipt/:id', comercialController.updateReceipt);
         this.router.delete('/product/:id', comercialController.deleteProduct);
         this.router.delete('/provider/:id', comercialController.deleteProvider);
+        this.router.delete('/receipt/:id', comercialController.deleteReceipt);
         this.router.post('/upload', multipartMiddleware, comercialController.upload);
     }
 }

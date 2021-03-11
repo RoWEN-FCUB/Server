@@ -18,7 +18,7 @@ class ComercialController {
     listProviders(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id_empresa;
-            const prov = yield database_1.default.query("SELECT * FROM comercial_proveedor WHERE id_empresa = ?;", [id], function (error, results, fields) {
+            const prov = yield database_1.default.query("SELECT * FROM comercial_proveedor WHERE id_serv = ?;", [id], function (error, results, fields) {
                 res.json(results);
             });
         });
@@ -183,6 +183,14 @@ class ComercialController {
                         });
                     }
                 });
+            });
+        });
+    }
+    deleteReceipt(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const result = yield database_1.default.query('DELETE FROM comercial_vale WHERE id = ?', [id], function (error, results, fields) {
+                res.json({ text: "Receipt deleted" });
             });
         });
     }
