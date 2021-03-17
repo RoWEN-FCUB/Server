@@ -218,7 +218,7 @@ class WorkshopController {
             query += ' WHERE id_serv = ' + id_serv + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
             query_count += ' WHERE id_serv = ' + id_serv + ';';
         } 
-        console.log(query);
+        // console.log(query);
         const records = await pool.query(query, async function(error: any, wrecords: any, fields: any){
             const reccount = await pool.query(query_count, function(error: any, count: any, fields: any){            
                 let total = 0;

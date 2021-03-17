@@ -250,7 +250,7 @@ class WorkshopController {
                 query += ' WHERE id_serv = ' + id_serv + ' ORDER BY id DESC LIMIT 10 OFFSET ' + ((page - 1) * 10) + ';';
                 query_count += ' WHERE id_serv = ' + id_serv + ';';
             }
-            console.log(query);
+            // console.log(query);
             const records = yield database_1.default.query(query, function (error, wrecords, fields) {
                 return __awaiter(this, void 0, void 0, function* () {
                     const reccount = yield database_1.default.query(query_count, function (error, count, fields) {

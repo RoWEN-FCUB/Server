@@ -41,6 +41,86 @@ class ComercialController {
             });
         });
     }
+    listReceiptProducts(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id_receipt = req.params.id_receipt;
+            const prod = yield database_1.default.query("SELECT comercial_producto.*, comercial_vale_productos.cantidad as cantidad FROM comercial_producto INNER JOIN comercial_vale_productos ON (comercial_producto.id = comercial_vale_productos.id_producto) WHERE comercial_vale_productos.id_vale = ?;", [id_receipt], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
+    searchReceipts(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id_provider = req.params.id_provider;
+            const concilied = Number(req.params.concilied);
+            const delivered = Number(req.params.delivered);
+            const str = String(req.params.str);
+            const keys = str.split(' ');
+            const page = Number(req.params.page);
+            let query = '';
+            let query_count = 'SELECT count(*) as total_records FROM comercial_vale';
+            let query_mod = '';
+            if (keys.length >= 0 && str !== 'null') {
+                query = 'SELECT comercial_vale.*, (SELECT SUM(cantidad) FROM comercial_vale_productos WHERE comercial_vale_productos.id_vale = comercial_vale.id) as cantidad_productos FROM comercial_vale WHERE ';
+                for (let i = 0; i < keys.length; i++) {
+                    if (i === 0) {
+                        query_mod += "(comercial_vale.pedido LIKE '%" + keys[i] + "%'";
+                    }
+                    else {
+                        query_mod += "AND (comercial_vale.pedido LIKE '%" + keys[i] + "%'";
+                    }
+                    query_mod += " OR comercial_vale.precio_total LIKE '%" + keys[i] + "%'";
+                    query_mod += " OR comercial_vale.comprador LIKE '%" + keys[i] + "%'";
+                    query_mod += " OR comercial_vale.destinatario LIKE '%" + keys[i] + "%'";
+                    query_mod += " OR comercial_vale.destinatario_direccion LIKE '%" + keys[i] + "%'";
+                    query_mod += " OR comercial_vale.destinatario_telefono LIKE '%" + keys[i] + "%'";
+                    query_mod += " OR comercial_vale.fecha_emision LIKE '%" + keys[i] + "%'";
+                    query_mod += " OR comercial_vale.costo_envio LIKE '%" + keys[i] + "%'";
+                    query_mod += " OR comercial_vale.provincia LIKE '%" + keys[i] + "%'";
+                    query_mod += " OR comercial_vale.municipio LIKE '%" + keys[i] + "%'";
+                    query_mod += " OR comercial_vale.fecha_emision LIKE '%" + keys[i] + "%')";
+                }
+                if (delivered < 3) {
+                    query_mod += ' AND comercial_vale.entregado = ' + delivered;
+                }
+                if (concilied < 3) {
+                    query_mod += ' AND comercial_vale.conciliado = ' + concilied;
+                }
+                query_count += ' WHERE ' + query_mod + ' AND comercial_vale.id_proveedor = ' + id_provider + ';';
+                query += query_mod + ' AND comercial_vale.id_proveedor = ' + id_provider + ' ORDER BY pedido DESC LIMIT 2 OFFSET ' + ((page - 1) * 2) + ';';
+            }
+            else {
+                if (delivered < 3) {
+                    query_mod += ' AND comercial_vale.entregado = ' + delivered;
+                }
+                if (concilied < 3) {
+                    query_mod += ' AND comercial_vale.conciliado = ' + concilied;
+                }
+                query = 'SELECT comercial_vale.*, (SELECT SUM(cantidad) FROM comercial_vale_productos WHERE comercial_vale_productos.id_vale = comercial_vale.id) as cantidad_productos FROM comercial_vale';
+                query += ' WHERE comercial_vale.id_proveedor = ' + id_provider + query_mod + ' ORDER BY pedido DESC LIMIT 2 OFFSET ' + ((page - 1) * 2) + ';';
+                query_count += ' WHERE comercial_vale.id_proveedor = ' + id_provider + query_mod + ';';
+            }
+            // console.log(query);
+            const records = yield database_1.default.query(query, function (error, receipts, fields) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    if (error) {
+                        console.log(error);
+                    }
+                    const reccount = yield database_1.default.query(query_count, function (error, count, fields) {
+                        let total = 0;
+                        if (error) {
+                            console.log(error);
+                        }
+                        if (count[0].total_records) {
+                            total = count[0].total_records;
+                        }
+                        //console.log(receipts.length + ' ' + total);
+                        res.json({ receipts, total });
+                    });
+                });
+            });
+        });
+    }
     createProduct(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;

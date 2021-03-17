@@ -14,6 +14,8 @@ class CompanyRoutes{
         this.router.get('/listProviders/:id_empresa', comercialController.listProviders);
         this.router.get('/listProducts/:id_proveedor', comercialController.listProducts);
         this.router.get('/listReceipts/:id_proveedor&:concilied&:delivered', comercialController.listReceipts);
+        this.router.get('/listReceiptProducts/:id_receipt', comercialController.listReceiptProducts);
+        this.router.get('/searchreceipts/:str&:page&:id_provider&:concilied&:delivered', comercialController.searchReceipts);
         this.router.post('/product', comercialController.createProduct);
         this.router.post('/provider', comercialController.createProvider);
         this.router.post('/receipt', comercialController.createReceipt);

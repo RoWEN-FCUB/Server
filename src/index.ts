@@ -154,13 +154,13 @@ class Server{
             cert: fs.readFileSync(slash(Path.join(__dirname, 'apache-selfsigned.crt'))),
           }, this.app);
 
-        /*httpServer.listen(3128, () => {
-            console.log('HTTP Server running on port 80');
-        });*/
-        
-        httpsServer.listen(3128, () => {
-            console.log('HTTPS Server running on port 3128');
+        httpServer.listen(8080, () => {
+            console.log('HTTP Server running on port 8080');
         });
+        
+        /*httpsServer.listen(3001, () => {
+            console.log('HTTPS Server running on port 3001');
+        });*/
 
         /*this.app.listen(this.app.get('port'), '0.0.0.0', () => {
             console.log('Server on port:',this.app.get('port'));            
