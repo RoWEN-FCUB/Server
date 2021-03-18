@@ -201,31 +201,45 @@ class ComercialController {
             delete req.body.cantidad_productos;
             // console.log(req.body);
             req.body.fecha_emision = req.body.fecha_emision.substr(0, req.body.fecha_emision.indexOf('T'));
-            let productos = req.body.productos;
-            delete req.body.productos;
-            const result = yield database_1.default.query('DELETE FROM comercial_vale_productos WHERE id_vale = ?', [id], function (error, results, fields) {
-                return __awaiter(this, void 0, void 0, function* () {
-                    yield database_1.default.query('UPDATE comercial_vale set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
+            if (req.body.productos) {
+                let productos = req.body.productos;
+                delete req.body.productos;
+                if (productos.length > 0) {
+                    const result = yield database_1.default.query('DELETE FROM comercial_vale_productos WHERE id_vale = ?', [id], function (error, results, fields) {
                         return __awaiter(this, void 0, void 0, function* () {
-                            let prods = [];
-                            for (let i = 0; i < productos.length; i++) {
-                                const vale_producto = {
-                                    id_vale: id,
-                                    id_producto: productos[i].id,
-                                    cantidad: productos[i].cantidad,
-                                };
-                                prods.push(Object.values(vale_producto));
-                            }
-                            yield database_1.default.query('INSERT INTO comercial_vale_productos (id_vale, id_producto, cantidad) VALUES ?', [prods], function (error, results, fields) {
-                                if (error) {
-                                    console.log(error);
-                                }
-                                res.json({ message: 'Receipt updated' });
+                            yield database_1.default.query('UPDATE comercial_vale set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
+                                return __awaiter(this, void 0, void 0, function* () {
+                                    let prods = [];
+                                    for (let i = 0; i < productos.length; i++) {
+                                        const vale_producto = {
+                                            id_vale: id,
+                                            id_producto: productos[i].id,
+                                            cantidad: productos[i].cantidad,
+                                        };
+                                        prods.push(Object.values(vale_producto));
+                                    }
+                                    yield database_1.default.query('INSERT INTO comercial_vale_productos (id_vale, id_producto, cantidad) VALUES ?', [prods], function (error, results, fields) {
+                                        if (error) {
+                                            console.log(error);
+                                        }
+                                        res.json({ message: 'Receipt updated' });
+                                    });
+                                });
                             });
                         });
                     });
+                }
+            }
+            else {
+                yield database_1.default.query('UPDATE comercial_vale set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        if (error) {
+                            console.log(error);
+                        }
+                        res.json({ message: 'Receipt updated' });
+                    });
                 });
-            });
+            }
         });
     }
     deleteProduct(req, res) {
