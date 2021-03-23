@@ -27,6 +27,13 @@ class ComercialController {
         });
     }
 
+    public async listMarkedReceipts (req: Request, res: Response): Promise<void>{
+        const id_provider = req.params.id_proveedor;
+        const prod = await pool.query("SELECT comercial_vale.*, comercial_vale_productos.id_producto, comercial_vale_productos.cantidad, comercial_producto.codigo, comercial_producto.nombre, comercial_producto.descripcion, comercial_producto.unidad_medida, comercial_producto.precio, comercial_producto.mlc FROM comercial_vale INNER JOIN comercial_vale_productos ON (comercial_vale.id = comercial_vale_productos.id_vale) INNER JOIN comercial_producto ON (comercial_vale_productos.id_producto = comercial_producto.id) WHERE comercial_vale.id_proveedor = ? AND comercial_vale.marcado_conciliar = TRUE ORDER BY pedido DESC;", [id_provider], function(error: any, results: any, fields: any){
+            res.json(results);            
+        });
+    }
+
     public async listReceiptProducts (req: Request, res: Response): Promise<void>{
         const id_receipt = req.params.id_receipt;
         const prod = await pool.query("SELECT comercial_producto.*, comercial_vale_productos.cantidad as cantidad FROM comercial_producto INNER JOIN comercial_vale_productos ON (comercial_producto.id = comercial_vale_productos.id_producto) WHERE comercial_vale_productos.id_vale = ?;", [id_receipt], function(error: any, results: any, fields: any){
@@ -150,6 +157,31 @@ class ComercialController {
             });
         });
         //res.json({message: 'Receipt saved'});
+    }
+
+    public async createConciliation(req: Request, res: Response): Promise<void>{
+        // console.log(req.body);
+        const datos = req.body.datos;
+        const productos = req.body.productos as any[];
+        // const fecha = new Date().toString();
+        let total_mn: number = 0;
+        let total_usd: number = 0;
+        let total_cl: number = 0;
+        for (let i = 0; i < productos.length; i++) {
+            total_cl += productos[i].cl;
+            total_mn += productos[i].total_mn;
+            total_usd += productos[i].total_usd;
+        }
+        const newCon = {
+            id_prov: datos.id_prov,
+            id_user: datos.id_user,
+            fecha: datos.fecha.substr(0, datos.fecha.indexOf('T')),
+            total_mn: total_mn,
+            total_usd: total_usd,
+            total_cl: total_cl,
+        }
+        console.log(newCon);
+        res.json({message: 'Conc saved'});
     }
 
     public async updateProduct(req: Request, res: Response): Promise<void>{

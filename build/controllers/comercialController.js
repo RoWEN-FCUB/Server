@@ -41,6 +41,14 @@ class ComercialController {
             });
         });
     }
+    listMarkedReceipts(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id_provider = req.params.id_proveedor;
+            const prod = yield database_1.default.query("SELECT comercial_vale.*, comercial_vale_productos.id_producto, comercial_vale_productos.cantidad, comercial_producto.codigo, comercial_producto.nombre, comercial_producto.descripcion, comercial_producto.unidad_medida, comercial_producto.precio, comercial_producto.mlc FROM comercial_vale INNER JOIN comercial_vale_productos ON (comercial_vale.id = comercial_vale_productos.id_vale) INNER JOIN comercial_producto ON (comercial_vale_productos.id_producto = comercial_producto.id) WHERE comercial_vale.id_proveedor = ? AND comercial_vale.marcado_conciliar = TRUE ORDER BY pedido DESC;", [id_provider], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
     listReceiptProducts(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id_receipt = req.params.id_receipt;
@@ -175,6 +183,32 @@ class ComercialController {
                 });
             });
             //res.json({message: 'Receipt saved'});
+        });
+    }
+    createConciliation(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // console.log(req.body);
+            const datos = req.body.datos;
+            const productos = req.body.productos;
+            // const fecha = new Date().toString();
+            let total_mn = 0;
+            let total_usd = 0;
+            let total_cl = 0;
+            for (let i = 0; i < productos.length; i++) {
+                total_cl += productos[i].cl;
+                total_mn += productos[i].total_mn;
+                total_usd += productos[i].total_usd;
+            }
+            const newCon = {
+                id_prov: datos.id_prov,
+                id_user: datos.id_user,
+                fecha: datos.fecha.substr(0, datos.fecha.indexOf('T')),
+                total_mn: total_mn,
+                total_usd: total_usd,
+                total_cl: total_cl,
+            };
+            console.log(newCon);
+            res.json({ message: 'Conc saved' });
         });
     }
     updateProduct(req, res) {

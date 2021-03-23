@@ -14,11 +14,13 @@ class CompanyRoutes{
         this.router.get('/listProviders/:id_empresa', comercialController.listProviders);
         this.router.get('/listProducts/:id_proveedor', comercialController.listProducts);
         this.router.get('/listReceipts/:id_proveedor&:concilied&:delivered', comercialController.listReceipts);
+        this.router.get('/listMarkedReceipts/:id_proveedor', comercialController.listMarkedReceipts);
         this.router.get('/listReceiptProducts/:id_receipt', comercialController.listReceiptProducts);
         this.router.get('/searchreceipts/:str&:page&:id_provider&:concilied&:delivered', comercialController.searchReceipts);
         this.router.post('/product', comercialController.createProduct);
         this.router.post('/provider', comercialController.createProvider);
         this.router.post('/receipt', comercialController.createReceipt);
+        this.router.post('/concic', comercialController.createConciliation);
         this.router.put('/product/:id', comercialController.updateProduct);
         this.router.put('/provider/:id', comercialController.updateProvider);
         this.router.put('/receipt/:id', comercialController.updateReceipt);
