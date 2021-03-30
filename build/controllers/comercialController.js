@@ -206,6 +206,7 @@ class ComercialController {
                 total_mn: total_mn,
                 total_usd: total_usd,
                 total_cl: total_cl,
+                vales: datos.pedidos,
             };
             console.log(newCon);
             res.json({ message: 'Conc saved' });

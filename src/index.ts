@@ -143,7 +143,7 @@ class Server{
             console.log('Buscando tareas incumplidas...');
             taskController.search_failed_tasks();
             taskController.send_Tasks();
-            //console.log('Esto se ejecuta cada 1 seg');
+            //console.log('Esto se ejecuta cada 10 min');
         }  
     }
 
