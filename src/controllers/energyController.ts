@@ -189,7 +189,10 @@ class EnergyController {
 
     public async deleteERecord(req: Request,res: Response) {
         const {id} = req.params;
-        await pool.query('UPDATE energia SET consumo = 0, lectura = 0, lectura_hpicd1 = 0, lectura_hpicd2 = 0, lectura_hpicn1 = 0, lectura_hpicn2 = 0, bloqueado = false WHERE id = ?', [id], function(error: any, results: any, fields: any){          
+        /*await pool.query('UPDATE energia SET consumo = 0, lectura = 0, lectura_hpicd1 = 0, lectura_hpicd2 = 0, lectura_hpicn1 = 0, lectura_hpicn2 = 0, bloqueado = false WHERE id = ?', [id], function(error: any, results: any, fields: any){          
+            res.json({text:"Energy record deleted"});
+        });*/
+        await pool.query('DELETE FROM energia WHERE id = ?', [id], function(error: any, results: any, fields: any){          
             res.json({text:"Energy record deleted"});
         });
     }

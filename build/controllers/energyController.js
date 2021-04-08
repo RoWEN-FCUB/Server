@@ -215,7 +215,10 @@ class EnergyController {
     deleteERecord(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            yield database_1.default.query('UPDATE energia SET consumo = 0, lectura = 0, lectura_hpicd1 = 0, lectura_hpicd2 = 0, lectura_hpicn1 = 0, lectura_hpicn2 = 0, bloqueado = false WHERE id = ?', [id], function (error, results, fields) {
+            /*await pool.query('UPDATE energia SET consumo = 0, lectura = 0, lectura_hpicd1 = 0, lectura_hpicd2 = 0, lectura_hpicn1 = 0, lectura_hpicn2 = 0, bloqueado = false WHERE id = ?', [id], function(error: any, results: any, fields: any){
+                res.json({text:"Energy record deleted"});
+            });*/
+            yield database_1.default.query('DELETE FROM energia WHERE id = ?', [id], function (error, results, fields) {
                 res.json({ text: "Energy record deleted" });
             });
         });
