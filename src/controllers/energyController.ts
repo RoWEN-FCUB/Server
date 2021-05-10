@@ -108,6 +108,7 @@ class EnergyController {
         /*await pool.query(query, function(error: any, results: any, fields: any) {
             res.json({message: 'Energy record updated'});
         });*/
+        console.log(req.body);
         await pool.query('UPDATE energia SET ? WHERE id = ?;', [req.body, id], function(error: any, results: any, fields: any) {
             res.json({message: 'Energy record updated'});
         });

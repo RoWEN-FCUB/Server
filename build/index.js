@@ -97,7 +97,7 @@ class Server {
             origin: '*',
             optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
         }*/
-        this.app.set('port', process.env.port || 3128);
+        this.app.set('port', process.env.port || 8080);
         this.app.use(morgan_1.default('dev'));
         this.app.use(cors_1.default());
         /*var corsMiddleware = function(req: any, res: any, next: any) {
@@ -157,10 +157,11 @@ class Server {
     }
     start() {
         const httpServer = http.createServer(this.app);
-        const httpsServer = https.createServer({
-            key: fs.readFileSync(slash(path_1.default.join(__dirname, 'apache-selfsigned.key'))),
-            cert: fs.readFileSync(slash(path_1.default.join(__dirname, 'apache-selfsigned.crt'))),
-        }, this.app);
+        /*const httpsServer = https.createServer({
+            key: fs.readFileSync(slash(Path.join(__dirname, 'apache-selfsigned.key'))),
+            cert: fs.readFileSync(slash(Path.join(__dirname, 'apache-selfsigned.crt'))),
+          }, this.app);
+        */
         httpServer.listen(8080, () => {
             console.log('HTTP Server running on port 8080');
         });
@@ -170,7 +171,7 @@ class Server {
         /*this.app.listen(this.app.get('port'), '0.0.0.0', () => {
             console.log('Server on port:',this.app.get('port'));
         });*/
-        this.verify();
+        // this.verify();
     }
 }
 const server = new Server();
