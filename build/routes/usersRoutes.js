@@ -19,6 +19,7 @@ class UsersRoutes {
         this.router.put('/:id', usersController_1.default.update);
         this.router.delete('/:id', usersController_1.default.delete);
         this.router.post('/login', usersController_1.default.validate);
+        this.router.post('/refresh', usersController_1.default.refresh);
         this.router.post('/valid', usersController_1.default.user_valid);
     }
 }

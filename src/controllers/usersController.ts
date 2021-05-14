@@ -135,18 +135,34 @@ class UsersController{
     
                         algorithm: 'RS256',
         
-                        expiresIn: 3600,
+                        expiresIn: 120,
         
                         subject: '' + results[0].id
         
                     });                                        
-                    res.json({data: {token: jwtBearerToken, expiresIn: 3600}});
+                    res.json({data: {token: jwtBearerToken, expiresIn: 120}});
                     // console.log(res);
                 } else {
                     res.status(404).json({text: 'Datos de usuario incorrectos'});
                 }
             }            
         });
+    }
+
+    public async refresh(req: Request, res: Response): Promise<void>{
+        // console.log(req.body.payload);
+        const payload = req.body.payload;
+        const RSA_PRIVATE_KEY = fs.readFileSync(slash(Path.join(__dirname, 'private.key')));
+        const jwtBearerToken = jwt.sign({id: payload.id, role: payload.role, name: payload.user, picture: payload.picture, fullname: payload.fullname, position: payload.position, id_sup: payload.id_sup, id_emp: payload.id_emp, id_serv: payload.id_serv, ci: payload.ci}, RSA_PRIVATE_KEY, {
+    
+            algorithm: 'RS256',
+
+            expiresIn: 300,
+
+            subject: '' + payload
+
+        });
+        res.json({data: {token: jwtBearerToken, expiresIn: 300}});
     }
 
     public async SendEmail(to: string, subject: string, body: string) {
