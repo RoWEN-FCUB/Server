@@ -22,6 +22,7 @@ import energyRoutes from './routes/energyRoutes';
 import companyRoutes from './routes/companyRoutes';
 import serviceRoutes from './routes/serviceRoutes';
 import comercialRoutes from './routes/comercialRoutes';
+import weatherRoutes from './routes/weatherRoutes';
 
 var dir = Path.join(__dirname, 'public');
 //const fileUpload = require('express-fileupload');
@@ -125,6 +126,7 @@ class Server{
         this.app.use('/company', companyRoutes);
         this.app.use('/service', serviceRoutes);
         this.app.use('/comercial', comercialRoutes);
+        this.app.use('/weather', weatherRoutes);
     }
 
     delay(milliseconds: number, count: number): Promise<number> {

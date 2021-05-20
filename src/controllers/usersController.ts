@@ -125,13 +125,13 @@ class UsersController{
         //const upass = req.body.password;        
         const upass = hash.sha256().update(req.body.password).digest('hex');                
         const RSA_PRIVATE_KEY = fs.readFileSync(slash(Path.join(__dirname, 'private.key')));
-        const resp = await pool.query('SELECT users.id, users.email, users.picture, users.pass, users.user, users.fullname, users.position, users.id_sup, users.id_emp, users.id_serv, users.ci, users_roles.role FROM users INNER JOIN users_roles ON (users.role = users_roles.id) WHERE email = ?',[email], function(error: any, results: any, fields: any){
+        const resp = await pool.query('SELECT users.id, users.email, users.picture, users.pass, users.user, users.fullname, users.position, users.id_sup, users.id_emp, users.id_serv, users.ci, users_roles.role, servicios.municipio FROM users INNER JOIN users_roles ON (users.role = users_roles.id) INNER JOIN servicios ON (users.id_serv=servicios.id) WHERE email = ?',[email], function(error: any, results: any, fields: any){
             //console.log(results[0]);
             if(!results[0]){
                 res.status(404).json({text: 'Datos de usuario incorrectos'});
             } else {
                 if(results[0].pass === upass) {                    
-                    const jwtBearerToken = jwt.sign({id: results[0].id, role: results[0].role, name: results[0].user, picture: results[0].picture, fullname: results[0].fullname, position: results[0].position, id_sup: results[0].id_sup, id_emp: results[0].id_emp, id_serv: results[0].id_serv, ci: results[0].ci}, RSA_PRIVATE_KEY, {
+                    const jwtBearerToken = jwt.sign({id: results[0].id, role: results[0].role, name: results[0].user, picture: results[0].picture, fullname: results[0].fullname, position: results[0].position, id_sup: results[0].id_sup, id_emp: results[0].id_emp, id_serv: results[0].id_serv, ci: results[0].ci, municipio: results[0].municipio}, RSA_PRIVATE_KEY, {
     
                         algorithm: 'RS256',
         
@@ -153,7 +153,7 @@ class UsersController{
         // console.log(req.body.payload);
         const payload = req.body.payload;
         const RSA_PRIVATE_KEY = fs.readFileSync(slash(Path.join(__dirname, 'private.key')));
-        const jwtBearerToken = jwt.sign({id: payload.id, role: payload.role, name: payload.user, picture: payload.picture, fullname: payload.fullname, position: payload.position, id_sup: payload.id_sup, id_emp: payload.id_emp, id_serv: payload.id_serv, ci: payload.ci}, RSA_PRIVATE_KEY, {
+        const jwtBearerToken = jwt.sign({id: payload.id, role: payload.role, name: payload.user, picture: payload.picture, fullname: payload.fullname, position: payload.position, id_sup: payload.id_sup, id_emp: payload.id_emp, id_serv: payload.id_serv, ci: payload.ci, municipio: payload.municipio}, RSA_PRIVATE_KEY, {
     
             algorithm: 'RS256',
 
