@@ -158,7 +158,13 @@ class TaskController {
     public async copy(req: Request, res: Response): Promise<void>{        
         const id = req.body.id;
         let startD = req.body.startD;
-        const endD = req.body.endD;        
+        startD = startD.replace('T', ' ');
+        startD = startD.split('.')[0] + '.000';
+        console.log(startD);
+        let endD = req.body.endD;
+        endD = endD.replace('T', ' ');
+        endD = endD.split('.')[0] + '.000';
+        console.log(endD);
         let new_tasks: any[] = [];
         const date = new Date();
         const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
@@ -175,15 +181,15 @@ class TaskController {
                 results[0].validada = false;
                 const creador = results[0].nombre_creador;
                 delete results[0].nombre_creador;                
-                startD = new Date(startD);
-                results[0].fecha_inicio = moment.utc(results[0].fecha_inicio).dayOfYear(moment(startD).dayOfYear()).toDate();
+                // startD = new Date(startD);
+                results[0].fecha_inicio = moment.utc(results[0].fecha_inicio).dayOfYear(moment.utc(startD).dayOfYear()).toDate();
                 results[0].fecha_fin = results[0].fecha_inicio;
                 const id_usuario = results[0].id_usuario;
                 const resumen = results[0].resumen;
                 const id_creador = results[0].id_creador;                
                 do {                    
                     new_tasks.push(Object.values(results[0]));//copiar el objeto como un arreglo de valores
-                    results[0].fecha_inicio = moment(results[0].fecha_inicio).add(1,'days').toDate();
+                    results[0].fecha_inicio = moment.utc(results[0].fecha_inicio).add(1,'days').toDate();
                     results[0].fecha_fin = results[0].fecha_inicio;
                 }
                 while(!moment(results[0].fecha_inicio).isAfter(endD, 'day'));

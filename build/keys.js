@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
     database: {
+        // host: '169.158.143.133',
         host: '127.0.0.1',
         // host: '104.207.147.123',
         // host: '169.158.137.126',
