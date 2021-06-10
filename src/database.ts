@@ -6,11 +6,16 @@ var mysql = require('mysql');
 const pool = mysql.createPool(keys.database);
 
 
-pool.getConnection(function(err: any,connection: any){
-    if (err) throw err;
-    pool.releaseConnection(connection);
-    console.log('BD connection started...');
+const attemptConnection = () => pool.getConnection(function(err: any,connection: any){
+    if (err) {
+        console.log('Error connecting to database. retrying in 5 sec');
+        setTimeout(attemptConnection, 5000);
+    }  else {
+        pool.releaseConnection(connection);
+        console.log('Database connection started...');
+    }
 });
 
 pool.query = promisify(pool.query);
-export default pool;    
+export default pool;
+attemptConnection();

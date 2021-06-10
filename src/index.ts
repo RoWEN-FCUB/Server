@@ -114,7 +114,7 @@ class Server{
     routes(): void{
         this.app.use('/public',express.static(dir));
         const RSA_PUBLIC_KEY = fs.readFileSync(slash(Path.join(__dirname, 'public.key')));
-        this.app.use(jwt({secret: RSA_PUBLIC_KEY}).unless({path:['/user/login']}));
+        this.app.use(jwt({secret: RSA_PUBLIC_KEY}).unless({path:['/user/login', '/user/refresh']}));
         this.app.use('/',indexRoutes);        
         this.app.use('/user', usersRoutes);
         this.app.use('/task', taskRoutes);

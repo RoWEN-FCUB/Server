@@ -123,7 +123,7 @@ class Server {
     routes() {
         this.app.use('/public', express_1.default.static(dir));
         const RSA_PUBLIC_KEY = fs.readFileSync(slash(path_1.default.join(__dirname, 'public.key')));
-        this.app.use(jwt({ secret: RSA_PUBLIC_KEY }).unless({ path: ['/user/login'] }));
+        this.app.use(jwt({ secret: RSA_PUBLIC_KEY }).unless({ path: ['/user/login', '/user/refresh'] }));
         this.app.use('/', indexRoutes_1.default);
         this.app.use('/user', usersRoutes_1.default);
         this.app.use('/task', taskRoutes_1.default);
