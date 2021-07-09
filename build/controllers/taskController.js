@@ -158,7 +158,7 @@ class TaskController {
             const hours = date.getHours();
             newDate.setHours(hours - offset);
             let query = 'UPDATE tareas SET validada=true WHERE tareas.id_usuario = ' + userid + ' AND ((DATE(tareas.fecha_inicio) BETWEEN \'' + startD + '\' AND \'' + endD + '\') OR (DATE(tareas.fecha_fin) BETWEEN \'' + startD + '\' AND \'' + endD + '\'));';
-            // console.log(query);
+            console.log(query);
             const tasktovalidate = yield database_1.default.query(query, function (error, results, fields) {
                 return __awaiter(this, void 0, void 0, function* () {
                     if (error) {
@@ -176,7 +176,7 @@ class TaskController {
                                 estatus: 'info',
                             };
                             yield database_1.default.query('INSERT INTO notificaciones set ?', [notificacion], function (error, results, fields) {
-                                // res.json({text: 'Task copied'});
+                                res.json({ text: 'Tasks validated' });
                             });
                         });
                     });
