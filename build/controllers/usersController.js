@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -11,23 +30,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("../database"));
 var jwt = require('jsonwebtoken');
 const fs = __importStar(require("fs"));
 const path_1 = __importDefault(require("path"));
-const slash = require('slash');
 const nodemailer = require("nodemailer");
 var hash = require('hash.js');
 const keys_1 = __importDefault(require("../keys"));
 class UsersController {
+    slash(path) {
+        const isExtendedLengthPath = /^\\\\\?\\/.test(path);
+        const hasNonAscii = /[^\u0000-\u0080]+/.test(path); // eslint-disable-line no-control-regex
+        if (isExtendedLengthPath || hasNonAscii) {
+            return path;
+        }
+        return path.replace(/\\/g, '/');
+    }
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const users = yield database_1.default.query('SELECT users.*, empresas.siglas, servicios.nombre AS nombre_servicio FROM users INNER JOIN empresas ON (users.id_emp = empresas.id) INNER JOIN servicios ON (users.id_serv = servicios.id) ORDER BY empresas.siglas', function (error, results, fields) {
@@ -154,7 +173,14 @@ class UsersController {
             //console.log(req.body);   
             //const upass = req.body.password;        
             const upass = hash.sha256().update(req.body.password).digest('hex');
-            const RSA_PRIVATE_KEY = fs.readFileSync(slash(path_1.default.join(__dirname, 'private.key')));
+            let path = path_1.default.join(__dirname, 'private.key');
+            const isExtendedLengthPath = /^\\\\\?\\/.test(path);
+            const hasNonAscii = /[^\u0000-\u0080]+/.test(path); // eslint-disable-line no-control-regex
+            if (!isExtendedLengthPath && !hasNonAscii) {
+                path = path.replace(/\\/g, '/');
+            }
+            //console.log(path);
+            const RSA_PRIVATE_KEY = fs.readFileSync(path);
             const resp = yield database_1.default.query('SELECT users.id, users.email, users.picture, users.pass, users.user, users.fullname, users.position, users.id_sup, users.id_emp, users.id_serv, users.ci, users_roles.role, servicios.municipio FROM users INNER JOIN users_roles ON (users.role = users_roles.id) INNER JOIN servicios ON (users.id_serv=servicios.id) WHERE email = ?', [email], function (error, results, fields) {
                 //console.log(results[0]);
                 if (!results[0]) {
@@ -181,7 +207,13 @@ class UsersController {
         return __awaiter(this, void 0, void 0, function* () {
             // console.log(req.body.payload);
             const payload = req.body.payload;
-            const RSA_PRIVATE_KEY = fs.readFileSync(slash(path_1.default.join(__dirname, 'private.key')));
+            let path = path_1.default.join(__dirname, 'private.key');
+            const isExtendedLengthPath = /^\\\\\?\\/.test(path);
+            const hasNonAscii = /[^\u0000-\u0080]+/.test(path); // eslint-disable-line no-control-regex
+            if (!isExtendedLengthPath && !hasNonAscii) {
+                path = path.replace(/\\/g, '/');
+            }
+            const RSA_PRIVATE_KEY = fs.readFileSync(path);
             const jwtBearerToken = jwt.sign({ id: payload.id, role: payload.role, name: payload.name, picture: payload.picture, fullname: payload.fullname, position: payload.position, id_sup: payload.id_sup, id_emp: payload.id_emp, id_serv: payload.id_serv, ci: payload.ci, municipio: payload.municipio }, RSA_PRIVATE_KEY, {
                 algorithm: 'RS256',
                 expiresIn: 300,

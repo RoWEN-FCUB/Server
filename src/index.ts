@@ -1,14 +1,14 @@
 import express, {Application} from 'express';
-import morgan from 'morgan';
-import cors from 'cors';
+// import morgan from 'morgan';
+var morgan = require('morgan');
+// import cors from 'cors';
+var cors = require('cors');
 
 const bodyParser = require('body-parser');
 
 var jwt = require('express-jwt');
 import * as fs from 'fs';
-import Path from "path";
-const slash = require('slash');
-
+import Path from 'path';
 
 import indexRoutes from './routes/indexRoutes';
 import usersRoutes from './routes/usersRoutes';
@@ -30,7 +30,7 @@ var dir = Path.join(__dirname, 'public');
 const nodemailer = require("nodemailer");
 const https = require('https');
 const http = require('http');
-
+// exports.requireSignin =  jwt({ secret:  process.env.JWT_SECRET, algorithms: ['RS256'] });
 
 class Server{
     public app: Application;
@@ -40,6 +40,17 @@ class Server{
         this.config();
         this.routes();
         // this.SendEmail();      
+    }
+
+    slash(path: string) {
+        const isExtendedLengthPath = /^\\\\\?\\/.test(path);
+        const hasNonAscii = /[^\u0000-\u0080]+/.test(path); // eslint-disable-line no-control-regex
+    
+        if (isExtendedLengthPath || hasNonAscii) {
+            return path;
+        }
+    
+        return path.replace(/\\/g, '/');
     }
 
     async SendEmail() {
@@ -88,7 +99,7 @@ class Server{
             origin: '*',
             optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
         }*/
-        this.app.set('port', process.env.port || 8080);
+        this.app.set('port', process.env.port || 80);
         this.app.use(morgan('dev'));
         this.app.use(cors());
         /*var corsMiddleware = function(req: any, res: any, next: any) {
@@ -113,8 +124,8 @@ class Server{
 
     routes(): void{
         this.app.use('/public',express.static(dir));
-        const RSA_PUBLIC_KEY = fs.readFileSync(slash(Path.join(__dirname, 'public.key')));
-        this.app.use(jwt({secret: RSA_PUBLIC_KEY}).unless({path:['/user/login', '/user/refresh']}));
+        const RSA_PUBLIC_KEY = fs.readFileSync(this.slash(Path.join(__dirname, 'public.key')));
+        this.app.use(jwt({secret: RSA_PUBLIC_KEY, algorithms: ['RS256']}).unless({path:['/user/login', '/user/refresh']}));
         this.app.use('/',indexRoutes);        
         this.app.use('/user', usersRoutes);
         this.app.use('/task', taskRoutes);
@@ -151,18 +162,18 @@ class Server{
 
     start(): void{
         const httpServer = http.createServer(this.app);
-        /*const httpsServer = https.createServer({
-            key: fs.readFileSync(slash(Path.join(__dirname, 'apache-selfsigned.key'))),
-            cert: fs.readFileSync(slash(Path.join(__dirname, 'apache-selfsigned.crt'))),
+        const httpsServer = https.createServer({
+            key: fs.readFileSync(this.slash(Path.join(__dirname, 'apache-selfsigned.key'))),
+            cert: fs.readFileSync(this.slash(Path.join(__dirname, 'apache-selfsigned.crt'))),
           }, this.app);
-        */
-        httpServer.listen(8080, () => {
-            console.log('HTTP Server running on port 8080');
-        });
         
-        /*httpsServer.listen(3001, () => {
-            console.log('HTTPS Server running on port 3001');
+        /*httpServer.listen(8080, () => {
+            console.log('HTTP Server running on port 8080');
         });*/
+        
+        httpsServer.listen(80, () => {
+            console.log('HTTPS Server running on port 80');
+        });
 
         /*this.app.listen(this.app.get('port'), '0.0.0.0', () => {
             console.log('Server on port:',this.app.get('port'));            

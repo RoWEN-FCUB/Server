@@ -140,6 +140,7 @@ class WorkshopController {
                 }
                 // console.log(id);
                 req.body.id_cliente = id[0].id;
+                delete req.body.id;
                 database_1.default.query('INSERT INTO taller_clientes_personas set ?', req.body, function (error, results, fields) {
                     if (error) {
                         console.log(error);

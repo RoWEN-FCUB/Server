@@ -2,14 +2,24 @@ import { Request, Response } from 'express';
 import pool from '../database';
 var jwt = require('jsonwebtoken');
 import * as fs from 'fs';
-import Path from "path";
-const slash = require('slash');
+import Path from 'path';
 const nodemailer = require("nodemailer");
 var hash = require('hash.js');
 import keys from '../keys';
 
 
 class UsersController{
+
+    slash(path: string) {
+        const isExtendedLengthPath = /^\\\\\?\\/.test(path);
+        const hasNonAscii = /[^\u0000-\u0080]+/.test(path); // eslint-disable-line no-control-regex
+
+        if (isExtendedLengthPath || hasNonAscii) {
+            return path;
+        }
+
+        return path.replace(/\\/g, '/');
+    }
 
    public async list (req: Request,res: Response): Promise<void>{
         const users = await pool.query('SELECT users.*, empresas.siglas, servicios.nombre AS nombre_servicio FROM users INNER JOIN empresas ON (users.id_emp = empresas.id) INNER JOIN servicios ON (users.id_serv = servicios.id) ORDER BY empresas.siglas', function(error: any, results: any, fields: any){
@@ -123,8 +133,15 @@ class UsersController{
         //console.log('Esto es lo que viene '+ req.body.email + ' ' + req.body.password);     
         //console.log(req.body);   
         //const upass = req.body.password;        
-        const upass = hash.sha256().update(req.body.password).digest('hex');                
-        const RSA_PRIVATE_KEY = fs.readFileSync(slash(Path.join(__dirname, 'private.key')));
+        const upass = hash.sha256().update(req.body.password).digest('hex');
+        let path = Path.join(__dirname, 'private.key');
+        const isExtendedLengthPath = /^\\\\\?\\/.test(path);
+        const hasNonAscii = /[^\u0000-\u0080]+/.test(path); // eslint-disable-line no-control-regex
+        if (!isExtendedLengthPath && !hasNonAscii) {
+            path = path.replace(/\\/g, '/');
+        }
+        //console.log(path);
+        const RSA_PRIVATE_KEY = fs.readFileSync(path);
         const resp = await pool.query('SELECT users.id, users.email, users.picture, users.pass, users.user, users.fullname, users.position, users.id_sup, users.id_emp, users.id_serv, users.ci, users_roles.role, servicios.municipio FROM users INNER JOIN users_roles ON (users.role = users_roles.id) INNER JOIN servicios ON (users.id_serv=servicios.id) WHERE email = ?',[email], function(error: any, results: any, fields: any){
             //console.log(results[0]);
             if(!results[0]){
@@ -152,7 +169,13 @@ class UsersController{
     public async refresh(req: Request, res: Response): Promise<void>{
         // console.log(req.body.payload);
         const payload = req.body.payload;
-        const RSA_PRIVATE_KEY = fs.readFileSync(slash(Path.join(__dirname, 'private.key')));
+        let path = Path.join(__dirname, 'private.key');
+        const isExtendedLengthPath = /^\\\\\?\\/.test(path);
+        const hasNonAscii = /[^\u0000-\u0080]+/.test(path); // eslint-disable-line no-control-regex
+        if (!isExtendedLengthPath && !hasNonAscii) {
+            path = path.replace(/\\/g, '/');
+        }
+        const RSA_PRIVATE_KEY = fs.readFileSync(path);
         const jwtBearerToken = jwt.sign({id: payload.id, role: payload.role, name: payload.name, picture: payload.picture, fullname: payload.fullname, position: payload.position, id_sup: payload.id_sup, id_emp: payload.id_emp, id_serv: payload.id_serv, ci: payload.ci, municipio: payload.municipio}, RSA_PRIVATE_KEY, {
     
             algorithm: 'RS256',
