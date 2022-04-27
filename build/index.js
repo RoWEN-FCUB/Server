@@ -56,7 +56,7 @@ const weatherRoutes_1 = __importDefault(require("./routes/weatherRoutes"));
 var dir = path_1.default.join(__dirname, 'public');
 //const fileUpload = require('express-fileupload');
 const nodemailer = require("nodemailer");
-const https = require('https');
+//const https = require('https');
 const http = require('http');
 // exports.requireSignin =  jwt({ secret:  process.env.JWT_SECRET, algorithms: ['RS256'] });
 class Server {
@@ -126,7 +126,7 @@ class Server {
             origin: '*',
             optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
         }*/
-        this.app.set('port', process.env.port || 80);
+        this.app.set('port', process.env.port || 443);
         this.app.use(morgan('dev'));
         this.app.use(cors());
         /*var corsMiddleware = function(req: any, res: any, next: any) {
@@ -136,12 +136,12 @@ class Server {
             next();
         }
         this.app.use(corsMiddleware);*/
-        this.app.use(function (req, res, next) {
+        /*this.app.use(function(req, res, next) {
             res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
             res.header('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT, PATCH, POST, DELETE');
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             next();
-        });
+          });*/
         this.app.use(express_1.default.json());
         this.app.use(express_1.default.urlencoded({ extended: false }));
         //this.app.use(fileUpload());
@@ -187,16 +187,16 @@ class Server {
     }
     start() {
         const httpServer = http.createServer(this.app);
-        const httpsServer = https.createServer({
-            key: fs.readFileSync(this.slash(path_1.default.join(__dirname, 'apache-selfsigned.key'))),
-            cert: fs.readFileSync(this.slash(path_1.default.join(__dirname, 'apache-selfsigned.crt'))),
-        }, this.app);
-        /*httpServer.listen(8080, () => {
-            console.log('HTTP Server running on port 8080');
-        });*/
-        httpsServer.listen(80, () => {
-            console.log('HTTPS Server running on port 80');
+        /*const httpsServer = https.createServer({
+            key: fs.readFileSync(this.slash(Path.join(__dirname, 'apache-selfsigned.key'))),
+            cert: fs.readFileSync(this.slash(Path.join(__dirname, 'apache-selfsigned.crt'))),
+          }, this.app);*/
+        httpServer.listen(443, () => {
+            console.log('HTTP Server running on port 443');
         });
+        /*httpsServer.listen(80, () => {
+            console.log('HTTPS Server running on port 80');
+        });*/
         /*this.app.listen(this.app.get('port'), '0.0.0.0', () => {
             console.log('Server on port:',this.app.get('port'));
         });*/

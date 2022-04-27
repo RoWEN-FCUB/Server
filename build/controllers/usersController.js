@@ -190,10 +190,10 @@ class UsersController {
                     if (results[0].pass === upass) {
                         const jwtBearerToken = jwt.sign({ id: results[0].id, role: results[0].role, name: results[0].user, picture: results[0].picture, fullname: results[0].fullname, position: results[0].position, id_sup: results[0].id_sup, id_emp: results[0].id_emp, id_serv: results[0].id_serv, ci: results[0].ci, municipio: results[0].municipio }, RSA_PRIVATE_KEY, {
                             algorithm: 'RS256',
-                            expiresIn: 60,
+                            expiresIn: 600,
                             subject: '' + results[0].id
                         });
-                        res.json({ data: { token: jwtBearerToken, expiresIn: 60 } });
+                        res.json({ data: { token: jwtBearerToken, expiresIn: 600 } });
                         // console.log(res);
                     }
                     else {
@@ -216,10 +216,10 @@ class UsersController {
             const RSA_PRIVATE_KEY = fs.readFileSync(path);
             const jwtBearerToken = jwt.sign({ id: payload.id, role: payload.role, name: payload.name, picture: payload.picture, fullname: payload.fullname, position: payload.position, id_sup: payload.id_sup, id_emp: payload.id_emp, id_serv: payload.id_serv, ci: payload.ci, municipio: payload.municipio }, RSA_PRIVATE_KEY, {
                 algorithm: 'RS256',
-                expiresIn: 300,
+                expiresIn: 1200,
                 subject: '' + payload
             });
-            res.json({ data: { token: jwtBearerToken, expiresIn: 300 } });
+            res.json({ data: { token: jwtBearerToken, expiresIn: 1200 } });
         });
     }
     SendEmail(to, subject, body) {

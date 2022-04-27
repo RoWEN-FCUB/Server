@@ -152,12 +152,12 @@ class UsersController{
     
                         algorithm: 'RS256',
         
-                        expiresIn: 60,
+                        expiresIn: 600,
         
                         subject: '' + results[0].id
         
                     });                                        
-                    res.json({data: {token: jwtBearerToken, expiresIn: 60}});
+                    res.json({data: {token: jwtBearerToken, expiresIn: 600}});
                     // console.log(res);
                 } else {
                     res.status(404).json({text: 'Datos de usuario incorrectos'});
@@ -180,12 +180,12 @@ class UsersController{
     
             algorithm: 'RS256',
 
-            expiresIn: 300,
+            expiresIn: 1200,
 
             subject: '' + payload
 
         });
-        res.json({data: {token: jwtBearerToken, expiresIn: 300}});
+        res.json({data: {token: jwtBearerToken, expiresIn: 1200}});
     }
 
     public async SendEmail(to: string, subject: string, body: string) {
