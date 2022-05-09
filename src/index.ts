@@ -3,7 +3,7 @@ import express, {Application} from 'express';
 var morgan = require('morgan');
 // import cors from 'cors';
 var cors = require('cors');
-
+var fetch = require('node-fetch');
 const bodyParser = require('body-parser');
 
 var jwt = require('express-jwt');
@@ -23,6 +23,7 @@ import companyRoutes from './routes/companyRoutes';
 import serviceRoutes from './routes/serviceRoutes';
 import comercialRoutes from './routes/comercialRoutes';
 import weatherRoutes from './routes/weatherRoutes';
+import deliverRoutes from './routes/deliverRoutes';
 
 var dir = Path.join(__dirname, 'public');
 //const fileUpload = require('express-fileupload');
@@ -95,29 +96,11 @@ class Server{
     }
 
     config(): void{
-        /*var corsOptions = {
-            origin: '*',
-            optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-        }*/
         this.app.set('port', process.env.port || 443);
         this.app.use(morgan('dev'));
         this.app.use(cors());
-        /*var corsMiddleware = function(req: any, res: any, next: any) {
-            res.header('Access-Control-Allow-Origin', '169.158.137.122'); //replace localhost with actual host
-            res.header('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT, PATCH, POST, DELETE');
-            res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Authorization');        
-            next();
-        }        
-        this.app.use(corsMiddleware);*/
-        /*this.app.use(function(req, res, next) {
-            res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-            res.header('Access-Control-Allow-Methods', 'OPTIONS, GET, PUT, PATCH, POST, DELETE');
-            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-            next();
-          });*/
         this.app.use(express.json());
-        this.app.use(express.urlencoded({extended:false}));
-        //this.app.use(fileUpload());
+        this.app.use(express.urlencoded({extended:false}));        
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(bodyParser.json());
     }
@@ -138,6 +121,7 @@ class Server{
         this.app.use('/service', serviceRoutes);
         this.app.use('/comercial', comercialRoutes);
         this.app.use('/weather', weatherRoutes);
+        this.app.use('/deliver', deliverRoutes);
     }
 
     delay(milliseconds: number, count: number): Promise<number> {
@@ -160,6 +144,23 @@ class Server{
         }  
     }
 
+    async testDeliver() : Promise <void> {        
+        const params = new URLSearchParams();
+        params.append('auth_login', 'yaro');
+        params.append('auth_password', 'yaro.2021');
+        const url = 'http://mall.cuba.cu/backend/index.php';
+        const url2 = 'http://mall.cuba.cu/backend/pedido.php?action=DgJson&page=1&sortField=1&sortOrder=asc&show=10&filtroPedidoCodigoDesde=B4085124&filtroPedidoCodigoHasta=B4085124';
+        const response = await fetch(url, {
+            method: 'POST',
+            body: params,
+            headers: {'Connection': "keep-alive"}
+        }).then((res0: any) => {
+            const response2 = fetch(url2, {method: 'GET', headers: {'Cookie': res0.headers.raw()['set-cookie'][0].substr(0, res0.headers.raw()['set-cookie'][0].indexOf(";"))}}).then(
+                (res01: any) => res01.json()
+            ).then((text:any) => console.log(text['rows']));
+        });
+    }
+
     start(): void{
         const httpServer = http.createServer(this.app);
         /*const httpsServer = https.createServer({
@@ -179,6 +180,7 @@ class Server{
             console.log('Server on port:',this.app.get('port'));            
         });*/
         // this.verify();
+        // this.testDeliver();
     }
 }
 
