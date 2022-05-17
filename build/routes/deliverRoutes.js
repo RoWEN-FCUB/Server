@@ -12,6 +12,7 @@ class DeliverRoutes {
     }
     config() {
         this.router.get('/:code', deliverController_1.default.getRemoteDeliver);
+        this.router.post('/', deliverController_1.default.saveDeliver);
     }
 }
 const deliverRoutes = new DeliverRoutes();

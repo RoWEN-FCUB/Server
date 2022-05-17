@@ -34,7 +34,7 @@ class CompanyController {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;
             yield database_1.default.query('INSERT INTO empresas SET ?', [req.body], function (error, results, fields) {
-                res.json({ message: 'Company saved' });
+                res.json({ text: 'Company saved' });
             });
         });
     }

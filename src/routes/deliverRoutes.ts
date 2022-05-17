@@ -9,7 +9,8 @@ class DeliverRoutes{
     }
 
     config(): void{
-        this.router.get('/:code', DeliverController.getRemoteDeliver);        
+        this.router.get('/:code', DeliverController.getRemoteDeliver);
+        this.router.post('/', DeliverController.saveDeliver);
     }
 }
 const deliverRoutes = new DeliverRoutes();

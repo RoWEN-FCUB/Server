@@ -20,7 +20,7 @@ class CompanyController {
     public async create(req: Request, res: Response): Promise<void>{
         delete req.body.id;
         await pool.query('INSERT INTO empresas SET ?', [req.body], function(error: any, results: any, fields: any) {
-            res.json({message: 'Company saved'});
+            res.json({text: 'Company saved'});
         });
     }
 

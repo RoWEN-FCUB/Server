@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,7 +27,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs = __importStar(require("fs"));
+const path_1 = __importDefault(require("path"));
 // var moment = require('moment');
 var fetch = require('node-fetch');
 class DeliverController {
@@ -30,7 +54,36 @@ class DeliverController {
                     // console.log(text['rows']);
                     res.json(text['rows']);
                 });
+            }).catch((error) => {
+                console.log(error);
+                res.status(404).json({ text: 'Error al contactar con el servidor' });
             });
+        });
+    }
+    saveDeliver(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const code = req.body.code;
+            const img64 = req.body.img;
+            let buff = Buffer.from(img64, 'base64');
+            let fullpath = path_1.default.join(process.cwd(), 'public', 'Vales', code + '.png');
+            const isExtendedLengthPath = /^\\\\\?\\/.test(fullpath);
+            const hasNonAscii = /[^\u0000-\u0080]+/.test(fullpath); // eslint-disable-line no-control-regex
+            if (!isExtendedLengthPath && !hasNonAscii) {
+                fullpath = fullpath.replace(/\\/g, '/');
+            }
+            try {
+                if (!fs.existsSync(fullpath)) {
+                    fs.writeFileSync(fullpath, buff);
+                    res.json({ text: 'Vale guardado' });
+                }
+                else {
+                    res.status(404).json({ text: 'El vale ya existe.' });
+                }
+            }
+            catch (err) {
+                console.log(err);
+                res.status(404).json({ text: 'Se produjo un error al intentar guardar el vale.' });
+            }
         });
     }
 }

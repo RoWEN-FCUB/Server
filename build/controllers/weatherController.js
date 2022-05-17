@@ -22,11 +22,16 @@ class WeatherController {
                 headers: {
                     'Content-Type': 'text/plain'
                 }
+            }).then((myJson) => {
+                res.json(myJson);
+            }).catch((err) => {
+                console.log(err);
+                res.status(404).json({ text: 'Error al contactar con el servidor' });
             });
-            const myJson = yield response.json(); //extract JSON from the http response
+            // const myJson = await response.json(); //extract JSON from the http response
             // do something with myJson
             // console.log(myJson);
-            res.json(myJson);
+            // res.json(myJson);
         });
     }
 }

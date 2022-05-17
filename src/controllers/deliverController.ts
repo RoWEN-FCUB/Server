@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import * as fs from 'fs';
+import Path from 'path';
 // var moment = require('moment');
 var fetch = require('node-fetch');
 
@@ -23,7 +25,33 @@ class DeliverController {
                 // console.log(text['rows']);
                 res.json(text['rows']);
             });
+        }).catch((error: any) => {
+            console.log(error);
+            res.status(404).json({text: 'Error al contactar con el servidor'});
         });
+    }
+
+    public async saveDeliver (req: Request, res: Response): Promise<void>{
+        const code = req.body.code;
+        const img64 = req.body.img;
+        let buff = Buffer.from(img64, 'base64');
+        let fullpath = Path.join(process.cwd(), 'public', 'Vales', code + '.png');
+        const isExtendedLengthPath = /^\\\\\?\\/.test(fullpath);
+        const hasNonAscii = /[^\u0000-\u0080]+/.test(fullpath); // eslint-disable-line no-control-regex
+        if (!isExtendedLengthPath && !hasNonAscii) {
+            fullpath = fullpath.replace(/\\/g, '/');
+        }
+        try {
+            if (!fs.existsSync(fullpath)) {
+                fs.writeFileSync(fullpath, buff);
+                res.json({text: 'Vale guardado'});
+            } else {
+                res.status(404).json({text: 'El vale ya existe.'});
+            }
+        } catch(err) {
+            console.log(err);
+            res.status(404).json({text: 'Se produjo un error al intentar guardar el vale.'});
+        }        
     }
 }
 const deliverController = new DeliverController();
