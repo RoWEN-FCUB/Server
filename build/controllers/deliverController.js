@@ -35,6 +35,7 @@ const fs = __importStar(require("fs"));
 const path_1 = __importDefault(require("path"));
 // var moment = require('moment');
 var fetch = require('node-fetch');
+const database_1 = __importDefault(require("../database"));
 class DeliverController {
     constructor() { }
     getRemoteDeliver(req, res) {
@@ -64,6 +65,8 @@ class DeliverController {
         return __awaiter(this, void 0, void 0, function* () {
             const code = req.body.code;
             const img64 = req.body.img;
+            const id_user = req.body.id_user;
+            delete req.body.img;
             let buff = Buffer.from(img64, 'base64');
             let fullpath = path_1.default.join(process.cwd(), 'public', 'Vales', code + '.png');
             const isExtendedLengthPath = /^\\\\\?\\/.test(fullpath);
@@ -74,7 +77,9 @@ class DeliverController {
             try {
                 if (!fs.existsSync(fullpath)) {
                     fs.writeFileSync(fullpath, buff);
-                    res.json({ text: 'Vale guardado' });
+                    yield database_1.default.query('INSERT INTO registro_vale SET ?', [req.body], function (error, results, fields) {
+                        res.json({ text: 'Vale guardado' });
+                    });
                 }
                 else {
                     res.status(404).json({ text: 'El vale ya existe.' });

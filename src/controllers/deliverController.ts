@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import Path from 'path';
 // var moment = require('moment');
 var fetch = require('node-fetch');
+import pool from '../database';
 
 class DeliverController {
     constructor() {}
@@ -34,6 +35,8 @@ class DeliverController {
     public async saveDeliver (req: Request, res: Response): Promise<void>{
         const code = req.body.code;
         const img64 = req.body.img;
+        const id_user = req.body.id_user;
+        delete req.body.img;
         let buff = Buffer.from(img64, 'base64');
         let fullpath = Path.join(process.cwd(), 'public', 'Vales', code + '.png');
         const isExtendedLengthPath = /^\\\\\?\\/.test(fullpath);
@@ -44,7 +47,9 @@ class DeliverController {
         try {
             if (!fs.existsSync(fullpath)) {
                 fs.writeFileSync(fullpath, buff);
-                res.json({text: 'Vale guardado'});
+                await pool.query('INSERT INTO registro_vale SET ?', [req.body], function(error: any, results: any, fields: any) {
+                    res.json({text: 'Vale guardado'});
+                });
             } else {
                 res.status(404).json({text: 'El vale ya existe.'});
             }
