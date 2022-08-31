@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { body } from 'express-validator';
 import pool from '../database';
 var moment = require('moment');
 

@@ -24,6 +24,7 @@ import serviceRoutes from './routes/serviceRoutes';
 import comercialRoutes from './routes/comercialRoutes';
 import weatherRoutes from './routes/weatherRoutes';
 import deliverRoutes from './routes/deliverRoutes';
+import geeRoutes from './routes/geeRoutes';
 
 var dir = Path.join(__dirname, 'public');
 //const fileUpload = require('express-fileupload');
@@ -122,6 +123,7 @@ class Server{
         this.app.use('/comercial', comercialRoutes);
         this.app.use('/weather', weatherRoutes);
         this.app.use('/deliver', deliverRoutes);
+        this.app.use('/gee', geeRoutes);
     }
 
     delay(milliseconds: number, count: number): Promise<number> {

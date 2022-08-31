@@ -8,13 +8,14 @@ class WeatherController {
     public async getWeather (req: Request, res: Response): Promise<void>{
         const city = req.params.city;
         const url = 'http://api.openweathermap.org/data/2.5/weather?q=' + city + ', CU&APPID=34b197ed03d2291a7604953e84cb67a5&lang=es&units=metric'
-        const response = await fetch(url, {
+        /*const response = await fetch(url, {
             method: 'GET',
             headers: {
             'Content-Type': 'text/plain'
             }
-        }).then((myJson: JSON) => {
-            res.json(myJson);
+        }).then((myJson: any) => {
+            //res.json(myJson);
+            console.log(myJson);
         }).catch((err: any) => {
             console.log(err);
             res.status(404).json({text: 'Error al contactar con el servidor'});
@@ -22,7 +23,13 @@ class WeatherController {
         // const myJson = await response.json(); //extract JSON from the http response
         // do something with myJson
         // console.log(myJson);
-        // res.json(myJson);
+        // res.json(myJson);*/
+        
+        await fetch('https://jsonplaceholder.typicode.com/todos/1')
+        .then((response: any) => response.json())
+        .then((json: any) => console.log(json));
+        await fetch(url).then((response: any) => response.json())
+        .then((json: any) => console.log(json));
     }
 }
 const weatherController = new WeatherController();
