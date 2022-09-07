@@ -9,6 +9,23 @@ class GEEController {
             res.json(results);        
         });
     }
+
+    public async create(req: Request, res: Response): Promise<void>{
+        delete req.body.id;
+        await pool.query('INSERT INTO gee SET ?', [req.body], function(error: any, results: any, fields: any) {
+            if (error) {
+                console.log(error);
+            }
+            res.json({message: 'GEE saved'});
+        });
+    }
+
+    public async delete(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        const gee = await pool.query('DELETE FROM gee WHERE id = ?', [id], function(error: any, results: any, fields: any){            
+            res.json({text:"GEE deleted"});
+        });        
+    }
 }
 const geeController = new GEEController();
 export default geeController;
