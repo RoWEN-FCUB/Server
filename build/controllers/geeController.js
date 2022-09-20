@@ -17,7 +17,23 @@ class GEEController {
     constructor() { }
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const gees = yield database_1.default.query("SELECT gee.id, gee.id_emp, gee.id_serv, gee.idgee, gee.marca, gee.kva, empresas.siglas as empresa, servicios.nombre as servicio, servicios.provincia as provincia, servicios.municipio as municipio FROM gee INNER JOIN empresas ON (gee.id_emp = empresas.id) INNER JOIN servicios ON (gee.id_serv = servicios.id);", function (error, results, fields) {
+            const gees = yield database_1.default.query("SELECT gee.id, gee.id_emp, gee.id_serv, gee.idgee, gee.marca, gee.kva, gee.ic_scarga, gee.ic_ccargad, gee.ic_ccargan, empresas.siglas as empresa, servicios.nombre as servicio, servicios.provincia as provincia, servicios.municipio as municipio FROM gee INNER JOIN empresas ON (gee.id_emp = empresas.id) INNER JOIN servicios ON (gee.id_serv = servicios.id);", function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
+    listRecords(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const gees = yield database_1.default.query("SELECT * FROM gee_registro WHERE id_gee = ?;", [id], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
+    listGEEByUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const gees = yield database_1.default.query("SELECT gee.id, gee.idgee FROM gee INNER JOIN usuario_servicio ON (gee.id_serv = usuario_servicio.id_servicio) INNER JOIN users ON (usuario_servicio.id_usuario = users.id) WHERE users.id = ?;", [id], function (error, results, fields) {
                 res.json(results);
             });
         });

@@ -11,6 +11,8 @@ class GEERoutes{
 
     config(): void{
         this.router.get('/list/', geeController.list);
+        this.router.get('/listGEEByUser/:id', geeController.listGEEByUser);
+        this.router.get('/listGEERecords/:id', geeController.listRecords);
         this.router.post('/', geeController.create);
         this.router.delete('/:id', geeController.delete);
     }
