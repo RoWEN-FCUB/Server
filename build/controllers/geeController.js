@@ -25,7 +25,7 @@ class GEEController {
     listRecords(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const gees = yield database_1.default.query("SELECT * FROM gee_registro WHERE id_gee = ?;", [id], function (error, results, fields) {
+            const gees = yield database_1.default.query("SELECT * FROM gee_registro WHERE id_gee = ? ORDER BY id DESC;", [id], function (error, results, fields) {
                 res.json(results);
             });
         });

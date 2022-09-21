@@ -12,7 +12,7 @@ class GEEController {
 
     public async listRecords (req: Request, res: Response): Promise<void>{
         const {id} = req.params;
-        const gees = await pool.query("SELECT * FROM gee_registro WHERE id_gee = ?;", [id], function(error: any, results: any, fields: any){            
+        const gees = await pool.query("SELECT * FROM gee_registro WHERE id_gee = ? ORDER BY id DESC;", [id], function(error: any, results: any, fields: any){            
             res.json(results);        
         });
     }
