@@ -150,8 +150,8 @@ class TaskController {
             let endD = req.body.endD;
             const inicio = startD;
             const fin = endD;
-            startD = startD.substr(0, startD.indexOf('T'));
-            endD = endD.substr(0, endD.indexOf('T'));
+            startD = startD.substring(0, startD.indexOf('T'));
+            endD = endD.substring(0, endD.indexOf('T'));
             const date = new Date();
             const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
             const offset = date.getTimezoneOffset() / 60;

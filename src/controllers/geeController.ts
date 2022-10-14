@@ -34,6 +34,22 @@ class GEEController {
         });
     }
 
+    public async update(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        delete req.body.id;
+        delete req.body.empresa;
+        delete req.body.servicio;
+        delete req.body.provincia;
+        delete req.body.municipio;
+        // console.log(req.body);
+        const result = pool.query('UPDATE gee set ? WHERE id = ?', [req.body,id], function(error: any, results: any, fields: any){            
+            if (error) {
+                console.log(error);
+            }
+            res.json({text:"Gee updated"});
+        });
+    }
+
     public async delete(req: Request, res: Response): Promise<void>{
         const {id} = req.params;
         const gee = await pool.query('DELETE FROM gee WHERE id = ?', [id], function(error: any, results: any, fields: any){            

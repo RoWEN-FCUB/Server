@@ -49,6 +49,23 @@ class GEEController {
             });
         });
     }
+    update(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            delete req.body.id;
+            delete req.body.empresa;
+            delete req.body.servicio;
+            delete req.body.provincia;
+            delete req.body.municipio;
+            // console.log(req.body);
+            const result = database_1.default.query('UPDATE gee set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+                res.json({ text: "Gee updated" });
+            });
+        });
+    }
     delete(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
