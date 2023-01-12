@@ -9,7 +9,7 @@ const multipart = require('connect-multiparty');
 const multipartMiddleware = multipart({ uploadDir: './public' });
 class CompanyRoutes {
     constructor() {
-        this.router = express_1.Router();
+        this.router = (0, express_1.Router)();
         this.config();
     }
     config() {

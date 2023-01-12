@@ -7,7 +7,7 @@ const express_1 = require("express");
 const workshopController_1 = __importDefault(require("../controllers/workshopController"));
 class WorkshopRoutes {
     constructor() {
-        this.router = express_1.Router();
+        this.router = (0, express_1.Router)();
         this.config();
     }
     config() {

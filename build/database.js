@@ -18,6 +18,6 @@ const attemptConnection = () => pool.getConnection(function (err, connection) {
         console.log('Database connection started...');
     }
 });
-pool.query = util_1.promisify(pool.query);
+pool.query = (0, util_1.promisify)(pool.query);
 exports.default = pool;
 attemptConnection();

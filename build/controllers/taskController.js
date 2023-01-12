@@ -91,7 +91,7 @@ class TaskController {
             const subs = req.body.subs;
             // const id = task.id;
             const creador = task.nombre_creador;
-            // console.log(req.body);
+            console.log(req.body);
             delete task.id;
             delete task.observaciones;
             delete task.nombre_creador;
@@ -102,6 +102,7 @@ class TaskController {
             const hours = date.getHours();
             task.fecha_inicio = task.fecha_inicio.replace('T', ' ');
             task.fecha_inicio = task.fecha_inicio.split('.')[0] + '.000';
+            console.log(task.fecha_inicio);
             task.fecha_fin = task.fecha_fin.replace('T', ' ');
             task.fecha_fin = task.fecha_fin.split('.')[0] + '.000';
             newDate.setHours(hours - offset);
@@ -189,13 +190,14 @@ class TaskController {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.body.id;
             let startD = req.body.startD;
+            console.log('como viene' + startD);
             startD = startD.replace('T', ' ');
             startD = startD.split('.')[0] + '.000';
-            console.log(startD);
+            console.log('arreglada' + startD);
             let endD = req.body.endD;
             endD = endD.replace('T', ' ');
             endD = endD.split('.')[0] + '.000';
-            console.log(endD);
+            // console.log(endD);
             let new_tasks = [];
             const date = new Date();
             const newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
@@ -213,7 +215,12 @@ class TaskController {
                     const creador = results[0].nombre_creador;
                     delete results[0].nombre_creador;
                     // startD = new Date(startD);
-                    results[0].fecha_inicio = moment.utc(results[0].fecha_inicio).dayOfYear(moment.utc(startD).dayOfYear()).toDate();
+                    console.log('la que tenia' + results[0].fecha_inicio);
+                    const hora_inicio = moment(results[0].fecha_inicio).hour();
+                    const min_inicio = moment(results[0].fecha_inicio).minute();
+                    results[0].fecha_inicio = moment(startD).hour(hora_inicio).minute(min_inicio).toDate();
+                    //results[0].fecha_inicio = moment.utc(startD).toDate();
+                    console.log('la que quedo' + results[0].fecha_inicio);
                     results[0].fecha_fin = results[0].fecha_inicio;
                     const id_usuario = results[0].id_usuario;
                     const resumen = results[0].resumen;
@@ -223,7 +230,7 @@ class TaskController {
                         results[0].fecha_inicio = moment.utc(results[0].fecha_inicio).add(1, 'days').toDate();
                         results[0].fecha_fin = results[0].fecha_inicio;
                     } while (!moment(results[0].fecha_inicio).isAfter(endD, 'day'));
-                    console.log(new_tasks);
+                    //console.log(new_tasks);                
                     const sqlquery = 'INSERT INTO tareas (id_usuario, resumen, descripcion, fecha_inicio, estado, id_creador, duracion, validada, fecha_fin) VALUES ?';
                     const copyingtask = database_1.default.query(sqlquery, [new_tasks], (error, results, fields) => __awaiter(this, void 0, void 0, function* () {
                         if (error) {

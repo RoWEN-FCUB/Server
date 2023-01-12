@@ -4,7 +4,7 @@ const express_1 = require("express");
 const indexController_1 = require("../controllers/indexController");
 class IndexRoutes {
     constructor() {
-        this.router = express_1.Router();
+        this.router = (0, express_1.Router)();
         this.config();
     }
     config() {
