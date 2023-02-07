@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import pool from '../database';
+const request = require('request');
 
 class ServiceController {
     constructor() {}
@@ -60,6 +61,28 @@ class ServiceController {
         const company = await pool.query('DELETE FROM servicios WHERE id = ?', [id], function(error: any, results: any, fields: any){            
             res.json({text:"Service deleted"});
         });        
+    }
+
+    public async getGeolocation (req: Request, res: Response): Promise<void>{
+        const city = req.params.city;
+        let options = {json: true};
+        request.get({
+            url: 'https://api.api-ninjas.com/v1/geocoding?city=' + city + '&country=Cuba',
+            options,
+            headers: {
+              'X-Api-Key': 'SA6Mqw5WV97WzR29uc1kEQ==iQbcaSOYZk5FR4uq'
+            },
+          },function(error: any, response: any, body: any) {
+            if (error) {
+                console.log(error);
+                res.status(404).json({text: 'Error al contactar con el servidor'});
+            };
+        
+            if (!error && res.statusCode == 200) {
+                res.json(JSON.parse(body));
+                console.log(body);
+            };
+          });
     }
 }
 const serviceController = new ServiceController();

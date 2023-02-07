@@ -18,6 +18,7 @@ class ServiceRoutes {
         this.router.put('/:id', serviceController_1.default.update);
         this.router.put('/user_services/:id', serviceController_1.default.updateUserServices);
         this.router.delete('/:id', serviceController_1.default.delete);
+        this.router.get('/geo/:city', serviceController_1.default.getGeolocation);
     }
 }
 const serviceRoutes = new ServiceRoutes();

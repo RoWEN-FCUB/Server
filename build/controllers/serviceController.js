@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("../database"));
+const request = require('request');
 class ServiceController {
     constructor() { }
     list(req, res) {
@@ -80,6 +81,30 @@ class ServiceController {
             const { id } = req.params;
             const company = yield database_1.default.query('DELETE FROM servicios WHERE id = ?', [id], function (error, results, fields) {
                 res.json({ text: "Service deleted" });
+            });
+        });
+    }
+    getGeolocation(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const city = req.params.city;
+            let options = { json: true };
+            request.get({
+                url: 'https://api.api-ninjas.com/v1/geocoding?city=' + city + '&country=Cuba',
+                options,
+                headers: {
+                    'X-Api-Key': 'SA6Mqw5WV97WzR29uc1kEQ==iQbcaSOYZk5FR4uq'
+                },
+            }, function (error, response, body) {
+                if (error) {
+                    console.log(error);
+                    res.status(404).json({ text: 'Error al contactar con el servidor' });
+                }
+                ;
+                if (!error && res.statusCode == 200) {
+                    res.json(JSON.parse(body));
+                    console.log(body);
+                }
+                ;
             });
         });
     }
