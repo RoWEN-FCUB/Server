@@ -9,64 +9,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const request = require('request');
+//const request = require('request');
+var fetch = require('node-fetch');
 class WeatherController {
     constructor() { }
     getWeather(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const city = req.params.city;
-            let options = { json: true };
-            // const url = 'http://api.openweathermap.org/data/2.5/weather?q=' + city + ', CU&APPID=34b197ed03d2291a7604953e84cb67a5&lang=es&units=metric'
-            request.get({
-                url: 'https://api.api-ninjas.com/v1/geocoding?city=' + city + '&country=Cuba',
-                options,
-                headers: {
-                    'X-Api-Key': 'SA6Mqw5WV97WzR29uc1kEQ==iQbcaSOYZk5FR4uq'
-                },
-            }, function (error, response, body) {
-                if (error) {
-                    console.log(error);
-                    res.status(404).json({ text: 'Error al contactar con el servidor' });
+            const url = 'https://api.api-ninjas.com/v1/geocoding?city=' + city + '&country=Cuba';
+            try {
+                const response = yield fetch(url, {
+                    method: 'get',
+                    headers: { 'X-Api-Key': 'SA6Mqw5WV97WzR29uc1kEQ==iQbcaSOYZk5FR4uq' }
+                });
+                const cities = yield response.json();
+                console.log(cities);
+                if (cities.length > 0) {
+                    const url2 = 'https://api.open-meteo.com/v1/forecast?latitude=' + cities[0].latitude + '&longitude=' + cities[0].longitude + '&current_weather=true&timezone=auto';
+                    const response2 = yield fetch(url2, { method: 'get' });
+                    const weather = yield response2.json();
+                    console.log(weather);
+                    res.json(weather);
                 }
-                ;
-                if (!error && res.statusCode == 200) {
-                    const cities = JSON.parse(body);
-                    console.log(cities);
-                    if (cities) {
-                        const url2 = 'https://api.open-meteo.com/v1/forecast?latitude=' + cities[0].latitude + '&longitude=' + cities[0].longitude + '&current_weather=true&timezone=auto';
-                        console.log(url2);
-                        request(url2, options, (error, response2, body2) => {
-                            if (error) {
-                                console.log(error);
-                                res.status(404).json({ text: 'Error al contactar con el servidor' });
-                            }
-                            ;
-                            if (!error && res.statusCode == 200) {
-                                res.json(body2);
-                                console.log(body2);
-                            }
-                            ;
-                        });
-                    }
-                }
-                ;
-            });
-            /* request.get({
-                url: 'https://api.api-ninjas.com/v1/weather?city=' + city,
-                headers: {
-                  'X-Api-Key': 'SA6Mqw5WV97WzR29uc1kEQ==iQbcaSOYZk5FR4uq'
-                },
-              }, function(error: any, response: any, body: any) {
-                if (error) {
-                    console.log(error);
-                    res.status(404).json({text: 'Error al contactar con el servidor'});
-                };
-            
-                if (!error && res.statusCode == 200) {
-                    res.json(body);
-                    console.log(body);
-                };
-              }); */
+            }
+            catch (error) {
+                console.log(error);
+                res.status(404).json({ text: 'Error al contactar con el servidor api' });
+            }
         });
     }
 }

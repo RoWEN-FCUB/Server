@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import pool from '../database';
-const request = require('request');
+var fetch = require('node-fetch');
 
 class ServiceController {
     constructor() {}
@@ -66,23 +66,21 @@ class ServiceController {
     public async getGeolocation (req: Request, res: Response): Promise<void>{
         const city = req.params.city;
         let options = {json: true};
-        request.get({
-            url: 'https://api.api-ninjas.com/v1/geocoding?city=' + city + '&country=Cuba',
-            options,
-            headers: {
-              'X-Api-Key': 'SA6Mqw5WV97WzR29uc1kEQ==iQbcaSOYZk5FR4uq'
-            },
-          },function(error: any, response: any, body: any) {
-            if (error) {
-                console.log(error);
-                res.status(404).json({text: 'Error al contactar con el servidor'});
-            };
-        
-            if (!error && res.statusCode == 200) {
-                res.json(JSON.parse(body));
-                console.log(body);
-            };
-          });
+        const url = 'https://api.api-ninjas.com/v1/geocoding?city=' + city + '&country=Cuba';
+        try {
+            const response = await fetch(url, {
+              method: 'get',
+              headers:{'X-Api-Key': 'SA6Mqw5WV97WzR29uc1kEQ==iQbcaSOYZk5FR4uq'}
+            });
+            const cities = await response.json();
+            console.log(cities);
+            if (cities.length > 0) {
+              res.json(cities);
+            }
+          } catch (error) {
+            console.log(error);
+            res.status(404).json({text: 'Error al contactar con el servidor api'});
+          }
     }
 }
 const serviceController = new ServiceController();

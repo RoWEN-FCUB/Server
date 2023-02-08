@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("../database"));
-const request = require('request');
+var fetch = require('node-fetch');
 class ServiceController {
     constructor() { }
     list(req, res) {
@@ -88,24 +88,22 @@ class ServiceController {
         return __awaiter(this, void 0, void 0, function* () {
             const city = req.params.city;
             let options = { json: true };
-            request.get({
-                url: 'https://api.api-ninjas.com/v1/geocoding?city=' + city + '&country=Cuba',
-                options,
-                headers: {
-                    'X-Api-Key': 'SA6Mqw5WV97WzR29uc1kEQ==iQbcaSOYZk5FR4uq'
-                },
-            }, function (error, response, body) {
-                if (error) {
-                    console.log(error);
-                    res.status(404).json({ text: 'Error al contactar con el servidor' });
+            const url = 'https://api.api-ninjas.com/v1/geocoding?city=' + city + '&country=Cuba';
+            try {
+                const response = yield fetch(url, {
+                    method: 'get',
+                    headers: { 'X-Api-Key': 'SA6Mqw5WV97WzR29uc1kEQ==iQbcaSOYZk5FR4uq' }
+                });
+                const cities = yield response.json();
+                console.log(cities);
+                if (cities.length > 0) {
+                    res.json(cities);
                 }
-                ;
-                if (!error && res.statusCode == 200) {
-                    res.json(JSON.parse(body));
-                    console.log(body);
-                }
-                ;
-            });
+            }
+            catch (error) {
+                console.log(error);
+                res.status(404).json({ text: 'Error al contactar con el servidor api' });
+            }
         });
     }
 }
