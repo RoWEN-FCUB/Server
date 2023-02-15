@@ -136,11 +136,21 @@ class Server {
         this.app.use(express_1.default.urlencoded({ extended: false }));
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(bodyParser.json());
+        this.app.use(function (err, req, res, next) {
+            if (err.name === "UnauthorizedError") {
+                res.status(401).send("invalid token...");
+            }
+            else {
+                next(err);
+            }
+        });
     }
     routes() {
         this.app.use('/public', express_1.default.static(dir));
         const RSA_PUBLIC_KEY = fs.readFileSync(this.slash(path_1.default.join(__dirname, 'public.key')));
-        this.app.use(jwt({ secret: RSA_PUBLIC_KEY, algorithms: ['RS256'] }).unless({ path: ['/user/login', '/user/refresh'] }));
+        this.app.use(jwt({ secret: RSA_PUBLIC_KEY, algorithms: ['RS256'], onExpired: (req, err) => __awaiter(this, void 0, void 0, function* () {
+                throw err;
+            }) }).unless({ path: ['/user/login', '/user/refresh'] }));
         this.app.use('/', indexRoutes_1.default);
         this.app.use('/user', usersRoutes_1.default);
         this.app.use('/task', taskRoutes_1.default);
