@@ -105,6 +105,7 @@ class Server{
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(bodyParser.json());
         this.app.use(function (err: any, req: any, res: any, next: any) {
+            console.log(err);
             if (err.name === "UnauthorizedError") {
               res.status(401).send("invalid token...");
             } else {
@@ -117,6 +118,7 @@ class Server{
         this.app.use('/public',express.static(dir));
         const RSA_PUBLIC_KEY = fs.readFileSync(this.slash(Path.join(__dirname, 'public.key')));
         this.app.use(jwt({secret: RSA_PUBLIC_KEY, algorithms: ['RS256'], onExpired: async (req: any, err: any) => {
+            console.log('Token expirado');
             throw err;
           }}).unless({path:['/user/login', '/user/refresh']}));
         this.app.use('/',indexRoutes);        

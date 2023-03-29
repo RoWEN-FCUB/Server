@@ -14,7 +14,7 @@ class WeatherController {
           //console.log(moment.utc(results[0].time));
           const h1 = moment.utc(results[0].time).hour();
           const h2 = new Date().getHours();
-          //console.log(h1 + ' ' + h2);
+          console.log(h1 + ' ' + h2);
           if (moment(results[0].time).isSame(new Date(), 'day') && h1 === h2) {
             const weather = {
               latitude: results[0].latitude,
