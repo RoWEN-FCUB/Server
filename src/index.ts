@@ -6,7 +6,8 @@ var cors = require('cors');
 var fetch = require('node-fetch');
 const bodyParser = require('body-parser');
 
-var jwt = require('express-jwt');
+//var jwt = require('express-jwt');
+const { expressjwt: jwt } = require('express-jwt');
 import * as fs from 'fs';
 import Path from 'path';
 
