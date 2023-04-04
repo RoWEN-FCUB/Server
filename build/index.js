@@ -72,7 +72,6 @@ class Server {
         this.app = (0, express_1.default)();
         this.config();
         this.routes();
-        // this.SendEmail();      
     }
     slash(path) {
         const isExtendedLengthPath = /^\\\\\?\\/.test(path);
@@ -137,15 +136,6 @@ class Server {
         this.app.use(express_1.default.urlencoded({ extended: false }));
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(bodyParser.json());
-        this.app.use(function (err, req, res, next) {
-            console.log(err);
-            if (err.name === "UnauthorizedError") {
-                res.status(401).send("invalid token...");
-            }
-            else {
-                next(err);
-            }
-        });
     }
     routes() {
         this.app.use('/public', express_1.default.static(dir));

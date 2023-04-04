@@ -37,6 +37,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("../database"));
 var jwt = require('jsonwebtoken');
+//const { expressjwt: jwt } = require('express-jwt'); //this line will import the jwt middleware from Express-Jwt module.
 const fs = __importStar(require("fs"));
 const path_1 = __importDefault(require("path"));
 const nodemailer = require("nodemailer");
@@ -188,20 +189,27 @@ class UsersController {
             const resp = yield database_1.default.query('SELECT users.id, users.email, users.picture, users.pass, users.user, users.fullname, users.position, users.id_sup, users.id_emp, users.id_serv, users.ci, users_roles.role, servicios.municipio FROM users INNER JOIN users_roles ON (users.role = users_roles.id) INNER JOIN servicios ON (users.id_serv=servicios.id) WHERE email = ?', [email], function (error, results, fields) {
                 //console.log(results[0]);
                 if (!results[0]) {
-                    res.status(404).json({ text: 'Datos de usuario incorrectos' });
+                    res.status(401).json({ error: 'Datos de usuario incorrectos' });
                 }
                 else {
                     if (results[0].pass === upass) {
-                        const jwtBearerToken = jwt.sign({ id: results[0].id, role: results[0].role, name: results[0].user, picture: results[0].picture, fullname: results[0].fullname, position: results[0].position, id_sup: results[0].id_sup, id_emp: results[0].id_emp, id_serv: results[0].id_serv, ci: results[0].ci, municipio: results[0].municipio }, RSA_PRIVATE_KEY, {
-                            algorithm: 'RS256',
-                            expiresIn: 600,
-                            subject: '' + results[0].id
-                        });
-                        res.json({ data: { token: jwtBearerToken, expiresIn: 600 } });
+                        try {
+                            const jwtBearerToken = jwt.sign({ id: results[0].id, role: results[0].role, name: results[0].user, picture: results[0].picture, fullname: results[0].fullname, position: results[0].position, id_sup: results[0].id_sup, id_emp: results[0].id_emp, id_serv: results[0].id_serv, ci: results[0].ci, municipio: results[0].municipio }, RSA_PRIVATE_KEY, {
+                                algorithm: 'RS256',
+                                allowInsecureKeySizes: true,
+                                expiresIn: 600,
+                                subject: '' + results[0].id
+                            });
+                            res.status(200).json({ data: { token: jwtBearerToken, expiresIn: 600 } });
+                        }
+                        catch (err) {
+                            console.log(err);
+                            res.status(500).json({ error: 'Error en el servidor' });
+                        }
                         // console.log(res);
                     }
                     else {
-                        res.status(404).json({ text: 'Datos de usuario incorrectos' });
+                        res.status(401).json({ error: 'Datos de usuario incorrectos' });
                     }
                 }
             });
@@ -220,6 +228,7 @@ class UsersController {
             const RSA_PRIVATE_KEY = fs.readFileSync(path);
             const jwtBearerToken = jwt.sign({ id: payload.id, role: payload.role, name: payload.name, picture: payload.picture, fullname: payload.fullname, position: payload.position, id_sup: payload.id_sup, id_emp: payload.id_emp, id_serv: payload.id_serv, ci: payload.ci, municipio: payload.municipio }, RSA_PRIVATE_KEY, {
                 algorithm: 'RS256',
+                allowInsecureKeySizes: true,
                 expiresIn: 1200,
                 subject: '' + payload
             });

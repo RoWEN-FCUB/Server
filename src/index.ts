@@ -42,7 +42,6 @@ class Server{
         this.app = express();
         this.config();
         this.routes();
-        // this.SendEmail();      
     }
 
     slash(path: string) {
@@ -105,14 +104,7 @@ class Server{
         this.app.use(express.urlencoded({extended:false}));        
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(bodyParser.json());
-        this.app.use(function (err: any, req: any, res: any, next: any) {
-            console.log(err);
-            if (err.name === "UnauthorizedError") {
-              res.status(401).send("invalid token...");
-            } else {
-              next(err);
-            }
-          });
+        
     }
 
     routes(): void{
