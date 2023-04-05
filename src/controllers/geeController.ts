@@ -34,6 +34,16 @@ class GEEController {
         });
     }
 
+    public async createFCard(req: Request, res: Response): Promise<void> {
+        delete req.body.id;
+        await pool.query('INSERT INTO tarjeta SET ?', [req.body], function(error: any, results: any, fields: any) {
+            if (error) {
+                console.log(error);
+            }
+            res.json({message: 'FCard saved'});
+        });
+    }
+
     public async update(req: Request, res: Response): Promise<void>{
         const {id} = req.params;
         delete req.body.id;

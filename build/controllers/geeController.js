@@ -49,6 +49,17 @@ class GEEController {
             });
         });
     }
+    createFCard(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            delete req.body.id;
+            yield database_1.default.query('INSERT INTO tarjeta SET ?', [req.body], function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+                res.json({ message: 'FCard saved' });
+            });
+        });
+    }
     update(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;

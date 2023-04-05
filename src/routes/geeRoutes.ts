@@ -14,6 +14,7 @@ class GEERoutes{
         this.router.get('/listGEEByUser/:id', geeController.listGEEByUser);
         this.router.get('/listGEERecords/:id', geeController.listRecords);
         this.router.post('/', geeController.create);
+        this.router.post('/FCard', geeController.createFCard);
         this.router.put('/:id', geeController.update);
         this.router.delete('/:id', geeController.delete);
     }
