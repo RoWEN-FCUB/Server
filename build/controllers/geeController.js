@@ -38,6 +38,14 @@ class GEEController {
             });
         });
     }
+    listCardsbyGEE(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_gee } = req.params;
+            const gees = yield database_1.default.query("SELECT * FROM tarjeta WHERE id_gee = ?;", [id_gee], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;

@@ -24,6 +24,13 @@ class GEEController {
         });
     }
 
+    public async listCardsbyGEE (req: Request, res: Response):  Promise<void>{
+        const {id_gee} = req.params;
+        const gees = await pool.query("SELECT * FROM tarjeta WHERE id_gee = ?;", [id_gee], function(error: any, results: any, fields: any){            
+            res.json(results);        
+        });
+    }
+
     public async create(req: Request, res: Response): Promise<void>{
         delete req.body.id;
         await pool.query('INSERT INTO gee SET ?', [req.body], function(error: any, results: any, fields: any) {
