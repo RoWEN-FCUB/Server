@@ -27,7 +27,7 @@ class GEEController {
     public async listCardsbyGEE (req: Request, res: Response):  Promise<void>{
         const {id_gee} = req.params;
         const gees = await pool.query("SELECT * FROM tarjeta WHERE id_gee = ?;", [id_gee], function(error: any, results: any, fields: any){            
-            res.json(results);        
+            res.json(results);
         });
     }
 
