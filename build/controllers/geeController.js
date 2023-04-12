@@ -33,7 +33,7 @@ class GEEController {
     listGEEByUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const gees = yield database_1.default.query("SELECT gee.id, gee.idgee FROM gee INNER JOIN usuario_servicio ON (gee.id_serv = usuario_servicio.id_servicio) INNER JOIN users ON (usuario_servicio.id_usuario = users.id) WHERE users.id = ?;", [id], function (error, results, fields) {
+            const gees = yield database_1.default.query("SELECT gee.*, servicios.nombre as servicio, empresas.siglas as empresa, empresas.oace as oace FROM gee INNER JOIN usuario_servicio ON (gee.id_serv = usuario_servicio.id_servicio) INNER JOIN users ON (usuario_servicio.id_usuario = users.id) INNER JOIN servicios ON (gee.id_serv = servicios.id) INNER JOIN empresas ON (servicios.id_emp = empresas.id) WHERE users.id = ?;", [id], function (error, results, fields) {
                 res.json(results);
             });
         });
@@ -41,7 +41,15 @@ class GEEController {
     listCardsbyGEE(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_gee } = req.params;
-            const gees = yield database_1.default.query("SELECT * FROM tarjeta WHERE id_gee = ?;", [id_gee], function (error, results, fields) {
+            const gees = yield database_1.default.query("SELECT * FROM tarjetas WHERE id_gee = ?;", [id_gee], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
+    listCardsRecords(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_card } = req.params;
+            const gees = yield database_1.default.query("SELECT * FROM tarjetas_registro WHERE id_tarjeta = ?;", [id_card], function (error, results, fields) {
                 res.json(results);
             });
         });
@@ -60,7 +68,7 @@ class GEEController {
     createFCard(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;
-            yield database_1.default.query('INSERT INTO tarjeta SET ?', [req.body], function (error, results, fields) {
+            yield database_1.default.query('INSERT INTO tarjetas SET ?', [req.body], function (error, results, fields) {
                 if (error) {
                     console.log(error);
                 }

@@ -19,14 +19,21 @@ class GEEController {
     
     public async listGEEByUser (req: Request, res: Response): Promise<void>{
         const {id} = req.params;
-        const gees = await pool.query("SELECT gee.id, gee.idgee FROM gee INNER JOIN usuario_servicio ON (gee.id_serv = usuario_servicio.id_servicio) INNER JOIN users ON (usuario_servicio.id_usuario = users.id) WHERE users.id = ?;", [id], function(error: any, results: any, fields: any){            
+        const gees = await pool.query("SELECT gee.*, servicios.nombre as servicio, empresas.siglas as empresa, empresas.oace as oace FROM gee INNER JOIN usuario_servicio ON (gee.id_serv = usuario_servicio.id_servicio) INNER JOIN users ON (usuario_servicio.id_usuario = users.id) INNER JOIN servicios ON (gee.id_serv = servicios.id) INNER JOIN empresas ON (servicios.id_emp = empresas.id) WHERE users.id = ?;", [id], function(error: any, results: any, fields: any){            
             res.json(results);        
         });
     }
 
     public async listCardsbyGEE (req: Request, res: Response):  Promise<void>{
         const {id_gee} = req.params;
-        const gees = await pool.query("SELECT * FROM tarjeta WHERE id_gee = ?;", [id_gee], function(error: any, results: any, fields: any){            
+        const gees = await pool.query("SELECT * FROM tarjetas WHERE id_gee = ?;", [id_gee], function(error: any, results: any, fields: any){            
+            res.json(results);
+        });
+    }
+
+    public async listCardsRecords (req: Request, res: Response):  Promise<void>{
+        const {id_card} = req.params;
+        const gees = await pool.query("SELECT * FROM tarjetas_registro WHERE id_tarjeta = ?;", [id_card], function(error: any, results: any, fields: any){            
             res.json(results);
         });
     }
@@ -43,7 +50,7 @@ class GEEController {
 
     public async createFCard(req: Request, res: Response): Promise<void> {
         delete req.body.id;
-        await pool.query('INSERT INTO tarjeta SET ?', [req.body], function(error: any, results: any, fields: any) {
+        await pool.query('INSERT INTO tarjetas SET ?', [req.body], function(error: any, results: any, fields: any) {
             if (error) {
                 console.log(error);
             }
