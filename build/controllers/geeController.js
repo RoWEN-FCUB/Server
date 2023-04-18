@@ -49,7 +49,7 @@ class GEEController {
     listCardsRecords(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_card } = req.params;
-            const gees = yield database_1.default.query("SELECT * FROM tarjetas_registro WHERE id_tarjeta = ?;", [id_card], function (error, results, fields) {
+            const gees = yield database_1.default.query("SELECT * FROM tarjetas_registro WHERE id_tarjeta = ? ORDER BY id ASC;", [id_card], function (error, results, fields) {
                 res.json(results);
             });
         });
@@ -75,6 +75,43 @@ class GEEController {
                 res.json({ message: 'FCard saved' });
             });
         });
+    }
+    createCardRecord(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            delete req.body.id;
+            req.body.fecha = req.body.fecha.substring(0, req.body.fecha.indexOf('T'));
+            yield database_1.default.query('SELECT tipo_combustible FROM tarjetas WHERE id = ?', [req.body.id_tarjeta], (error, results, fields) => __awaiter(this, void 0, void 0, function* () {
+                const tipo_combustible = results[0].tipo_combustible;
+                console.log(tipo_combustible);
+                yield database_1.default.query('SELECT * FROM configuracion', (error, configuracion, fields) => __awaiter(this, void 0, void 0, function* () {
+                    let precio_combustible = 0;
+                    console.log(configuracion);
+                    if (tipo_combustible === 'Diesel Regular') {
+                        precio_combustible = configuracion[0].precio_dregular;
+                    }
+                    else if (tipo_combustible === 'Gasolina') {
+                        precio_combustible = configuracion[0].precio_gregular;
+                    }
+                    req.body.sinicial_litros = geeController.round(req.body.sinicial_pesos / precio_combustible, 2);
+                    req.body.sfinal_litros = geeController.round(req.body.sfinal_pesos / precio_combustible, 2);
+                    if (req.body.recarga_pesos) {
+                        req.body.recarga_litros = geeController.round(req.body.recarga_pesos / precio_combustible, 2);
+                        req.body.saldo_litros = geeController.round(req.body.saldo_pesos / precio_combustible, 2);
+                    }
+                    if (req.body.consumo_pesos) {
+                        req.body.consumo_litros = geeController.round(req.body.consumo_pesos / precio_combustible, 2);
+                    }
+                    console.log(req.body);
+                    yield database_1.default.query('INSERT INTO tarjetas_registro SET ?', [req.body], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
+                        res.json({ message: 'FCard Record saved' });
+                    }));
+                }));
+            }));
+        });
+    }
+    round(numb, precision) {
+        const exp = Math.pow(10, precision);
+        return Math.round((numb + Number.EPSILON) * exp) / exp;
     }
     update(req, res) {
         return __awaiter(this, void 0, void 0, function* () {

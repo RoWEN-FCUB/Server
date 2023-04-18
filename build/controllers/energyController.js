@@ -171,7 +171,7 @@ class EnergyController {
         return __awaiter(this, void 0, void 0, function* () {
             let updates = [];
             for (let i = 0; i < req.body.length; i++) {
-                req.body[i].fecha = req.body[i].fecha.substr(0, req.body[i].fecha.indexOf('T'));
+                req.body[i].fecha = req.body[i].fecha.substring(0, req.body[i].fecha.indexOf('T'));
                 delete req.body[i].realacumulado;
                 delete req.body[i].planacumulado;
                 updates.push(Object.values(req.body[i]));
@@ -192,8 +192,8 @@ class EnergyController {
     updatePlans(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             //console.log(req.body);
-            let inicio = req.body.start.substr(0, req.body.start.indexOf('T'));
-            const fin = req.body.end.substr(0, req.body.end.indexOf('T'));
+            let inicio = req.body.start.substring(0, req.body.start.indexOf('T'));
+            const fin = req.body.end.substring(0, req.body.end.indexOf('T'));
             const plan = req.body.plan;
             const plan_picod = req.body.plan_picod;
             const plan_picon = req.body.plan_picon;

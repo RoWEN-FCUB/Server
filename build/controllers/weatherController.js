@@ -43,24 +43,30 @@ class WeatherController {
                         }
                         else {
                             const url2 = 'https://api.open-meteo.com/v1/forecast?latitude=' + results[0].latitude + '&longitude=' + results[0].longitude + '&current_weather=true&timezone=auto';
-                            const response2 = yield fetch(url2, { method: 'get' });
-                            const weather = yield response2.json();
-                            const new_weather = {
-                                generationtime_ms: weather.generationtime_ms,
-                                utc_offset_seconds: weather.utc_offset_seconds,
-                                timezone: weather.timezone,
-                                timezone_abbreviation: weather.timezone_abbreviation,
-                                elevation: weather.elevation,
-                                temperature: weather.current_weather.temperature,
-                                windspeed: weather.current_weather.windspeed,
-                                winddirection: weather.current_weather.winddirection,
-                                weathercode: weather.current_weather.weathercode,
-                                time: weather.current_weather.time,
-                            };
-                            console.log(new_weather);
-                            yield database_1.default.query('UPDATE cities_weather SET ? WHERE name = ?', [new_weather, city], function (error, results, fields) {
-                                res.json(weather);
-                            });
+                            try {
+                                const response2 = yield fetch(url2, { method: 'get' });
+                                const weather = yield response2.json();
+                                const new_weather = {
+                                    generationtime_ms: weather.generationtime_ms,
+                                    utc_offset_seconds: weather.utc_offset_seconds,
+                                    timezone: weather.timezone,
+                                    timezone_abbreviation: weather.timezone_abbreviation,
+                                    elevation: weather.elevation,
+                                    temperature: weather.current_weather.temperature,
+                                    windspeed: weather.current_weather.windspeed,
+                                    winddirection: weather.current_weather.winddirection,
+                                    weathercode: weather.current_weather.weathercode,
+                                    time: weather.current_weather.time,
+                                };
+                                console.log(new_weather);
+                                yield database_1.default.query('UPDATE cities_weather SET ? WHERE name = ?', [new_weather, city], function (error, results, fields) {
+                                    res.json(weather);
+                                });
+                            }
+                            catch (error) {
+                                console.log(error);
+                                res.status(404).json({ text: 'Error al contactar con el servidor api' });
+                            }
                         }
                     }
                     else {
