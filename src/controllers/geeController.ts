@@ -10,6 +10,12 @@ class GEEController {
         });
     }
 
+    public async getFuelPrices(req: Request, res: Response): Promise<void>{
+        await pool.query('SELECT configuracion.precio_dregular as precio_dregular, configuracion.precio_gregular as precio_gregular FROM configuracion;', function(error: any, results: any, fields: any){
+            res.json(results[0]);
+        });
+    }
+
     public async listRecords (req: Request, res: Response): Promise<void>{
         const {id} = req.params;
         const gees = await pool.query("SELECT * FROM gee_registro WHERE id_gee = ? ORDER BY id DESC;", [id], function(error: any, results: any, fields: any){            
@@ -114,6 +120,13 @@ class GEEController {
         const {id} = req.params;
         const gee = await pool.query('DELETE FROM gee WHERE id = ?', [id], function(error: any, results: any, fields: any){            
             res.json({text:"GEE deleted"});
+        });        
+    }
+
+    public async deleteCardRecord(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        const gee = await pool.query('DELETE FROM tarjetas_registro WHERE id = ?', [id], function(error: any, results: any, fields: any){            
+            res.json({text:"CardRecord deleted"});
         });        
     }
 }

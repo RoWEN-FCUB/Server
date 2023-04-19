@@ -11,6 +11,7 @@ class GEERoutes{
 
     config(): void{
         this.router.get('/list/', geeController.list);
+        this.router.get('/fuelPrices/', geeController.getFuelPrices);
         this.router.get('/listGEEByUser/:id', geeController.listGEEByUser);
         this.router.get('/listGEERecords/:id', geeController.listRecords);
         this.router.get('/listCardsByGEE/:id_gee', geeController.listCardsbyGEE);
@@ -20,6 +21,7 @@ class GEERoutes{
         this.router.post('/FCardRecord', geeController.createCardRecord);
         this.router.put('/:id', geeController.update);
         this.router.delete('/:id', geeController.delete);
+        this.router.delete('/deleteCardRecord/:id', geeController.deleteCardRecord);
     }
 }
 const geeRoutes = new GEERoutes();

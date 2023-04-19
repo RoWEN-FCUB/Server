@@ -22,6 +22,13 @@ class GEEController {
             });
         });
     }
+    getFuelPrices(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield database_1.default.query('SELECT configuracion.precio_dregular as precio_dregular, configuracion.precio_gregular as precio_gregular FROM configuracion;', function (error, results, fields) {
+                res.json(results[0]);
+            });
+        });
+    }
     listRecords(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
@@ -135,6 +142,14 @@ class GEEController {
             const { id } = req.params;
             const gee = yield database_1.default.query('DELETE FROM gee WHERE id = ?', [id], function (error, results, fields) {
                 res.json({ text: "GEE deleted" });
+            });
+        });
+    }
+    deleteCardRecord(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const gee = yield database_1.default.query('DELETE FROM tarjetas_registro WHERE id = ?', [id], function (error, results, fields) {
+                res.json({ text: "CardRecord deleted" });
             });
         });
     }
