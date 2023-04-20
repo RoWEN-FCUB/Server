@@ -19,6 +19,7 @@ class GEERoutes{
         this.router.post('/', geeController.create);
         this.router.post('/FCard', geeController.createFCard);
         this.router.post('/FCardRecord', geeController.createCardRecord);
+        this.router.post('/changeFuelPrice', geeController.changeFuelPrice);
         this.router.put('/:id', geeController.update);
         this.router.delete('/:id', geeController.delete);
         this.router.delete('/deleteCardRecord/:id', geeController.deleteCardRecord);

@@ -75,12 +75,37 @@ class GEEController {
     createFCard(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;
-            yield database_1.default.query('INSERT INTO tarjetas SET ?', [req.body], function (error, results, fields) {
-                if (error) {
-                    console.log(error);
+            const id_usuario = req.body.id_usuario;
+            delete req.body.id_usuario; // delete id_usuario from request to avoid circular reference when using the function later on.
+            yield database_1.default.query('SELECT * FROM configuracion', (error, configuracion, fields) => __awaiter(this, void 0, void 0, function* () {
+                let precio_combustible = 0;
+                if (req.body.tipo_combustible === 'Diesel Regular') {
+                    precio_combustible = configuracion[0].precio_dregular;
                 }
-                res.json({ message: 'FCard saved' });
-            });
+                else if (req.body.tipo_combustible === 'Gasolina') {
+                    precio_combustible = configuracion[0].precio_gregular;
+                }
+                yield database_1.default.query('INSERT INTO tarjetas SET ?', [req.body], function (error, results, fields) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        if (error) {
+                            console.log(error);
+                        }
+                        const newRecord = {
+                            id_tarjeta: results.insertId,
+                            id_gee: req.body.id_gee,
+                            id_usuario: id_usuario,
+                            fecha: new Date(),
+                            sinicial_pesos: req.body.saldo,
+                            sinicial_litros: geeController.round(req.body.saldo / precio_combustible, 2),
+                            sfinal_pesos: req.body.saldo,
+                            sfinal_litros: geeController.round(req.body.saldo / precio_combustible, 2), // round to 2 decimals, because the database only accepts numbers.
+                        };
+                        yield database_1.default.query('INSERT INTO tarjetas_registro SET ?', [newRecord], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
+                            res.json({ message: 'FCard saved' });
+                        }));
+                    });
+                });
+            }));
         });
     }
     createCardRecord(req, res) {
@@ -92,7 +117,6 @@ class GEEController {
                 console.log(tipo_combustible);
                 yield database_1.default.query('SELECT * FROM configuracion', (error, configuracion, fields) => __awaiter(this, void 0, void 0, function* () {
                     let precio_combustible = 0;
-                    console.log(configuracion);
                     if (tipo_combustible === 'Diesel Regular') {
                         precio_combustible = configuracion[0].precio_dregular;
                     }
@@ -108,12 +132,55 @@ class GEEController {
                     if (req.body.consumo_pesos) {
                         req.body.consumo_litros = geeController.round(req.body.consumo_pesos / precio_combustible, 2);
                     }
-                    console.log(req.body);
-                    yield database_1.default.query('INSERT INTO tarjetas_registro SET ?', [req.body], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
-                        res.json({ message: 'FCard Record saved' });
+                    yield database_1.default.query('UPDATE tarjetas SET saldo = ? WHERE id = ?', [req.body.sfinal_pesos, req.body.id_tarjeta], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
+                        yield database_1.default.query('INSERT INTO tarjetas_registro SET ?', [req.body], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
+                            res.json({ message: 'FCard Record saved' });
+                        }));
                     }));
                 }));
             }));
+        });
+    }
+    changeFuelPrice(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const prevPrice = req.body.prevPrice; // Price before change
+            const newPrice = req.body.newPrice;
+            const fuelType = req.body.fuelType;
+            const id_usuario = req.body.id_usuario;
+            yield database_1.default.query("SELECT * FROM tarjetas WHERE tipo_combustible = ?;", [fuelType], function (error, tarjetas, fields) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    let new_records = [];
+                    for (let i = 0; i < tarjetas.length; i++) {
+                        let record = [
+                            tarjetas[i].id,
+                            tarjetas[i].id_gee,
+                            id_usuario,
+                            new Date(),
+                            tarjetas[i].saldo,
+                            geeController.round(tarjetas[i].saldo / prevPrice, 2),
+                            tarjetas[i].saldo,
+                            geeController.round(tarjetas[i].saldo / newPrice, 2),
+                            'Cambio de precio del ' + fuelType + ' de ' + prevPrice + ' a ' + newPrice,
+                        ];
+                        new_records.push(record);
+                    }
+                    yield database_1.default.query('INSERT INTO tarjetas_registro(id_tarjeta, id_gee, id_usuario, fecha, sinicial_pesos, sinicial_litros, sfinal_pesos, sfinal_litros, observacion) VALUES ?', [new_records], function (error, results, fields) {
+                        return __awaiter(this, void 0, void 0, function* () {
+                            let query = 'UPDATE configuracion SET ';
+                            if (fuelType === 'Diesel Regular') {
+                                query += 'precio_dregular';
+                            }
+                            else if (fuelType === 'Gasolina') {
+                                query += 'precio_gregular';
+                            }
+                            query += ' = ?'; // Price after change,
+                            yield database_1.default.query(query, [newPrice], function (error, result, fields) {
+                                res.json({ text: "Price updated" });
+                            });
+                        });
+                    });
+                });
+            });
         });
     }
     round(numb, precision) {
