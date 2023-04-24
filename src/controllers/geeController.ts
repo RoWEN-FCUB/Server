@@ -80,6 +80,9 @@ class GEEController {
                     sfinal_litros: geeController.round(req.body.saldo / precio_combustible, 2),	// round to 2 decimals, because the database only accepts numbers.
                 };
                 await pool.query('INSERT INTO tarjetas_registro SET ?', [newRecord], async (errors: any, result: any, fields:any) => {
+                    if (errors) {
+                        console.log(error);
+                    }
                     res.json({message: 'FCard saved'});
                 });
             });
@@ -186,6 +189,15 @@ class GEEController {
         const gee = await pool.query('DELETE FROM tarjetas_registro WHERE id = ?', [id], function(error: any, results: any, fields: any){            
             res.json({text:"CardRecord deleted"});
         });        
+    }
+
+    public async deleteFuelCard(req: Request, res: Response):  Promise<void> {
+        const {id} = req.params;            //id de la tarjeta a borrar.
+        await pool.query('DELETE FROM tarjetas_registro WHERE id_tarjeta = ?', [id], async function(error: any, results: any, fields: any) {
+            await pool.query('DELETE FROM tarjetas WHERE id = ?', [id], async function(error: any, results: any, fields: any) {
+                res.json({text:"Card deleted"});
+            });
+        });
     }
 }
 const geeController = new GEEController();

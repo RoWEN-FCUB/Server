@@ -101,6 +101,9 @@ class GEEController {
                             sfinal_litros: geeController.round(req.body.saldo / precio_combustible, 2), // round to 2 decimals, because the database only accepts numbers.
                         };
                         yield database_1.default.query('INSERT INTO tarjetas_registro SET ?', [newRecord], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
+                            if (errors) {
+                                console.log(error);
+                            }
                             res.json({ message: 'FCard saved' });
                         }));
                     });
@@ -217,6 +220,20 @@ class GEEController {
             const { id } = req.params;
             const gee = yield database_1.default.query('DELETE FROM tarjetas_registro WHERE id = ?', [id], function (error, results, fields) {
                 res.json({ text: "CardRecord deleted" });
+            });
+        });
+    }
+    deleteFuelCard(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params; //id de la tarjeta a borrar.
+            yield database_1.default.query('DELETE FROM tarjetas_registro WHERE id_tarjeta = ?', [id], function (error, results, fields) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    yield database_1.default.query('DELETE FROM tarjetas WHERE id = ?', [id], function (error, results, fields) {
+                        return __awaiter(this, void 0, void 0, function* () {
+                            res.json({ text: "Card deleted" });
+                        });
+                    });
+                });
             });
         });
     }

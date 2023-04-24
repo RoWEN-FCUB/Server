@@ -23,6 +23,7 @@ class GEERoutes{
         this.router.put('/:id', geeController.update);
         this.router.delete('/:id', geeController.delete);
         this.router.delete('/deleteCardRecord/:id', geeController.deleteCardRecord);
+        this.router.delete('/deleteFuelCard/:id', geeController.deleteFuelCard);
     }
 }
 const geeRoutes = new GEERoutes();
