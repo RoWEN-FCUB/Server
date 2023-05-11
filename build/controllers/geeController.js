@@ -17,7 +17,7 @@ class GEEController {
     constructor() { }
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const gees = yield database_1.default.query("SELECT gee.id, gee.id_emp, gee.id_serv, gee.idgee, gee.marca, gee.kva, gee.ic_scarga, gee.ic_ccargad, gee.ic_ccargan, empresas.siglas as empresa, servicios.nombre as servicio, servicios.provincia as provincia, servicios.municipio as municipio FROM gee INNER JOIN empresas ON (gee.id_emp = empresas.id) INNER JOIN servicios ON (gee.id_serv = servicios.id);", function (error, results, fields) {
+            const gees = yield database_1.default.query("SELECT gee.*, empresas.siglas as empresa, servicios.nombre as servicio, servicios.provincia as provincia, servicios.municipio as municipio FROM gee INNER JOIN empresas ON (gee.id_emp = empresas.id) INNER JOIN servicios ON (gee.id_serv = servicios.id);", function (error, results, fields) {
                 res.json(results);
             });
         });
@@ -198,7 +198,7 @@ class GEEController {
             delete req.body.servicio;
             delete req.body.provincia;
             delete req.body.municipio;
-            // console.log(req.body);
+            console.log(req.body);
             const result = database_1.default.query('UPDATE gee set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
                 if (error) {
                     console.log(error);

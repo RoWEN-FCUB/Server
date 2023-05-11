@@ -5,7 +5,7 @@ class GEEController {
     constructor() {}
 
     public async list (req: Request, res: Response): Promise<void>{
-        const gees = await pool.query("SELECT gee.id, gee.id_emp, gee.id_serv, gee.idgee, gee.marca, gee.kva, gee.ic_scarga, gee.ic_ccargad, gee.ic_ccargan, empresas.siglas as empresa, servicios.nombre as servicio, servicios.provincia as provincia, servicios.municipio as municipio FROM gee INNER JOIN empresas ON (gee.id_emp = empresas.id) INNER JOIN servicios ON (gee.id_serv = servicios.id);", function(error: any, results: any, fields: any){            
+        const gees = await pool.query("SELECT gee.*, empresas.siglas as empresa, servicios.nombre as servicio, servicios.provincia as provincia, servicios.municipio as municipio FROM gee INNER JOIN empresas ON (gee.id_emp = empresas.id) INNER JOIN servicios ON (gee.id_serv = servicios.id);", function(error: any, results: any, fields: any){            
             res.json(results);        
         });
     }
@@ -168,7 +168,7 @@ class GEEController {
         delete req.body.servicio;
         delete req.body.provincia;
         delete req.body.municipio;
-        // console.log(req.body);
+        console.log(req.body);
         const result = pool.query('UPDATE gee set ? WHERE id = ?', [req.body,id], function(error: any, results: any, fields: any){            
             if (error) {
                 console.log(error);
