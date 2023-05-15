@@ -37,6 +37,13 @@ class GEEController {
         });
     }
 
+    public async listTanksbyGEE (req: Request, res: Response):  Promise<void>{
+        const {id_gee} = req.params;
+        const gees = await pool.query("SELECT * FROM gee_tanque WHERE id_gee = ?;", [id_gee], function(error: any, results: any, fields: any){            
+            res.json(results);
+        });
+    }
+
     public async listCardsRecords (req: Request, res: Response):  Promise<void>{
         const {id_card} = req.params;
         const gees = await pool.query("SELECT * FROM tarjetas_registro WHERE id_tarjeta = ? ORDER BY id ASC;", [id_card], function(error: any, results: any, fields: any){            
@@ -78,6 +85,7 @@ class GEEController {
                     sinicial_litros: geeController.round(req.body.saldo / precio_combustible, 2),	// round to 2 decimals, because the database only accepts numbers.
                     sfinal_pesos: req.body.saldo,
                     sfinal_litros: geeController.round(req.body.saldo / precio_combustible, 2),	// round to 2 decimals, because the database only accepts numbers.
+                    observacion: 'Tarjeta agregada al registro.'
                 };
                 await pool.query('INSERT INTO tarjetas_registro SET ?', [newRecord], async (errors: any, result: any, fields:any) => {
                     if (errors) {
@@ -92,8 +100,9 @@ class GEEController {
     public async createCardRecord(req: Request, res: Response):  Promise<void>{
         delete req.body.id;
         req.body.fecha = req.body.fecha.substring(0, req.body.fecha.indexOf('T'));
-        await pool.query('SELECT tipo_combustible FROM tarjetas WHERE id = ?',[req.body.id_tarjeta], async (error: any, results: any, fields: any) =>{
+        await pool.query('SELECT tipo_combustible, id_gee FROM tarjetas WHERE id = ?',[req.body.id_tarjeta], async (error: any, results: any, fields: any) =>{
             const tipo_combustible = results[0].tipo_combustible;
+            const id_gee = results[0].id_gee;
             console.log(tipo_combustible);
             await pool.query('SELECT * FROM configuracion', async (error: any, configuracion: any, fields: any) =>{
                 let precio_combustible = 0;
@@ -110,6 +119,13 @@ class GEEController {
                 }
                 if (req.body.consumo_pesos) {
                     req.body.consumo_litros = geeController.round(req.body.consumo_pesos / precio_combustible, 2);
+                    const tankRecord = {
+                        id_gee: id_gee,
+                        fecha: req.body.fecha,
+                        entrada: req.body.consumo_litros,
+                        id_usuario: req.body.id_usuario,
+                    };
+                    await pool.query('INSERT INTO gee_tanque SET ?', [tankRecord]);
                 }
                 await pool.query('UPDATE tarjetas SET saldo = ? WHERE id = ?', [req.body.sfinal_pesos, req.body.id_tarjeta], async (errors: any, result: any, fields:any) => {
                     await pool.query('INSERT INTO tarjetas_registro SET ?', [req.body], async (errors: any, result: any, fields:any) => {

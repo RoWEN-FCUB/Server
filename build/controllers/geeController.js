@@ -53,6 +53,14 @@ class GEEController {
             });
         });
     }
+    listTanksbyGEE(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_gee } = req.params;
+            const gees = yield database_1.default.query("SELECT * FROM gee_tanque WHERE id_gee = ?;", [id_gee], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
     listCardsRecords(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_card } = req.params;
@@ -98,7 +106,8 @@ class GEEController {
                             sinicial_pesos: req.body.saldo,
                             sinicial_litros: geeController.round(req.body.saldo / precio_combustible, 2),
                             sfinal_pesos: req.body.saldo,
-                            sfinal_litros: geeController.round(req.body.saldo / precio_combustible, 2), // round to 2 decimals, because the database only accepts numbers.
+                            sfinal_litros: geeController.round(req.body.saldo / precio_combustible, 2),
+                            observacion: 'Tarjeta agregada al registro.'
                         };
                         yield database_1.default.query('INSERT INTO tarjetas_registro SET ?', [newRecord], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
                             if (errors) {
@@ -115,8 +124,9 @@ class GEEController {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;
             req.body.fecha = req.body.fecha.substring(0, req.body.fecha.indexOf('T'));
-            yield database_1.default.query('SELECT tipo_combustible FROM tarjetas WHERE id = ?', [req.body.id_tarjeta], (error, results, fields) => __awaiter(this, void 0, void 0, function* () {
+            yield database_1.default.query('SELECT tipo_combustible, id_gee FROM tarjetas WHERE id = ?', [req.body.id_tarjeta], (error, results, fields) => __awaiter(this, void 0, void 0, function* () {
                 const tipo_combustible = results[0].tipo_combustible;
+                const id_gee = results[0].id_gee;
                 console.log(tipo_combustible);
                 yield database_1.default.query('SELECT * FROM configuracion', (error, configuracion, fields) => __awaiter(this, void 0, void 0, function* () {
                     let precio_combustible = 0;
@@ -134,6 +144,13 @@ class GEEController {
                     }
                     if (req.body.consumo_pesos) {
                         req.body.consumo_litros = geeController.round(req.body.consumo_pesos / precio_combustible, 2);
+                        const tankRecord = {
+                            id_gee: id_gee,
+                            fecha: req.body.fecha,
+                            entrada: req.body.consumo_litros,
+                            id_usuario: req.body.id_usuario,
+                        };
+                        yield database_1.default.query('INSERT INTO gee_tanque SET ?', [tankRecord]);
                     }
                     yield database_1.default.query('UPDATE tarjetas SET saldo = ? WHERE id = ?', [req.body.sfinal_pesos, req.body.id_tarjeta], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
                         yield database_1.default.query('INSERT INTO tarjetas_registro SET ?', [req.body], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {

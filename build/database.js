@@ -11,6 +11,7 @@ const pool = mysql.createPool(keys_1.default.database);
 const attemptConnection = () => pool.getConnection(function (err, connection) {
     if (err) {
         console.log('Error connecting to database. retrying in 5 sec');
+        console.log(err);
         setTimeout(attemptConnection, 5000);
     }
     else {
