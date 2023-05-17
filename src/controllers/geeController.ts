@@ -16,6 +16,24 @@ class GEEController {
         });
     }
 
+    public async getFuelExistenceByGee(req: Request, res: Response): Promise <void> {
+        const {id_gee} = req.params;
+        let existence = 0;
+        await pool.query("SELECT SUM(sfinal_litros) as saldofinal FROM (SELECT id, sfinal_litros FROM tarjetas_registro WHERE id_gee = ? HAVING id IN (SELECT max(id) FROM tarjetas_registro WHERE id_gee = ? GROUP BY id_tarjeta)) as subquery", [id_gee, id_gee], async function(error: any, results: any, fields: any){
+            if (results.length > 0) {
+                console.log(results);
+                existence += results[0].saldofinal;  // saldofinal en tarjetas
+            }
+            await pool.query("SELECT existencia FROM gee_tanque WHERE id_gee = ? ORDER BY id DESC LIMIT 1", [id_gee], 	function(error: any, results: any, fields: any) {
+                if (results.length > 0) {
+                    console.log(results);
+                    existence += results[0].existencia;  // existencia en tanque
+                }
+                res.json({existencia: existence});
+            });
+        });
+    }
+
     public async listRecords (req: Request, res: Response): Promise<void>{
         const {id} = req.params;
         const gees = await pool.query("SELECT * FROM gee_registro WHERE id_gee = ? ORDER BY id DESC;", [id], function(error: any, results: any, fields: any){            
@@ -39,14 +57,14 @@ class GEEController {
 
     public async listTanksbyGEE (req: Request, res: Response):  Promise<void>{
         const {id_gee} = req.params;
-        const gees = await pool.query("SELECT * FROM gee_tanque WHERE id_gee = ?;", [id_gee], function(error: any, results: any, fields: any){            
+        const gees = await pool.query("SELECT * FROM gee_tanque WHERE id_gee = ? ORDER BY id DESC;", [id_gee], function(error: any, results: any, fields: any){            
             res.json(results);
         });
     }
 
     public async listCardsRecords (req: Request, res: Response):  Promise<void>{
         const {id_card} = req.params;
-        const gees = await pool.query("SELECT * FROM tarjetas_registro WHERE id_tarjeta = ? ORDER BY id ASC;", [id_card], function(error: any, results: any, fields: any){            
+        const gees = await pool.query("SELECT * FROM tarjetas_registro WHERE id_tarjeta = ? ORDER BY id DESC;", [id_card], function(error: any, results: any, fields: any){            
             res.json(results);
         });
     }

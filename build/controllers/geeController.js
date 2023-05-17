@@ -29,6 +29,27 @@ class GEEController {
             });
         });
     }
+    getFuelExistenceByGee(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_gee } = req.params;
+            let existence = 0;
+            yield database_1.default.query("SELECT SUM(sfinal_litros) as saldofinal FROM (SELECT id, sfinal_litros FROM tarjetas_registro WHERE id_gee = ? HAVING id IN (SELECT max(id) FROM tarjetas_registro WHERE id_gee = ? GROUP BY id_tarjeta)) as subquery", [id_gee, id_gee], function (error, results, fields) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    if (results.length > 0) {
+                        console.log(results);
+                        existence += results[0].saldofinal; // saldofinal en tarjetas
+                    }
+                    yield database_1.default.query("SELECT existencia FROM gee_tanque WHERE id_gee = ? ORDER BY id DESC LIMIT 1", [id_gee], function (error, results, fields) {
+                        if (results.length > 0) {
+                            console.log(results);
+                            existence += results[0].existencia; // existencia en tanque
+                        }
+                        res.json({ existencia: existence });
+                    });
+                });
+            });
+        });
+    }
     listRecords(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
@@ -56,7 +77,7 @@ class GEEController {
     listTanksbyGEE(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_gee } = req.params;
-            const gees = yield database_1.default.query("SELECT * FROM gee_tanque WHERE id_gee = ?;", [id_gee], function (error, results, fields) {
+            const gees = yield database_1.default.query("SELECT * FROM gee_tanque WHERE id_gee = ? ORDER BY id DESC;", [id_gee], function (error, results, fields) {
                 res.json(results);
             });
         });
@@ -64,7 +85,7 @@ class GEEController {
     listCardsRecords(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_card } = req.params;
-            const gees = yield database_1.default.query("SELECT * FROM tarjetas_registro WHERE id_tarjeta = ? ORDER BY id ASC;", [id_card], function (error, results, fields) {
+            const gees = yield database_1.default.query("SELECT * FROM tarjetas_registro WHERE id_tarjeta = ? ORDER BY id DESC;", [id_card], function (error, results, fields) {
                 res.json(results);
             });
         });
