@@ -53,9 +53,23 @@ class GEEController {
     }
     listRecords(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id } = req.params;
-            const gees = yield database_1.default.query("SELECT * FROM gee_registro WHERE id_gee = ? ORDER BY id DESC;", [id], function (error, results, fields) {
-                res.json(results);
+            const id = Number(req.params.id);
+            const page = Number(req.params.page);
+            const limit = Number(req.params.limit);
+            yield database_1.default.query("SELECT count(id) as total_records FROM gee_registro WHERE id_gee = ?;", [id], function (error, results, fields) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    if (error) {
+                        console.log(error);
+                    }
+                    const count = results[0].total_records; // numero de registros del gee a mostrar
+                    console.log(results);
+                    yield database_1.default.query("SELECT * FROM gee_registro WHERE id_gee = ? ORDER BY id DESC LIMIT ? OFFSET ?;", [id, limit, ((page - 1) * limit)], (error, results, fields) => {
+                        if (error) {
+                            console.log(error);
+                        }
+                        res.json({ records: results, total_items: count });
+                    });
+                });
             });
         });
     }

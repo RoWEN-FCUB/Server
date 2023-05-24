@@ -14,7 +14,7 @@ class GEERoutes {
         this.router.get('/list/', geeController_1.default.list);
         this.router.get('/fuelPrices/', geeController_1.default.getFuelPrices);
         this.router.get('/listGEEByUser/:id', geeController_1.default.listGEEByUser);
-        this.router.get('/listGEERecords/:id', geeController_1.default.listRecords);
+        this.router.get('/listGEERecords/:id&:page&:limit', geeController_1.default.listRecords);
         this.router.get('/listCardsByGEE/:id_gee', geeController_1.default.listCardsbyGEE);
         this.router.get('/listTanksByGEE/:id_gee', geeController_1.default.listTanksbyGEE);
         this.router.get('/getTotalExistence/:id_gee', geeController_1.default.getFuelExistenceByGee);

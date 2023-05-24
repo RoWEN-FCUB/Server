@@ -36,10 +36,22 @@ class GEEController {
     }
 
     public async listRecords (req: Request, res: Response): Promise<void>{
-        const {id} = req.params;
-        const gees = await pool.query("SELECT * FROM gee_registro WHERE id_gee = ? ORDER BY id DESC;", [id], function(error: any, results: any, fields: any){            
-            res.json(results);        
-        });
+        const id: number = Number(req.params.id);
+        const page: number = Number(req.params.page);
+        const limit: number = Number(req.params.limit);
+        await pool.query("SELECT count(id) as total_records FROM gee_registro WHERE id_gee = ?;", [id], async function(error: any, results: any, fields: any){
+            if(error) {
+                console.log(error);
+            }
+            const count = results[0].total_records;  // numero de registros del gee a mostrar
+            console.log(results);
+            await pool.query("SELECT * FROM gee_registro WHERE id_gee = ? ORDER BY id DESC LIMIT ? OFFSET ?;", [id, limit, ((page - 1) * limit)], (error: any, results: any, fields: any) => {            
+                if(error) {
+                    console.log(error);
+                }
+                res.json({records :results, total_items: count});
+            });
+        });        
     }
     
     public async listGEEByUser (req: Request, res: Response): Promise<void>{
