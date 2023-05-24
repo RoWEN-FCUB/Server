@@ -20,6 +20,7 @@ class GEERoutes {
         this.router.get('/getTotalExistence/:id_gee', geeController_1.default.getFuelExistenceByGee);
         this.router.get('/listCardsRecords/:id_card', geeController_1.default.listCardsRecords);
         this.router.post('/', geeController_1.default.create);
+        this.router.post('/GRecord', geeController_1.default.createGRecord);
         this.router.post('/FCard', geeController_1.default.createFCard);
         this.router.post('/FCardRecord', geeController_1.default.createCardRecord);
         this.router.post('/changeFuelPrice', geeController_1.default.changeFuelPrice);
