@@ -61,8 +61,7 @@ class GEEController {
                     if (error) {
                         console.log(error);
                     }
-                    const count = results[0].total_records; // numero de registros del gee a mostrar
-                    console.log(results);
+                    const count = results[0].total_records;
                     yield database_1.default.query("SELECT * FROM gee_registro WHERE id_gee = ? ORDER BY id DESC LIMIT ? OFFSET ?;", [id, limit, ((page - 1) * limit)], (error, results, fields) => {
                         if (error) {
                             console.log(error);
@@ -91,18 +90,34 @@ class GEEController {
     }
     listTanksbyGEE(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id_gee } = req.params;
-            const gees = yield database_1.default.query("SELECT * FROM gee_tanque WHERE id_gee = ? ORDER BY id DESC;", [id_gee], function (error, results, fields) {
-                res.json(results);
-            });
+            const id_gee = Number(req.params.id_gee);
+            const page = Number(req.params.page);
+            const limit = Number(req.params.limit);
+            yield database_1.default.query("SELECT count(id) as total_records FROM gee_tanque WHERE id_gee = ?;", [id_gee], (error, results, fields) => __awaiter(this, void 0, void 0, function* () {
+                if (error) {
+                    console.log(error);
+                }
+                const count = results[0].total_records;
+                yield database_1.default.query("SELECT * FROM gee_tanque WHERE id_gee = ? ORDER BY id DESC LIMIT ? OFFSET ?;", [id_gee, limit, ((page - 1) * limit)], function (error, results, fields) {
+                    res.json({ records: results, total_items: count });
+                });
+            }));
         });
     }
     listCardsRecords(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { id_card } = req.params;
-            const gees = yield database_1.default.query("SELECT * FROM tarjetas_registro WHERE id_tarjeta = ? ORDER BY id DESC;", [id_card], function (error, results, fields) {
-                res.json(results);
-            });
+            const id_card = Number(req.params.id_card);
+            const page = Number(req.params.page);
+            const limit = Number(req.params.limit);
+            yield database_1.default.query("SELECT count(*) as total_records FROM tarjetas_registro WHERE id_tarjeta = ? ORDER BY id DESC;", [id_card], (error, results, fields) => __awaiter(this, void 0, void 0, function* () {
+                if (error) {
+                    console.log(error);
+                }
+                const count = results[0].total_records;
+                yield database_1.default.query("SELECT * FROM tarjetas_registro WHERE id_tarjeta = ? ORDER BY id DESC LIMIT ? OFFSET ?;", [id_card, limit, ((page - 1) * limit)], function (error, results, fields) {
+                    res.json({ records: results, total_items: count });
+                });
+            }));
         });
     }
     create(req, res) {
@@ -287,15 +302,23 @@ class GEEController {
     delete(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const gee = yield database_1.default.query('DELETE FROM gee WHERE id = ?', [id], function (error, results, fields) {
+            yield database_1.default.query('DELETE FROM gee WHERE id = ?', [id], function (error, results, fields) {
                 res.json({ text: "GEE deleted" });
+            });
+        });
+    }
+    deleteGEERecord(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            yield database_1.default.query('DELETE FROM gee_registro WHERE id = ?', [id], function (error, results, fields) {
+                res.json({ text: "GEERecord deleted" });
             });
         });
     }
     deleteCardRecord(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const gee = yield database_1.default.query('DELETE FROM tarjetas_registro WHERE id = ?', [id], function (error, results, fields) {
+            yield database_1.default.query('DELETE FROM tarjetas_registro WHERE id = ?', [id], function (error, results, fields) {
                 res.json({ text: "CardRecord deleted" });
             });
         });

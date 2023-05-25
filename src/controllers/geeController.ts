@@ -43,8 +43,7 @@ class GEEController {
             if(error) {
                 console.log(error);
             }
-            const count = results[0].total_records;  // numero de registros del gee a mostrar
-            console.log(results);
+            const count = results[0].total_records;
             await pool.query("SELECT * FROM gee_registro WHERE id_gee = ? ORDER BY id DESC LIMIT ? OFFSET ?;", [id, limit, ((page - 1) * limit)], (error: any, results: any, fields: any) => {            
                 if(error) {
                     console.log(error);
@@ -69,16 +68,32 @@ class GEEController {
     }
 
     public async listTanksbyGEE (req: Request, res: Response):  Promise<void>{
-        const {id_gee} = req.params;
-        const gees = await pool.query("SELECT * FROM gee_tanque WHERE id_gee = ? ORDER BY id DESC;", [id_gee], function(error: any, results: any, fields: any){            
-            res.json(results);
+        const id_gee: number = Number(req.params.id_gee);
+        const page: number = Number(req.params.page);
+        const limit: number = Number(req.params.limit);
+        await pool.query("SELECT count(id) as total_records FROM gee_tanque WHERE id_gee = ?;", [id_gee], async (error: any, results: any, fields: any) => {            
+            if(error) {
+                console.log(error);
+            }
+            const count = results[0].total_records;
+            await pool.query("SELECT * FROM gee_tanque WHERE id_gee = ? ORDER BY id DESC LIMIT ? OFFSET ?;", [id_gee, limit, ((page - 1) * limit)], function(error: any, results: any, fields: any){            
+                res.json({records :results, total_items: count});
+            });    
         });
     }
 
     public async listCardsRecords (req: Request, res: Response):  Promise<void>{
-        const {id_card} = req.params;
-        const gees = await pool.query("SELECT * FROM tarjetas_registro WHERE id_tarjeta = ? ORDER BY id DESC;", [id_card], function(error: any, results: any, fields: any){            
-            res.json(results);
+        const id_card: number = Number(req.params.id_card);
+        const page: number = Number(req.params.page);
+        const limit: number = Number(req.params.limit);
+        await pool.query("SELECT count(*) as total_records FROM tarjetas_registro WHERE id_tarjeta = ? ORDER BY id DESC;", [id_card], async (error: any, results: any, fields: any) => {            
+            if(error) {
+                console.log(error);
+            }
+            const count = results[0].total_records;
+            await pool.query("SELECT * FROM tarjetas_registro WHERE id_tarjeta = ? ORDER BY id DESC LIMIT ? OFFSET ?;", [id_card, limit, ((page - 1) * limit)], function(error: any, results: any, fields: any){            
+                res.json({records :results, total_items: count});
+            });
         });
     }
 
@@ -249,14 +264,21 @@ class GEEController {
 
     public async delete(req: Request, res: Response): Promise<void>{
         const {id} = req.params;
-        const gee = await pool.query('DELETE FROM gee WHERE id = ?', [id], function(error: any, results: any, fields: any){            
+        await pool.query('DELETE FROM gee WHERE id = ?', [id], function(error: any, results: any, fields: any){            
             res.json({text:"GEE deleted"});
+        });        
+    }
+
+    public async deleteGEERecord(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        await pool.query('DELETE FROM gee_registro WHERE id = ?', [id], function(error: any, results: any, fields: any){            
+            res.json({text:"GEERecord deleted"});
         });        
     }
 
     public async deleteCardRecord(req: Request, res: Response): Promise<void>{
         const {id} = req.params;
-        const gee = await pool.query('DELETE FROM tarjetas_registro WHERE id = ?', [id], function(error: any, results: any, fields: any){            
+        await pool.query('DELETE FROM tarjetas_registro WHERE id = ?', [id], function(error: any, results: any, fields: any){            
             res.json({text:"CardRecord deleted"});
         });        
     }

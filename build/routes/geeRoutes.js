@@ -16,9 +16,9 @@ class GEERoutes {
         this.router.get('/listGEEByUser/:id', geeController_1.default.listGEEByUser);
         this.router.get('/listGEERecords/:id&:page&:limit', geeController_1.default.listRecords);
         this.router.get('/listCardsByGEE/:id_gee', geeController_1.default.listCardsbyGEE);
-        this.router.get('/listTanksByGEE/:id_gee', geeController_1.default.listTanksbyGEE);
+        this.router.get('/listTanksByGEE/:id_gee&:page&:limit', geeController_1.default.listTanksbyGEE);
         this.router.get('/getTotalExistence/:id_gee', geeController_1.default.getFuelExistenceByGee);
-        this.router.get('/listCardsRecords/:id_card', geeController_1.default.listCardsRecords);
+        this.router.get('/listCardsRecords/:id_card&:page&:limit', geeController_1.default.listCardsRecords);
         this.router.post('/', geeController_1.default.create);
         this.router.post('/GRecord', geeController_1.default.createGRecord);
         this.router.post('/FCard', geeController_1.default.createFCard);
@@ -26,6 +26,7 @@ class GEERoutes {
         this.router.post('/changeFuelPrice', geeController_1.default.changeFuelPrice);
         this.router.put('/:id', geeController_1.default.update);
         this.router.delete('/:id', geeController_1.default.delete);
+        this.router.delete('/deleteGEERecord/:id', geeController_1.default.deleteGEERecord);
         this.router.delete('/deleteCardRecord/:id', geeController_1.default.deleteCardRecord);
         this.router.delete('/deleteFuelCard/:id', geeController_1.default.deleteFuelCard);
     }
