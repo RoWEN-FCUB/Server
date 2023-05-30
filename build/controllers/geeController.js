@@ -133,26 +133,20 @@ class GEEController {
     }
     createGRecord(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let tank_records = [];
+            console.log(req.body);
+            //let tank_records: any[] = [];
             for (let i = 0; i < req.body.length; i++) {
                 req.body[i][6] = (0, moment_1.default)(req.body[i][6]).format('HH:mm');
                 req.body[i][7] = (0, moment_1.default)(req.body[i][7]).format('HH:mm');
-                let tank_record = [req.body[i][0], '20' + req.body[i][4] + '/' + req.body[i][3] + '/' + req.body[i][2], req.body[i][12], req.body[i][1]];
-                tank_records.push(tank_record);
+                /*let tank_record = [req.body[i][0], '20' + req.body[i][4] + '/' + req.body[i][3] + '/' + req.body[i][2], req.body[i][12], req.body[i][1]];
+                tank_records.push(tank_record);*/
             }
-            console.log(req.body);
-            console.log(tank_records);
-            yield database_1.default.query('INSERT INTO gee_registro (id_gee, id_usuario, D, M, A, tipo, hora_inicial, hora_final, horametro_inicial, horametro_final, tiempo_trabajado, energia_generada, combustible_consumido, combustible_existencia, observaciones) VALUES ?', [req.body], (error, results, fields) => __awaiter(this, void 0, void 0, function* () {
+            yield database_1.default.query('INSERT INTO gee_registro (id_gee, id_usuario, D, M, A, tipo, hora_inicial, hora_final, horametro_inicial, horametro_final, tiempo_trabajado, energia_generada, combustible_consumido, combustible_existencia, observaciones) VALUES ?', [req.body], function (error, results, fields) {
                 if (error) {
                     console.log(error);
                 }
-                yield database_1.default.query('INSERT INTO gee_tanque (id_gee, fecha, salida, id_usuario) VALUES ?', [tank_records], (error, results, fields) => {
-                    if (error) {
-                        console.log(error);
-                    }
-                    res.json({ message: 'GEE Record saved' });
-                });
-            }));
+                res.json({ message: 'GEE Record saved' });
+            });
         });
     }
     createFCard(req, res) {
@@ -227,10 +221,8 @@ class GEEController {
                         };
                         yield database_1.default.query('INSERT INTO gee_tanque SET ?', [tankRecord]);
                     }
-                    yield database_1.default.query('UPDATE tarjetas SET saldo = ? WHERE id = ?', [req.body.sfinal_pesos, req.body.id_tarjeta], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
-                        yield database_1.default.query('INSERT INTO tarjetas_registro SET ?', [req.body], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
-                            res.json({ message: 'FCard Record saved' });
-                        }));
+                    yield database_1.default.query('INSERT INTO tarjetas_registro SET ?', [req.body], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
+                        res.json({ message: 'FCard Record saved' });
                     }));
                 }));
             }));

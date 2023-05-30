@@ -108,25 +108,19 @@ class GEEController {
     }
 
     public async createGRecord(req: Request, res: Response): Promise<void>{
-        let tank_records: any[] = [];
+        console.log(req.body);
+        //let tank_records: any[] = [];
         for(let i = 0; i < req.body.length; i++) {
             req.body[i][6] = moment(req.body[i][6]).format('HH:mm');
             req.body[i][7] = moment(req.body[i][7]).format('HH:mm');
-            let tank_record = [req.body[i][0], '20' + req.body[i][4] + '/' + req.body[i][3] + '/' + req.body[i][2], req.body[i][12], req.body[i][1]];
-            tank_records.push(tank_record);
+            /*let tank_record = [req.body[i][0], '20' + req.body[i][4] + '/' + req.body[i][3] + '/' + req.body[i][2], req.body[i][12], req.body[i][1]];
+            tank_records.push(tank_record);*/
         }
-        console.log(req.body);
-        console.log(tank_records);
-        await pool.query('INSERT INTO gee_registro (id_gee, id_usuario, D, M, A, tipo, hora_inicial, hora_final, horametro_inicial, horametro_final, tiempo_trabajado, energia_generada, combustible_consumido, combustible_existencia, observaciones) VALUES ?', [req.body], async (error: any, results: any, fields: any) => {
+        await pool.query('INSERT INTO gee_registro (id_gee, id_usuario, D, M, A, tipo, hora_inicial, hora_final, horametro_inicial, horametro_final, tiempo_trabajado, energia_generada, combustible_consumido, combustible_existencia, observaciones) VALUES ?', [req.body], function (error: any, results: any, fields: any){
             if (error) {
                 console.log(error);
             }
-            await pool.query('INSERT INTO gee_tanque (id_gee, fecha, salida, id_usuario) VALUES ?', [tank_records], (error: any, results: any, fields: any) => {
-                if (error) {
-                    console.log(error);
-                }
-                res.json({message: 'GEE Record saved'});
-            });
+            res.json({message: 'GEE Record saved'});
         });
     }
 
@@ -196,10 +190,8 @@ class GEEController {
                     };
                     await pool.query('INSERT INTO gee_tanque SET ?', [tankRecord]);
                 }
-                await pool.query('UPDATE tarjetas SET saldo = ? WHERE id = ?', [req.body.sfinal_pesos, req.body.id_tarjeta], async (errors: any, result: any, fields:any) => {
-                    await pool.query('INSERT INTO tarjetas_registro SET ?', [req.body], async (errors: any, result: any, fields:any) => {
-                        res.json({message: 'FCard Record saved'});
-                    });
+                await pool.query('INSERT INTO tarjetas_registro SET ?', [req.body], async (errors: any, result: any, fields:any) => {
+                    res.json({message: 'FCard Record saved'});
                 });
             });
         });
