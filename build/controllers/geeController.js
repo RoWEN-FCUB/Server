@@ -193,20 +193,24 @@ class GEEController {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;
             req.body.fecha = req.body.fecha.substring(0, req.body.fecha.indexOf('T'));
-            yield database_1.default.query('SELECT tipo_combustible, id_gee FROM tarjetas WHERE id = ?', [req.body.id_tarjeta], (error, results, fields) => __awaiter(this, void 0, void 0, function* () {
+            console.log(req.body);
+            yield database_1.default.query('INSERT INTO tarjetas_registro SET ?', [req.body], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
+                res.json({ message: 'FCard Record saved' });
+            }));
+            /*
+            await pool.query('SELECT tipo_combustible, id_gee FROM tarjetas WHERE id = ?',[req.body.id_tarjeta], async (error: any, results: any, fields: any) =>{
                 const tipo_combustible = results[0].tipo_combustible;
                 const id_gee = results[0].id_gee;
                 console.log(tipo_combustible);
-                yield database_1.default.query('SELECT * FROM configuracion', (error, configuracion, fields) => __awaiter(this, void 0, void 0, function* () {
+                await pool.query('SELECT * FROM configuracion', async (error: any, configuracion: any, fields: any) =>{
                     let precio_combustible = 0;
                     if (tipo_combustible === 'Diesel Regular') {
                         precio_combustible = configuracion[0].precio_dregular;
-                    }
-                    else if (tipo_combustible === 'Gasolina') {
+                    } else if (tipo_combustible === 'Gasolina') {
                         precio_combustible = configuracion[0].precio_gregular;
                     }
                     req.body.sinicial_litros = geeController.round(req.body.sinicial_pesos / precio_combustible, 2);
-                    req.body.sfinal_litros = geeController.round(req.body.sfinal_pesos / precio_combustible, 2);
+                    req.body.sfinal_litros = geeController.round(req.body.sfinal_pesos / precio_combustible , 2);
                     if (req.body.recarga_pesos) {
                         req.body.recarga_litros = geeController.round(req.body.recarga_pesos / precio_combustible, 2);
                         req.body.saldo_litros = geeController.round(req.body.saldo_pesos / precio_combustible, 2);
@@ -219,13 +223,13 @@ class GEEController {
                             entrada: req.body.consumo_litros,
                             id_usuario: req.body.id_usuario,
                         };
-                        yield database_1.default.query('INSERT INTO gee_tanque SET ?', [tankRecord]);
+                        await pool.query('INSERT INTO gee_tanque SET ?', [tankRecord]);
                     }
-                    yield database_1.default.query('INSERT INTO tarjetas_registro SET ?', [req.body], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
-                        res.json({ message: 'FCard Record saved' });
-                    }));
-                }));
-            }));
+                    await pool.query('INSERT INTO tarjetas_registro SET ?', [req.body], async (errors: any, result: any, fields:any) => {
+                        res.json({message: 'FCard Record saved'});
+                    });
+                });
+            });*/
         });
     }
     changeFuelPrice(req, res) {

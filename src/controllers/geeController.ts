@@ -163,6 +163,11 @@ class GEEController {
     public async createCardRecord(req: Request, res: Response):  Promise<void>{
         delete req.body.id;
         req.body.fecha = req.body.fecha.substring(0, req.body.fecha.indexOf('T'));
+        console.log(req.body);
+        await pool.query('INSERT INTO tarjetas_registro SET ?', [req.body], async (errors: any, result: any, fields:any) => {
+            res.json({message: 'FCard Record saved'});
+        });
+        /*
         await pool.query('SELECT tipo_combustible, id_gee FROM tarjetas WHERE id = ?',[req.body.id_tarjeta], async (error: any, results: any, fields: any) =>{
             const tipo_combustible = results[0].tipo_combustible;
             const id_gee = results[0].id_gee;
@@ -194,7 +199,7 @@ class GEEController {
                     res.json({message: 'FCard Record saved'});
                 });
             });
-        });
+        });*/
     }
 
     public async changeFuelPrice(req: Request, res: Response): Promise<void> {
