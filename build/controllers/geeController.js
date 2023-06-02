@@ -23,10 +23,13 @@ class GEEController {
             });
         });
     }
-    getFuelPrices(req, res) {
+    getFuelTypes(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield database_1.default.query('SELECT configuracion.precio_dregular as precio_dregular, configuracion.precio_gregular as precio_gregular FROM configuracion;', function (error, results, fields) {
+            /*await pool.query('SELECT configuracion.precio_dregular as precio_dregular, configuracion.precio_gregular as precio_gregular FROM configuracion;', function(error: any, results: any, fields: any){
                 res.json(results[0]);
+            });*/
+            yield database_1.default.query('SELECT * FROM tipos_combustibles;', function (error, results, fields) {
+                res.json(results);
             });
         });
     }
@@ -75,7 +78,7 @@ class GEEController {
     listGEEByUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
-            const gees = yield database_1.default.query("SELECT gee.*, servicios.nombre as servicio, empresas.siglas as empresa, empresas.oace as oace FROM gee INNER JOIN usuario_servicio ON (gee.id_serv = usuario_servicio.id_servicio) INNER JOIN users ON (usuario_servicio.id_usuario = users.id) INNER JOIN servicios ON (gee.id_serv = servicios.id) INNER JOIN empresas ON (servicios.id_emp = empresas.id) WHERE users.id = ?;", [id], function (error, results, fields) {
+            yield database_1.default.query("SELECT gee.*, servicios.nombre as servicio, empresas.siglas as empresa, empresas.oace as oace FROM gee INNER JOIN usuario_servicio ON (gee.id_serv = usuario_servicio.id_servicio) INNER JOIN users ON (usuario_servicio.id_usuario = users.id) INNER JOIN servicios ON (gee.id_serv = servicios.id) INNER JOIN empresas ON (servicios.id_emp = empresas.id) WHERE users.id = ?;", [id], function (error, results, fields) {
                 res.json(results);
             });
         });
@@ -83,7 +86,7 @@ class GEEController {
     listCardsbyGEE(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_gee } = req.params;
-            const gees = yield database_1.default.query("SELECT * FROM tarjetas WHERE id_gee = ?;", [id_gee], function (error, results, fields) {
+            yield database_1.default.query("SELECT tarjetas.*, tipos_combustibles.precio AS precio_combustible FROM tarjetas LEFT JOIN tipos_combustibles ON (tarjetas.tipo_combustible = tipos_combustibles.id) WHERE id_gee = ?;", [id_gee], function (error, results, fields) {
                 res.json(results);
             });
         });
@@ -192,53 +195,21 @@ class GEEController {
     createCardRecord(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;
+            delete req.body.precio_combustible;
             req.body.fecha = req.body.fecha.substring(0, req.body.fecha.indexOf('T'));
-            console.log(req.body);
+            //console.log(req.body);
             yield database_1.default.query('INSERT INTO tarjetas_registro SET ?', [req.body], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
                 res.json({ message: 'FCard Record saved' });
             }));
-            /*
-            await pool.query('SELECT tipo_combustible, id_gee FROM tarjetas WHERE id = ?',[req.body.id_tarjeta], async (error: any, results: any, fields: any) =>{
-                const tipo_combustible = results[0].tipo_combustible;
-                const id_gee = results[0].id_gee;
-                console.log(tipo_combustible);
-                await pool.query('SELECT * FROM configuracion', async (error: any, configuracion: any, fields: any) =>{
-                    let precio_combustible = 0;
-                    if (tipo_combustible === 'Diesel Regular') {
-                        precio_combustible = configuracion[0].precio_dregular;
-                    } else if (tipo_combustible === 'Gasolina') {
-                        precio_combustible = configuracion[0].precio_gregular;
-                    }
-                    req.body.sinicial_litros = geeController.round(req.body.sinicial_pesos / precio_combustible, 2);
-                    req.body.sfinal_litros = geeController.round(req.body.sfinal_pesos / precio_combustible , 2);
-                    if (req.body.recarga_pesos) {
-                        req.body.recarga_litros = geeController.round(req.body.recarga_pesos / precio_combustible, 2);
-                        req.body.saldo_litros = geeController.round(req.body.saldo_pesos / precio_combustible, 2);
-                    }
-                    if (req.body.consumo_pesos) {
-                        req.body.consumo_litros = geeController.round(req.body.consumo_pesos / precio_combustible, 2);
-                        const tankRecord = {
-                            id_gee: id_gee,
-                            fecha: req.body.fecha,
-                            entrada: req.body.consumo_litros,
-                            id_usuario: req.body.id_usuario,
-                        };
-                        await pool.query('INSERT INTO gee_tanque SET ?', [tankRecord]);
-                    }
-                    await pool.query('INSERT INTO tarjetas_registro SET ?', [req.body], async (errors: any, result: any, fields:any) => {
-                        res.json({message: 'FCard Record saved'});
-                    });
-                });
-            });*/
         });
     }
     changeFuelPrice(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const prevPrice = req.body.prevPrice; // Price before change
-            const newPrice = req.body.newPrice;
-            const fuelType = req.body.fuelType;
+            console.log(req.body);
+            const newfuel = req.body.fuel;
+            const prevprice = req.body.prevprice;
             const id_usuario = req.body.id_usuario;
-            yield database_1.default.query("SELECT * FROM tarjetas WHERE tipo_combustible = ?;", [fuelType], function (error, tarjetas, fields) {
+            yield database_1.default.query("SELECT * FROM tarjetas WHERE tipo_combustible = ?;", [newfuel.id], function (error, tarjetas, fields) {
                 return __awaiter(this, void 0, void 0, function* () {
                     let new_records = [];
                     for (let i = 0; i < tarjetas.length; i++) {
@@ -248,24 +219,16 @@ class GEEController {
                             id_usuario,
                             new Date(),
                             tarjetas[i].saldo,
-                            geeController.round(tarjetas[i].saldo / prevPrice, 2),
+                            geeController.round(tarjetas[i].saldo / prevprice, 2),
                             tarjetas[i].saldo,
-                            geeController.round(tarjetas[i].saldo / newPrice, 2),
-                            'Cambio de precio del ' + fuelType + ' de ' + prevPrice + ' a ' + newPrice,
+                            geeController.round(tarjetas[i].saldo / newfuel.precio, 2),
+                            'Cambio de precio del ' + newfuel.tipo_combustible + ' de ' + prevprice + ' a ' + newfuel.precio,
                         ];
                         new_records.push(record);
                     }
                     yield database_1.default.query('INSERT INTO tarjetas_registro(id_tarjeta, id_gee, id_usuario, fecha, sinicial_pesos, sinicial_litros, sfinal_pesos, sfinal_litros, observacion) VALUES ?', [new_records], function (error, results, fields) {
                         return __awaiter(this, void 0, void 0, function* () {
-                            let query = 'UPDATE configuracion SET ';
-                            if (fuelType === 'Diesel Regular') {
-                                query += 'precio_dregular';
-                            }
-                            else if (fuelType === 'Gasolina') {
-                                query += 'precio_gregular';
-                            }
-                            query += ' = ?'; // Price after change,
-                            yield database_1.default.query(query, [newPrice], function (error, result, fields) {
+                            yield database_1.default.query('UPDATE tipos_combustibles SET ? WHERE id = ?', [newfuel, newfuel.id], function (error, result, fields) {
                                 res.json({ text: "Price updated" });
                             });
                         });
