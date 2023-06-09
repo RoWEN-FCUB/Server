@@ -20,6 +20,7 @@ class GEEController {
         });
     }
 
+    /*
     public async getFuelExistenceByGee(req: Request, res: Response): Promise <void> {
         const {id_gee} = req.params;
         let existence = 0;
@@ -36,7 +37,7 @@ class GEEController {
                 res.json({existencia: existence});
             });
         });
-    }
+    }*/
 
     public async listRecords (req: Request, res: Response): Promise<void>{
         const id: number = Number(req.params.id);
@@ -65,7 +66,7 @@ class GEEController {
 
     public async listCardsbyGEE (req: Request, res: Response):  Promise<void>{
         const {id_gee} = req.params;
-        await pool.query("SELECT tarjetas.*, tipos_combustibles.precio AS precio_combustible FROM tarjetas LEFT JOIN tipos_combustibles ON (tarjetas.tipo_combustible = tipos_combustibles.id) WHERE id_gee = ?;", [id_gee], function(error: any, results: any, fields: any){            
+        await pool.query("SELECT tarjetas.*, tipos_combustibles.precio AS precio_combustible, tipos_combustibles.tipo_combustible as nombre_combustible FROM tarjetas LEFT JOIN tipos_combustibles ON (tarjetas.tipo_combustible = tipos_combustibles.id) WHERE id_gee = ?;", [id_gee], function(error: any, results: any, fields: any){            
             res.json(results);
         });
     }
@@ -166,6 +167,7 @@ class GEEController {
     public async createCardRecord(req: Request, res: Response):  Promise<void>{
         delete req.body.id;
         delete req.body.precio_combustible;
+        delete req.body.nombre_combustible;
         req.body.fecha = req.body.fecha.substring(0, req.body.fecha.indexOf('T'));
         //console.log(req.body);
         await pool.query('INSERT INTO tarjetas_registro SET ?', [req.body], async (errors: any, result: any, fields:any) => {

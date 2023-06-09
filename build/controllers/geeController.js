@@ -33,27 +33,24 @@ class GEEController {
             });
         });
     }
-    getFuelExistenceByGee(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { id_gee } = req.params;
-            let existence = 0;
-            yield database_1.default.query("SELECT SUM(sfinal_litros) as saldofinal FROM (SELECT id, sfinal_litros FROM tarjetas_registro WHERE id_gee = ? HAVING id IN (SELECT max(id) FROM tarjetas_registro WHERE id_gee = ? GROUP BY id_tarjeta)) as subquery", [id_gee, id_gee], function (error, results, fields) {
-                return __awaiter(this, void 0, void 0, function* () {
-                    if (results.length > 0) {
-                        console.log(results);
-                        existence += results[0].saldofinal; // saldofinal en tarjetas
-                    }
-                    yield database_1.default.query("SELECT existencia FROM gee_tanque WHERE id_gee = ? ORDER BY id DESC LIMIT 1", [id_gee], function (error, results, fields) {
-                        if (results.length > 0) {
-                            console.log(results);
-                            existence += results[0].existencia; // existencia en tanque
-                        }
-                        res.json({ existencia: existence });
-                    });
-                });
+    /*
+    public async getFuelExistenceByGee(req: Request, res: Response): Promise <void> {
+        const {id_gee} = req.params;
+        let existence = 0;
+        await pool.query("SELECT SUM(sfinal_litros) as saldofinal FROM (SELECT id, sfinal_litros FROM tarjetas_registro WHERE id_gee = ? HAVING id IN (SELECT max(id) FROM tarjetas_registro WHERE id_gee = ? GROUP BY id_tarjeta)) as subquery", [id_gee, id_gee], async function(error: any, results: any, fields: any){
+            if (results.length > 0) {
+                console.log(results);
+                existence += results[0].saldofinal;  // saldofinal en tarjetas
+            }
+            await pool.query("SELECT existencia FROM gee_tanque WHERE id_gee = ? ORDER BY id DESC LIMIT 1", [id_gee], 	function(error: any, results: any, fields: any) {
+                if (results.length > 0) {
+                    console.log(results);
+                    existence += results[0].existencia;  // existencia en tanque
+                }
+                res.json({existencia: existence});
             });
         });
-    }
+    }*/
     listRecords(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = Number(req.params.id);
@@ -86,7 +83,7 @@ class GEEController {
     listCardsbyGEE(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id_gee } = req.params;
-            yield database_1.default.query("SELECT tarjetas.*, tipos_combustibles.precio AS precio_combustible FROM tarjetas LEFT JOIN tipos_combustibles ON (tarjetas.tipo_combustible = tipos_combustibles.id) WHERE id_gee = ?;", [id_gee], function (error, results, fields) {
+            yield database_1.default.query("SELECT tarjetas.*, tipos_combustibles.precio AS precio_combustible, tipos_combustibles.tipo_combustible as nombre_combustible FROM tarjetas LEFT JOIN tipos_combustibles ON (tarjetas.tipo_combustible = tipos_combustibles.id) WHERE id_gee = ?;", [id_gee], function (error, results, fields) {
                 res.json(results);
             });
         });
@@ -196,6 +193,7 @@ class GEEController {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;
             delete req.body.precio_combustible;
+            delete req.body.nombre_combustible;
             req.body.fecha = req.body.fecha.substring(0, req.body.fecha.indexOf('T'));
             //console.log(req.body);
             yield database_1.default.query('INSERT INTO tarjetas_registro SET ?', [req.body], (errors, result, fields) => __awaiter(this, void 0, void 0, function* () {
