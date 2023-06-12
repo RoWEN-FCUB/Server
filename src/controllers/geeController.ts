@@ -243,7 +243,7 @@ class GEEController {
         const {id} = req.params;
         await pool.query('DELETE FROM tarjetas_registro WHERE id = ?', [id], function(error: any, results: any, fields: any){            
             res.json({text:"CardRecord deleted"});
-        });        
+        });
     }
 
     public async deleteFuelCard(req: Request, res: Response):  Promise<void> {
