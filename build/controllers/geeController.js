@@ -235,6 +235,14 @@ class GEEController {
             });
         });
     }
+    adjustTankExistence(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const value = req.params.value;
+            yield database_1.default.query('UPDATE gee_tanque SET existencia = ? WHERE id = ?', [value, id], function (error, result, fields) {
+            });
+        });
+    }
     round(numb, precision) {
         const exp = Math.pow(10, precision);
         return Math.round((numb + Number.EPSILON) * exp) / exp;

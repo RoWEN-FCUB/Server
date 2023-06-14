@@ -204,6 +204,14 @@ class GEEController {
         });
     }
 
+    public async adjustTankExistence(req: Request, res: Response): Promise<void> {
+        const id = req.params.id;
+        const value = req.params.value;
+        await pool.query('UPDATE gee_tanque SET existencia = ? WHERE id = ?', [value, id], function (error: any, result: any, fields: any) {
+            
+        });
+    }
+
     public round(numb: number, precision: number) {
         const exp: number = Math.pow(10, precision);
         return Math.round( ( numb + Number.EPSILON ) * exp ) / exp;
