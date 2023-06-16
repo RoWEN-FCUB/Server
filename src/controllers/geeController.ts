@@ -205,10 +205,10 @@ class GEEController {
     }
 
     public async adjustTankExistence(req: Request, res: Response): Promise<void> {
-        const id = req.params.id;
-        const value = req.params.value;
-        await pool.query('UPDATE gee_tanque SET existencia = ? WHERE id = ?', [value, id], function (error: any, result: any, fields: any) {
-            
+        req.body.existencia = Number(req.body.existencia);
+        console.log(req.body);
+        await pool.query('INSERT INTO gee_tanque SET ?', [req.body], function (error: any, result: any, fields: any) {
+            res.json({message: 'GEETank fuel adjusted'});
         });
     }
 
