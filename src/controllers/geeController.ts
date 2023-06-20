@@ -59,7 +59,7 @@ class GEEController {
     
     public async listGEEByUser (req: Request, res: Response): Promise<void>{
         const {id} = req.params;
-        await pool.query("SELECT gee.*, servicios.nombre as servicio, empresas.siglas as empresa, empresas.oace as oace FROM gee INNER JOIN usuario_servicio ON (gee.id_serv = usuario_servicio.id_servicio) INNER JOIN users ON (usuario_servicio.id_usuario = users.id) INNER JOIN servicios ON (gee.id_serv = servicios.id) INNER JOIN empresas ON (servicios.id_emp = empresas.id) WHERE users.id = ?;", [id], function(error: any, results: any, fields: any){            
+        await pool.query("SELECT gee.*, servicios.nombre as servicio, servicios.provincia as provincia, servicios.municipio as municipio, empresas.siglas as empresa, empresas.oace as oace FROM gee INNER JOIN usuario_servicio ON (gee.id_serv = usuario_servicio.id_servicio) INNER JOIN users ON (usuario_servicio.id_usuario = users.id) INNER JOIN servicios ON (gee.id_serv = servicios.id) INNER JOIN empresas ON (servicios.id_emp = empresas.id) WHERE users.id = ?;", [id], function(error: any, results: any, fields: any){            
             res.json(results);        
         });
     }
