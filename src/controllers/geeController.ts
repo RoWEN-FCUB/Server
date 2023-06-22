@@ -56,6 +56,19 @@ class GEEController {
             });
         });        
     }
+
+    public async listRecordsByDate(req: Request, res: Response): Promise<void> {
+        const id: number = Number(req.params.id);
+        const fecha_inicial: string = req.params.fecha_inicial;
+        const fecha_final: string = req.params.fecha_final;
+        const query: string = "SELECT * FROM gee_registro WHERE id_gee = ? AND STR_TO_DATE(CONCAT(A, '-', M, '-', D), '%Y-%m-%d') >= ? AND STR_TO_DATE(CONCAT(A, '-', M, '-', D), '%Y-%m-%d') <= ? ORDER BY id ASC";
+        await pool.query(query, [id, fecha_inicial, fecha_final], (error: any, results: any, fields: any) => {
+            if(error) {
+                console.log(error);
+            }
+            res.json(results);
+        })
+    }
     
     public async listGEEByUser (req: Request, res: Response): Promise<void>{
         const {id} = req.params;
