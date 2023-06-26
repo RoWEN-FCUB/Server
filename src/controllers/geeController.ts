@@ -219,8 +219,11 @@ class GEEController {
 
     public async adjustTankExistence(req: Request, res: Response): Promise<void> {
         req.body.existencia = Number(req.body.existencia);
-        console.log(req.body);
+        req.body.fecha = String(req.body.fecha).substring(0, 10);
         await pool.query('INSERT INTO gee_tanque SET ?', [req.body], function (error: any, result: any, fields: any) {
+            if (error) {
+                console.log(error);
+            }
             res.json({message: 'GEETank fuel adjusted'});
         });
     }

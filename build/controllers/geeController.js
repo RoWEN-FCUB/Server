@@ -252,8 +252,11 @@ class GEEController {
     adjustTankExistence(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             req.body.existencia = Number(req.body.existencia);
-            console.log(req.body);
+            req.body.fecha = String(req.body.fecha).substring(0, 10);
             yield database_1.default.query('INSERT INTO gee_tanque SET ?', [req.body], function (error, result, fields) {
+                if (error) {
+                    console.log(error);
+                }
                 res.json({ message: 'GEETank fuel adjusted' });
             });
         });
