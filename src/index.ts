@@ -109,6 +109,13 @@ class Server{
 
     routes(): void{
         this.app.use('/public',express.static(dir));
+        this.app.use(function (err: any, req: any, res: any, next: any) {
+            if (err.name === "UnauthorizedError") {
+              res.status(401).send("invalid token...");
+            } else {
+              next(err);
+            }
+          });
         const RSA_PUBLIC_KEY = fs.readFileSync(this.slash(Path.join(__dirname, 'public.key')));
         this.app.use(jwt({secret: RSA_PUBLIC_KEY, algorithms: ['RS256'], onExpired: async (req: any, err: any) => {
             console.log('Token expirado');
