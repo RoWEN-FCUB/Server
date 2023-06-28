@@ -138,8 +138,13 @@ class Server {
         this.app.use(bodyParser.json());
     }
     routes() {
-        this.app.use('/public', express_1.default.static(dir));
+        const RSA_PUBLIC_KEY = fs.readFileSync(this.slash(path_1.default.join(__dirname, 'public.key')));
+        this.app.use(jwt({ secret: RSA_PUBLIC_KEY, algorithms: ['RS256'], onExpired: (req, err) => __awaiter(this, void 0, void 0, function* () {
+                console.log('Token expirado');
+                throw err;
+            }), credentialsRequired: true }).unless({ path: ['/user/login', '/user/refresh', { url: /^\/public\/.*/ }] }));
         this.app.use(function (err, req, res, next) {
+            console.log(err);
             if (err.name === "UnauthorizedError") {
                 res.status(401).send("invalid token...");
             }
@@ -147,11 +152,7 @@ class Server {
                 next(err);
             }
         });
-        const RSA_PUBLIC_KEY = fs.readFileSync(this.slash(path_1.default.join(__dirname, 'public.key')));
-        this.app.use(jwt({ secret: RSA_PUBLIC_KEY, algorithms: ['RS256'], onExpired: (req, err) => __awaiter(this, void 0, void 0, function* () {
-                console.log('Token expirado');
-                throw err;
-            }) }).unless({ path: ['/user/login', '/user/refresh'] }));
+        this.app.use('/public', express_1.default.static(dir));
         this.app.use('/', indexRoutes_1.default);
         this.app.use('/user', usersRoutes_1.default);
         this.app.use('/task', taskRoutes_1.default);

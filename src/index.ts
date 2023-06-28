@@ -97,30 +97,30 @@ class Server{
     }
 
     config(): void{
-        this.app.set('port', process.env.port || 443);
+        this.app.set('port', process.env.port || 443);        
         this.app.use(morgan('dev'));
         this.app.use(cors());
         this.app.use(express.json());
         this.app.use(express.urlencoded({extended:false}));        
         this.app.use(bodyParser.urlencoded({ extended: true }));
-        this.app.use(bodyParser.json());
-        
+        this.app.use(bodyParser.json());        
     }
 
-    routes(): void{
-        this.app.use('/public',express.static(dir));
-        this.app.use(function (err: any, req: any, res: any, next: any) {
-            if (err.name === "UnauthorizedError") {
-              res.status(401).send("invalid token...");
-            } else {
-              next(err);
-            }
-          });
+    routes(): void{        
         const RSA_PUBLIC_KEY = fs.readFileSync(this.slash(Path.join(__dirname, 'public.key')));
         this.app.use(jwt({secret: RSA_PUBLIC_KEY, algorithms: ['RS256'], onExpired: async (req: any, err: any) => {
             console.log('Token expirado');
             throw err;
-          }}).unless({path:['/user/login', '/user/refresh']}));
+          }, credentialsRequired: true}, ).unless({path:['/user/login', '/user/refresh', {url: /^\/public\/.*/}]}));
+        this.app.use(function (err: any, req: any, res: any, next: any) {
+            console.log(err);
+            if (err.name === "UnauthorizedError") {
+                res.status(401).send("invalid token...");
+            } else {
+                next(err);
+            }
+        });
+        this.app.use('/public',express.static(dir));
         this.app.use('/',indexRoutes);        
         this.app.use('/user', usersRoutes);
         this.app.use('/task', taskRoutes);
