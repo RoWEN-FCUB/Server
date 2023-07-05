@@ -197,10 +197,10 @@ class UsersController {
                             const jwtBearerToken = jwt.sign({ id: results[0].id, role: results[0].role, name: results[0].user, picture: results[0].picture, fullname: results[0].fullname, position: results[0].position, id_sup: results[0].id_sup, id_emp: results[0].id_emp, id_serv: results[0].id_serv, ci: results[0].ci, municipio: results[0].municipio }, RSA_PRIVATE_KEY, {
                                 algorithm: 'RS256',
                                 allowInsecureKeySizes: true,
-                                expiresIn: 600,
+                                expiresIn: 300,
                                 subject: '' + results[0].id
                             });
-                            res.status(200).json({ data: { token: jwtBearerToken, expiresIn: 600 } });
+                            res.status(200).json({ data: { token: jwtBearerToken, expiresIn: 300 } });
                         }
                         catch (err) {
                             console.log(err);
