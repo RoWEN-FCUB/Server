@@ -134,6 +134,20 @@ class GEEController {
             }));
         });
     }
+    listCardsRecordsByDate(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id_card = Number(req.params.id_card);
+            const fecha_inicial = req.params.fecha_inicial;
+            const fecha_final = req.params.fecha_final;
+            const query = "SELECT * FROM tarjetas_registro WHERE id_tarjeta = ? AND fecha >= ? AND fecha <= ? ORDER BY id ASC";
+            yield database_1.default.query(query, [id_card, fecha_inicial, fecha_final], (error, results, fields) => {
+                if (error) {
+                    console.log(error);
+                }
+                res.json(results);
+            });
+        });
+    }
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;

@@ -114,6 +114,19 @@ class GEEController {
         });
     }
 
+    public async listCardsRecordsByDate (req: Request, res: Response):  Promise<void>{
+        const id_card: number = Number(req.params.id_card);
+        const fecha_inicial: string = req.params.fecha_inicial;
+        const fecha_final: string = req.params.fecha_final;
+        const query: string = "SELECT * FROM tarjetas_registro WHERE id_tarjeta = ? AND fecha >= ? AND fecha <= ? ORDER BY id ASC";
+        await pool.query(query, [id_card, fecha_inicial, fecha_final], (error: any, results: any, fields: any) => {
+            if(error) {
+                console.log(error);
+            }
+            res.json(results);
+        })
+    }
+
     public async create(req: Request, res: Response): Promise<void>{
         delete req.body.id;
         await pool.query('INSERT INTO gee SET ?', [req.body], function(error: any, results: any, fields: any) {
