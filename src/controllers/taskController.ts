@@ -158,11 +158,11 @@ class TaskController {
 
     public async copy(req: Request, res: Response): Promise<void>{        
         const id = req.body.id;
+        const weekend = req.body.weekend;
+        console.log(req.body);
         let startD = req.body.startD;
-        console.log('como viene' + startD);
         startD = startD.replace('T', ' ');
         startD = startD.split('.')[0] + '.000';
-        console.log('arreglada' + startD);
         let endD = req.body.endD;
         endD = endD.replace('T', ' ');
         endD = endD.split('.')[0] + '.000';
@@ -173,36 +173,36 @@ class TaskController {
         const offset = date.getTimezoneOffset() / 60;
         const hours = date.getHours();
         newDate.setHours(hours - offset);            
-        const tasktocopy = await pool.query('SELECT tareas.*, users.user AS nombre_creador FROM tareas INNER JOIN users ON(tareas.id_creador=users.id) WHERE tareas.id = ?', id, function(error: any, results: any, fields: any) {
+        await pool.query('SELECT tareas.*, users.user AS nombre_creador FROM tareas INNER JOIN users ON(tareas.id_creador=users.id) WHERE tareas.id = ?', id, function(error: any, results: any, fields: any) {
             if(error) {
                 console.log(error);
             }            
-            if(results[0]) {                
+            if(results[0]) {
                 delete results[0].id;
                 results[0].estado = 'Pendiente';
                 results[0].validada = false;
                 const creador = results[0].nombre_creador;
                 delete results[0].nombre_creador;                
                 // startD = new Date(startD);
-                console.log('la que tenia' + results[0].fecha_inicio);
                 const hora_inicio = moment(results[0].fecha_inicio).hour();
                 const min_inicio = moment(results[0].fecha_inicio).minute();
                 results[0].fecha_inicio = moment(startD).hour(hora_inicio).minute(min_inicio).toDate();
-                //results[0].fecha_inicio = moment.utc(startD).toDate();
-                console.log('la que quedo' + results[0].fecha_inicio);
                 results[0].fecha_fin = results[0].fecha_inicio;
                 const id_usuario = results[0].id_usuario;
                 const resumen = results[0].resumen;
                 const id_creador = results[0].id_creador;                
-                do {                    
-                    new_tasks.push(Object.values(results[0]));//copiar el objeto como un arreglo de valores
+                do {
+                    console.log(moment(results[0].fecha_inicio).day());
+                    if (weekend || (moment(results[0].fecha_inicio).day() !== 0 && moment(results[0].fecha_inicio).day() !== 6)){ //excluir sabados y domingos
+                        new_tasks.push(Object.values(results[0]));//copiar el objeto como un arreglo de valores
+                    }
                     results[0].fecha_inicio = moment.utc(results[0].fecha_inicio).add(1,'days').toDate();
                     results[0].fecha_fin = results[0].fecha_inicio;
                 }
                 while(!moment(results[0].fecha_inicio).isAfter(endD, 'day'));
                 //console.log(new_tasks);                
                 const sqlquery = 'INSERT INTO tareas (id_usuario, resumen, descripcion, fecha_inicio, estado, id_creador, duracion, validada, fecha_fin) VALUES ?';
-                const copyingtask = pool.query(sqlquery, [new_tasks], async (error: any, results: any, fields: any)=>{
+                pool.query(sqlquery, [new_tasks], async (error: any, results: any, fields: any)=>{
                     if (error) {
                         console.log(error);
                     }
