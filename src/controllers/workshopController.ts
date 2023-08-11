@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import pool from '../database';
-var moment = require('moment');
-import usersController from './usersController';
+//var moment = require('moment');
+//import usersController from './usersController';
 
 class WorkshopController {
 
     constructor() {}
 
-    public async listAll (req: Request,res: Response): Promise<void>{
+    /*public async listAll (req: Request,res: Response): Promise<void>{
         const page = Number(req.params.page);
         const id_serv = Number(req.params.id_emp);
         const records = await pool.query("SELECT taller_registro.*, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente) WHERE id_emp = ? ORDER BY id DESC LIMIT 10 OFFSET ?;", [id_serv, ((page - 1) * 10)], async function(error: any, wrecords: any, fields: any){            
@@ -16,7 +16,7 @@ class WorkshopController {
                 res.json({wrecords, total});
             });            
         });   
-    }
+    }*/
 
     public async listParts (req: Request,res: Response): Promise<void>{        
         const id_reg = Number(req.params.id_reg);

@@ -9,7 +9,7 @@ class WorkshopRoutes{
     }
 
     config(): void{
-        this.router.get('/records/:page&:id_serv', workshopController.listAll);
+        //this.router.get('/records/:page&:id_serv', workshopController.listAll);
         this.router.get('/clients', workshopController.listClients);
         this.router.get('/devices', workshopController.listDevices);
         this.router.get('/marcs/:equipo', workshopController.listMarcs);

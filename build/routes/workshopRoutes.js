@@ -11,7 +11,7 @@ class WorkshopRoutes {
         this.config();
     }
     config() {
-        this.router.get('/records/:page&:id_serv', workshopController_1.default.listAll);
+        //this.router.get('/records/:page&:id_serv', workshopController.listAll);
         this.router.get('/clients', workshopController_1.default.listClients);
         this.router.get('/devices', workshopController_1.default.listDevices);
         this.router.get('/marcs/:equipo', workshopController_1.default.listMarcs);

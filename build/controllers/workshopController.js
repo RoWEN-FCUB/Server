@@ -13,23 +13,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = __importDefault(require("../database"));
-var moment = require('moment');
+//var moment = require('moment');
+//import usersController from './usersController';
 class WorkshopController {
     constructor() { }
-    listAll(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const page = Number(req.params.page);
-            const id_serv = Number(req.params.id_emp);
-            const records = yield database_1.default.query("SELECT taller_registro.*, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente) WHERE id_emp = ? ORDER BY id DESC LIMIT 10 OFFSET ?;", [id_serv, ((page - 1) * 10)], function (error, wrecords, fields) {
-                return __awaiter(this, void 0, void 0, function* () {
-                    const reccount = yield database_1.default.query("SELECT count(*) as total_records FROM taller_registro;", function (error, count, fields) {
-                        const total = count[0].total_records;
-                        res.json({ wrecords, total });
-                    });
-                });
+    /*public async listAll (req: Request,res: Response): Promise<void>{
+        const page = Number(req.params.page);
+        const id_serv = Number(req.params.id_emp);
+        const records = await pool.query("SELECT taller_registro.*, taller_clientes.nombre as cliente_nombre FROM taller_registro INNER JOIN taller_clientes ON (taller_clientes.siglas = taller_registro.cliente) WHERE id_emp = ? ORDER BY id DESC LIMIT 10 OFFSET ?;", [id_serv, ((page - 1) * 10)], async function(error: any, wrecords: any, fields: any){
+            const reccount = await pool.query("SELECT count(*) as total_records FROM taller_registro;", function(error: any, count: any, fields: any){
+                const total = count[0].total_records;
+                res.json({wrecords, total});
             });
         });
-    }
+    }*/
     listParts(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id_reg = Number(req.params.id_reg);
