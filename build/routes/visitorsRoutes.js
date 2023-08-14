@@ -13,7 +13,9 @@ class VisitorsRoutes {
     config() {
         this.router.get('/records/:page&:id_serv', visitorsController_1.default.listAll);
         this.router.get('/one/:ci', visitorsController_1.default.listOne);
+        this.router.get('/names/:id_serv', visitorsController_1.default.listNames);
         this.router.post('/', visitorsController_1.default.create);
+        this.router.put('/:id', visitorsController_1.default.update);
         this.router.delete('/:id', visitorsController_1.default.delete);
     }
 }

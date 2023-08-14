@@ -43,6 +43,17 @@ class VisitorsController {
             });
         });
     }
+    listNames(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id_serv = Number(req.params.id_serv);
+            yield database_1.default.query("SELECT DISTINCT nombre, organismo, ci, departamento FROM visitantes WHERE id_servicio = ?;", [id_serv], function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+                res.json(results);
+            });
+        });
+    }
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;
@@ -55,6 +66,20 @@ class VisitorsController {
                     console.log(error);
                 }
                 res.json({ message: 'Visitor saved' });
+            });
+        });
+    }
+    update(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            req.body.hora_salida = (0, moment_1.default)(req.body.hora_salida).format('HH:mm');
+            delete req.body.id;
+            delete req.body.nombre_autoriza;
+            const result = database_1.default.query('UPDATE visitantes set ? WHERE id = ?', [req.body, id], function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+                res.json({ text: "Visitor updated" });
             });
         });
     }

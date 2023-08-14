@@ -25,7 +25,15 @@ class VisitorsController {
             } else {
                 res.json(null);
             }            
-        })
+        });
+    }
+
+    public async listNames (req: Request,res: Response): Promise<void>{
+        const id_serv = Number(req.params.id_serv);
+        await pool.query("SELECT DISTINCT nombre, organismo, ci, departamento FROM visitantes WHERE id_servicio = ?;", [id_serv], function(error: any, results: any, fields: any){                        
+            if (error) {console.log(error);}
+            res.json(results);
+        });
     }
 
     public async create(req: Request, res: Response): Promise<void>{
@@ -39,6 +47,19 @@ class VisitorsController {
                 console.log(error);
             }
             res.json({message: 'Visitor saved'});
+        });
+    }
+
+    public async update(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        req.body.hora_salida = moment(req.body.hora_salida).format('HH:mm');
+        delete req.body.id;
+        delete req.body.nombre_autoriza;
+        const result = pool.query('UPDATE visitantes set ? WHERE id = ?', [req.body,id], function(error: any, results: any, fields: any){            
+            if (error) {
+                console.log(error);
+            }
+            res.json({text:"Visitor updated"});
         });
     }
 
