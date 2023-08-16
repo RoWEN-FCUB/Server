@@ -54,6 +54,47 @@ class VisitorsController {
             });
         });
     }
+    filterVisitors(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id_serv = Number(req.params.id_serv);
+            const page = Number(req.params.page);
+            let query = "SELECT visitantes.*, users.user as nombre_autoriza FROM visitantes INNER JOIN users ON (visitantes.autoriza = users.id) WHERE id_servicio = ?";
+            let params = '';
+            if (req.body.nombre) {
+                params += " AND visitantes.nombre LIKE '%" + req.body.nombre + "%'";
+            }
+            if (req.body.ci) {
+                params += " AND visitantes.ci LIKE '%" + req.body.ci + "%'";
+            }
+            if (req.body.organismo) {
+                params += " AND visitantes.organismo = '" + req.body.organismo + "'";
+            }
+            if (req.body.departamento) {
+                params += " AND visitantes.departamento LIKE '%" + req.body.departamento + "%'";
+            }
+            if (req.body.fecha) {
+                params += " AND visitantes.DATE(fecha) = " + "'" + (0, moment_1.default)(req.body.fecha).format('YYYY-MM-DD') + "'";
+            }
+            if (req.body.hora_entrada) {
+                req.body.hora_entrada = (0, moment_1.default)(req.body.hora_entrada).format('HH:mm');
+                params += " AND visitantes.hora_entrada LIKE '%" + req.body.hora_entrada + "%'";
+            }
+            if (req.body.hora_salida) {
+                req.body.hora_salida = (0, moment_1.default)(req.body.hora_salida).format('HH:mm');
+                params += " AND visitantes.hora_salida LIKE '%" + req.body.hora_salida + "%'";
+            }
+            query += params + " ORDER BY id DESC LIMIT 10 OFFSET ?;";
+            console.log(query);
+            yield database_1.default.query(query, [id_serv, ((page - 1) * 10)], function (error, vrecords, fields) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    yield database_1.default.query("SELECT count(*) as total_records FROM visitantes WHERE id_servicio = ?" + params + ";", [id_serv], function (error, count, fields) {
+                        const total = count[0].total_records;
+                        res.json({ vrecords, total });
+                    });
+                });
+            });
+        });
+    }
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;

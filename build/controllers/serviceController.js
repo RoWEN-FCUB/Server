@@ -95,7 +95,6 @@ class ServiceController {
                     headers: { 'X-Api-Key': 'SA6Mqw5WV97WzR29uc1kEQ==iQbcaSOYZk5FR4uq' }
                 });
                 const cities = yield response.json();
-                console.log(cities);
                 if (cities.length > 0) {
                     res.json(cities);
                 }
@@ -104,6 +103,32 @@ class ServiceController {
                 console.log(error);
                 res.status(404).json({ text: 'Error al contactar con el servidor api' });
             }
+        });
+    }
+    getServiceDepartments(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id_serv } = req.params;
+            const tasks = yield database_1.default.query("SELECT * FROM departamentos WHERE id_serv = ?", [id_serv], function (error, results, fields) {
+                res.json(results);
+            });
+        });
+    }
+    createDepartment(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield database_1.default.query('INSERT INTO departamentos SET ?', [req.body], function (error, results, fields) {
+                if (error) {
+                    console.log(error);
+                }
+                res.json({ message: 'Department saved' });
+            });
+        });
+    }
+    deleteDepartment(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            const company = yield database_1.default.query('DELETE FROM departamentos WHERE id = ?', [id], function (error, results, fields) {
+                res.json({ text: "Department deleted" });
+            });
         });
     }
 }

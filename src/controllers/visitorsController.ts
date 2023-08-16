@@ -36,6 +36,44 @@ class VisitorsController {
         });
     }
 
+    public async filterVisitors (req: Request,res: Response): Promise<void>{
+        const id_serv = Number(req.params.id_serv);
+        const page = Number(req.params.page);
+        let query = "SELECT visitantes.*, users.user as nombre_autoriza FROM visitantes INNER JOIN users ON (visitantes.autoriza = users.id) WHERE id_servicio = ?";
+        let params = '';
+        if (req.body.nombre) {
+            params += " AND visitantes.nombre LIKE '%" + req.body.nombre + "%'";
+        }
+        if (req.body.ci) {
+            params += " AND visitantes.ci LIKE '%" + req.body.ci + "%'";
+        }
+        if (req.body.organismo) {
+            params += " AND visitantes.organismo = '" + req.body.organismo + "'";
+        }
+        if (req.body.departamento) {
+            params += " AND visitantes.departamento LIKE '%" + req.body.departamento + "%'";
+        }
+        if (req.body.fecha) {
+            params += " AND visitantes.DATE(fecha) = " + "'" + moment(req.body.fecha).format('YYYY-MM-DD') + "'";
+        }
+        if (req.body.hora_entrada) {
+            req.body.hora_entrada = moment(req.body.hora_entrada).format('HH:mm');
+            params += " AND visitantes.hora_entrada LIKE '%" + req.body.hora_entrada + "%'";
+        }
+        if (req.body.hora_salida) {
+            req.body.hora_salida = moment(req.body.hora_salida).format('HH:mm');
+            params += " AND visitantes.hora_salida LIKE '%" + req.body.hora_salida + "%'";
+        }
+        query += params + " ORDER BY id DESC LIMIT 10 OFFSET ?;"
+        console.log(query)
+        await pool.query(query, [id_serv, ((page - 1) * 10)], async function(error: any, vrecords: any, fields: any){            
+            await pool.query("SELECT count(*) as total_records FROM visitantes WHERE id_servicio = ?" + params + ";", [id_serv], function(error: any, count: any, fields: any){            
+                const total = count[0].total_records;
+                res.json({vrecords, total});
+            });
+        });
+    }
+
     public async create(req: Request, res: Response): Promise<void>{
         delete req.body.id;
         if (req.body.hora_salida) {

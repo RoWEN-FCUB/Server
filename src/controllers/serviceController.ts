@@ -73,7 +73,6 @@ class ServiceController {
               headers:{'X-Api-Key': 'SA6Mqw5WV97WzR29uc1kEQ==iQbcaSOYZk5FR4uq'}
             });
             const cities = await response.json();
-            console.log(cities);
             if (cities.length > 0) {
               res.json(cities);
             }
@@ -81,6 +80,29 @@ class ServiceController {
             console.log(error);
             res.status(404).json({text: 'Error al contactar con el servidor api'});
           }
+    }
+
+    public async getServiceDepartments (req: Request, res: Response): Promise<void>{
+        const {id_serv} = req.params;
+        const tasks = await pool.query("SELECT * FROM departamentos WHERE id_serv = ?", [id_serv], function(error: any, results: any, fields: any){
+            res.json(results);            
+        });
+    }
+
+    public async createDepartment(req: Request, res: Response): Promise<void>{
+        await pool.query('INSERT INTO departamentos SET ?', [req.body], function(error: any, results: any, fields: any) {
+            if (error) {
+                console.log(error);
+            }
+            res.json({message: 'Department saved'});
+        });
+    }
+
+    public async deleteDepartment(req: Request, res: Response): Promise<void>{
+        const {id} = req.params;
+        const company = await pool.query('DELETE FROM departamentos WHERE id = ?', [id], function(error: any, results: any, fields: any){            
+            res.json({text:"Department deleted"});
+        });        
     }
 }
 const serviceController = new ServiceController();

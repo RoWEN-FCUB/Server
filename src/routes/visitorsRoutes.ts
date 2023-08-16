@@ -10,6 +10,7 @@ class VisitorsRoutes {
 
     config(): void{
         this.router.get('/records/:page&:id_serv', visitorsController.listAll);
+        this.router.post('/filter/:page&:id_serv', visitorsController.filterVisitors);
         this.router.get('/one/:ci', visitorsController.listOne);
         this.router.get('/names/:id_serv', visitorsController.listNames);
         this.router.post('/', visitorsController.create);
