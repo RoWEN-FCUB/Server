@@ -76,6 +76,7 @@ class VisitorsController {
 
     public async create(req: Request, res: Response): Promise<void>{
         delete req.body.id;
+        req.body.fecha = moment(req.body.fecha).format('YYYY-MM-DD');
         if (req.body.hora_salida) {
             req.body.hora_salida = moment(req.body.hora_salida).format('HH:mm');
         }

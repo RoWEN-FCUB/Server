@@ -98,6 +98,7 @@ class VisitorsController {
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             delete req.body.id;
+            req.body.fecha = (0, moment_1.default)(req.body.fecha).format('YYYY-MM-DD');
             if (req.body.hora_salida) {
                 req.body.hora_salida = (0, moment_1.default)(req.body.hora_salida).format('HH:mm');
             }
