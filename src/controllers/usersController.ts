@@ -145,7 +145,7 @@ class UsersController{
         const RSA_PRIVATE_KEY = fs.readFileSync(path);
         const resp = await pool.query('SELECT users.id, users.email, users.picture, users.pass, users.user, users.fullname, users.position, users.id_sup, users.id_emp, users.id_serv, users.ci, users_roles.role, servicios.municipio FROM users INNER JOIN users_roles ON (users.role = users_roles.id) INNER JOIN servicios ON (users.id_serv=servicios.id) WHERE email = ?',[email], function(error: any, results: any, fields: any){
             //console.log(results[0]);
-            if(!results[0]){
+            if(results.length === 0 || results === undefined || results === null){
                 res.status(401).json({error: 'Datos de usuario incorrectos'});
             } else {
                 if(results[0].pass === upass) {

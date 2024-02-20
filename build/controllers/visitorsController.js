@@ -115,6 +115,7 @@ class VisitorsController {
         return __awaiter(this, void 0, void 0, function* () {
             const { id } = req.params;
             req.body.hora_salida = (0, moment_1.default)(req.body.hora_salida).format('HH:mm');
+            req.body.fecha = (0, moment_1.default)(req.body.fecha).format('YYYY-MM-DD');
             delete req.body.id;
             delete req.body.nombre_autoriza;
             const result = database_1.default.query('UPDATE visitantes set ? WHERE id = ?', [req.body, id], function (error, results, fields) {

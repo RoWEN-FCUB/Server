@@ -92,6 +92,7 @@ class VisitorsController {
     public async update(req: Request, res: Response): Promise<void>{
         const {id} = req.params;
         req.body.hora_salida = moment(req.body.hora_salida).format('HH:mm');
+        req.body.fecha = moment(req.body.fecha).format('YYYY-MM-DD');
         delete req.body.id;
         delete req.body.nombre_autoriza;
         const result = pool.query('UPDATE visitantes set ? WHERE id = ?', [req.body,id], function(error: any, results: any, fields: any){            
